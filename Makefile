@@ -105,6 +105,11 @@ vet: ## Run go vet against code.
 test: manifests generate fmt vet ## Run tests.
 	go test ./... -coverprofile cover.out
 
+semver:
+ifeq (, $(shell which semver))
+ $(shell go install github.com/bakito/semver@latest)
+endif
+
 ## Location to install dependencies to
 LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
@@ -134,3 +139,13 @@ docker-build:
 
 docker-push: docker-build
 	docker push ghcr.io/bakito/vault-unsealer
+
+semver:
+ifeq (, $(shell which semver))
+ $(shell go install github.com/bakito/semver@latest)
+endif
+
+release: semver
+	@version=$$(semver); \
+	git tag -s $$version -m"Release $$version"
+	goreleaser --rm-dist
