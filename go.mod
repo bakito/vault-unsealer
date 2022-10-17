@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/vault/api v1.8.1
 	github.com/hashicorp/vault/sdk v0.6.1-0.20221010215534-6545e24b6023
 	github.com/onsi/ginkgo/v2 v2.3.1
-	github.com/onsi/gomega v1.22.0
+	github.com/onsi/gomega v1.22.1
 	go.uber.org/zap v1.23.0
 	k8s.io/api v0.25.3
 	k8s.io/apimachinery v0.25.3
