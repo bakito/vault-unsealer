@@ -1,0 +1,29 @@
+name: Github Build
+
+on:
+  push:
+    branches: [ main, ginkgo-v2 ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Go Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: "go.mod"
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+
+      - name: Build
+        run: go build .
+
+      - name: Test
+        run: make test

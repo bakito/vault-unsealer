@@ -1,0 +1,40 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+  - asciicheck
+  - bodyclose
+  - depguard
+  - dogsled
+  - durationcheck
+  - errcheck
+  - errorlint
+  - exportloopref
+  - gci
+  - gofmt
+  - gofumpt
+  - goimports
+  - gosec
+  - gosimple
+  - govet
+  - importas
+  - ineffassign
+  - megacheck
+  - misspell
+  - nakedret
+  - nolintlint
+  - revive
+  - staticcheck
+  - unconvert
+  - unparam
+  - unused
+  - wastedassign
+linters-settings:
+  gosec:
+    # Exclude generated files
+    exclude-generated: true
+  gofmt:
+    # simplify code: gofmt with `-s` option, true by default
+    simplify: true
+
