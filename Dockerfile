@@ -1,5 +1,4 @@
 FROM golang:1.19 as builder
-ARG upx_brute="--ultra-brute"
 WORKDIR /build
 
 RUN apt-get update && apt-get install -y upx
@@ -12,7 +11,7 @@ ENV GO111MODULE=on \
     GOARCH=amd64
 
 RUN go build -a -installsuffix cgo -ldflags="-w -s -X github.com/bakito/vault-unsealer/version.Version=${VERSION}" -o vault-unsealer main.go && \
-    upx ${upx_brute} -q vault-unsealer
+    upx -q vault-unsealer
 
 # application image
 
