@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/hashicorp/vault/api"
 )
 
@@ -34,14 +35,14 @@ func userpassLogin(cl *api.Client, username string, password string) (string, er
 	return token, nil
 }
 
-func readSecret(cl *api.Client, v *vaultInfo) error {
-	sec, err := cl.Logical().Read(v.secretPath)
+func readSecret(cl *api.Client, v *types.VaultInfo) error {
+	sec, err := cl.Logical().Read(v.SecretPath)
 	if err != nil {
 		return err
 	}
 
 	if sec == nil {
-		return fmt.Errorf("did not receive a valid secret with path %s", v.secretPath)
+		return fmt.Errorf("did not receive a valid secret with path %s", v.SecretPath)
 	}
 
 	if len(sec.Warnings) > 0 {
@@ -56,11 +57,11 @@ func readSecret(cl *api.Client, v *vaultInfo) error {
 	return nil
 }
 
-func extractUnsealKeys(data interface{}, v *vaultInfo) {
+func extractUnsealKeys(data interface{}, v *types.VaultInfo) {
 	if m, o := data.(map[string]interface{}); o {
 		for k, val := range m {
 			if strings.HasPrefix(k, constants.KeyPrefixUnsealKey) {
-				v.unsealKeys = append(v.unsealKeys, fmt.Sprintf("%v", val))
+				v.UnsealKeys = append(v.UnsealKeys, fmt.Sprintf("%v", val))
 			}
 		}
 	}

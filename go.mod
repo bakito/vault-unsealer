@@ -3,12 +3,15 @@ module github.com/bakito/vault-unsealer
 go 1.19
 
 require (
+	github.com/bakito/go-log-logr-adapter v0.0.2
 	github.com/go-logr/logr v1.2.3
+	github.com/hashicorp/serf v0.9.7
 	github.com/hashicorp/vault v1.12.0
 	github.com/hashicorp/vault/api v1.8.1
 	github.com/hashicorp/vault/sdk v0.6.1-0.20221010215534-6545e24b6023
 	github.com/onsi/ginkgo/v2 v2.3.1
 	github.com/onsi/gomega v1.22.1
+	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.23.0
 	k8s.io/api v0.25.3
 	k8s.io/apimachinery v0.25.3
@@ -88,6 +91,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/btree v1.0.1 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/go-metrics-stackdriver v0.2.0 // indirect
@@ -131,6 +135,7 @@ require (
 	github.com/hashicorp/hcl v1.0.1-vault-3 // indirect
 	github.com/hashicorp/hcp-sdk-go v0.22.0 // indirect
 	github.com/hashicorp/mdns v1.0.4 // indirect
+	github.com/hashicorp/memberlist v0.3.0 // indirect
 	github.com/hashicorp/raft v1.3.10 // indirect
 	github.com/hashicorp/raft-autopilot v0.1.6 // indirect
 	github.com/hashicorp/raft-boltdb/v2 v2.0.0-20210421194847-a7e34179d62c // indirect
@@ -172,7 +177,6 @@ require (
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pires/go-proxyproto v0.6.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
@@ -185,6 +189,7 @@ require (
 	github.com/renier/xmlrpc v0.0.0-20170708154548-ce4a1a486c03 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.0 // indirect
+	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/sethvargo/go-limiter v0.7.1 // indirect
 	github.com/shirou/gopsutil/v3 v3.22.6 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect

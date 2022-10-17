@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/bakito/vault-unsealer/controllers"
+	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
@@ -17,6 +18,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 var (
@@ -57,9 +59,24 @@ func main() {
 		os.Exit(1)
 	}
 
+	withCache := true
+	if withCache {
+		c := cache.NewClustered()
+		go run(mgr, watchNamespace, c)
+		err = c.Start()
+		if err != nil {
+			setupLog.Error(err, "unable to start cache")
+			os.Exit(1)
+		}
+	} else {
+		run(mgr, watchNamespace, cache.NewSimple())
+	}
+}
+
+func run(mgr manager.Manager, watchNamespace string, cache cache.Cache) {
 	ctx := context.TODO()
 	secrets := &corev1.SecretList{}
-	err = mgr.GetAPIReader().List(ctx, secrets, client.HasLabels{constants.LabelStatefulSetName}, client.InNamespace(watchNamespace))
+	err := mgr.GetAPIReader().List(ctx, secrets, client.HasLabels{constants.LabelStatefulSetName}, client.InNamespace(watchNamespace))
 	if err != nil {
 		setupLog.Error(err, "unable to find secrets")
 		os.Exit(1)
@@ -69,6 +86,7 @@ func main() {
 	if err = (&controllers.PodReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Cache:  cache,
 	}).SetupWithManager(mgr, secrets.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)
