@@ -73,10 +73,3 @@ Create the name of the role to use
     {{ default "default" .Values.rbac.roleName }}
 {{- end -}}
 {{- end -}}
-
-
-
-
-
-
-
