@@ -35,6 +35,9 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
+            - name: OPERATOR_POD_SELECTOR
+              value: |
+                {{- include "vault-unsealer.selectorLabels" . | nindent 16 }}
           resources:
           {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
