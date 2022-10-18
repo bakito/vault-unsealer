@@ -105,11 +105,6 @@ vet: ## Run go vet against code.
 test: manifests generate fmt vet ## Run tests.
 	go test ./... -coverprofile cover.out
 
-semver:
-ifeq (, $(shell which semver))
- $(shell go install github.com/bakito/semver@latest)
-endif
-
 ## Location to install dependencies to
 LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
@@ -117,14 +112,28 @@ $(LOCALBIN):
 
 ## Tool Binaries
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
+SEMVER ?= $(LOCALBIN)/semver
+HELM_DOCS ?= $(LOCALBIN)/helm-docs
 
 ## Tool Versions
 CONTROLLER_TOOLS_VERSION ?= v0.9.2
+SEMVER_VERSION ?= latest
+HELM_DOCS_VERSION ?= v1.11.0
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
 $(CONTROLLER_GEN): $(LOCALBIN)
 	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
+
+.PHONY: semver
+semver: $(SEMVER) ## Download semver locally if necessary.
+$(SEMVER): $(LOCALBIN)
+	test -s $(LOCALBIN)/semver || GOBIN=$(LOCALBIN) go install github.com/bakito/semver@$(SEMVER_VERSION)
+
+.PHONY: helm-docs
+helm-docs: $(HELM_DOCS) ## Download helm-docs locally if necessary.
+$(HELM_DOCS): $(LOCALBIN)
+	test -s $(LOCALBIN)/helm-docs || GOBIN=$(LOCALBIN) go install github.com/norwoodj/helm-docs/cmd/helm-docs@$(HELM_DOCS_VERSION)
 
 port-forward:
 	kubectl port-forward pod/vault-0 8200:8200 &
@@ -140,12 +149,10 @@ docker-build:
 docker-push: docker-build
 	docker push ghcr.io/bakito/vault-unsealer
 
-semver:
-ifeq (, $(shell which semver))
- $(shell go install github.com/bakito/semver@latest)
-endif
-
 release: semver
 	@version=$$(semver); \
 	git tag -s $$version -m"Release $$version"
 	goreleaser --rm-dist
+
+docs: helm-docs
+	@$(LOCALBIN)/helm-docs
