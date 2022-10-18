@@ -118,7 +118,7 @@ $(LOCALBIN):
 ## Tool Binaries
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 SEMVER ?= $(LOCALBIN)/semver
-bHELM_DOCS ?= $(LOCALBIN)/helm-docs
+HELM_DOCS ?= $(LOCALBIN)/helm-docs
 
 ## Tool Versions
 CONTROLLER_TOOLS_VERSION ?= v0.9.2
