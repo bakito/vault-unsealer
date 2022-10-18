@@ -27,7 +27,9 @@ jobs:
       - name: Build chart
         run: |
           VERSION=$(echo "${{github.event.release.tag_name }}" | sed 's/v//g')
-          helm package ./helm/ --version $VERSION --app-version v$VERSION -d dist
+          sed -i "s/^version:.*$/version: ${VERSION}/"        ./chart/Chart.yaml
+          sed -i "s/^appVersion:.*$/appVersion: v${VERSION}/" ./chart/Chart.yaml
+          helm package ./chart --version $VERSION --app-version v$VERSION -d dist
 
       - name: Install chart-releaser
         uses: engineerd/configurator@v0.0.8

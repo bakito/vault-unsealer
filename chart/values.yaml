@@ -1,0 +1,37 @@
+image:
+  # -- Repository to use
+  repository: docker pull ghcr.io/bakito/vault-unsealer
+  # -- Image pull policy
+  pullPolicy: Always
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
+  name:
+
+rbac:
+  # -- Specifies whether rbac should be created
+  create: true
+  # -- The name of the role and role to use.
+  # -- If not set and create is true, a name is generated using the fullname template
+  roleName:
+
+# -- Resource limits and requests for the controller pods.
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi
+
+# -- [Node selector]
+nodeSelector: { }
+
+# -- [Tolerations] for use with node taints
+tolerations: [ ]
+
+# -- Assign custom [affinity] rules to the deployment
+affinity: { }

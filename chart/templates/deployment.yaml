@@ -18,7 +18,7 @@ spec:
       serviceAccountName: {{ include "vault-unsealer.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - /opt/go/vault-unsealer
@@ -52,16 +52,6 @@ spec:
           ports:
             - containerPort: 8080
               name: metrics
-            {{- if .Values.webhook.enabled }}
-            - containerPort: 9443
-              name: webhook
-          {{- end }}
-          {{- if .Values.webhook.enabled  }}
-          volumeMounts:
-            - mountPath: /opt/go/certs
-              name: "webhook-certs"
-              readOnly: true
-          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
       {{- toYaml . | nindent 8 }}
@@ -73,11 +63,4 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if .Values.webhook.enabled }}
-      volumes:
-        - name: "webhook-certs"
-          secret:
-            defaultMode: 420
-            secretName: {{ include "vault-unsealer.webhookCertSecretName" . }}
       {{- end }}

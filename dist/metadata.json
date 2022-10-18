@@ -1,1 +1,1 @@
-{"project_name":"vault-unsealer","tag":"v0.0.1","previous_tag":"","version":"0.0.1","commit":"dbf0094f97e355b5d7948baadaa1643afa337eba","date":"2022-10-17T13:11:46.958574218+02:00","runtime":{"goos":"linux","goarch":"amd64"}}
+{"project_name":"vault-unsealer","tag":"v0.0.2","previous_tag":"","version":"0.0.2","commit":"44b133f7d63eba709e4c6d67b61db9be8401696c","date":"2022-10-18T15:04:37.799294046+02:00","runtime":{"goos":"linux","goarch":"amd64"}}
