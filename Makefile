@@ -105,11 +105,6 @@ vet: ## Run go vet against code.
 test: manifests generate fmt vet ## Run tests.
 	go test ./... -coverprofile cover.out
 
-semver:
-ifeq (, $(shell which semver))
- $(shell go install github.com/bakito/semver@latest)
-endif
-
 ## Location to install dependencies to
 LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
