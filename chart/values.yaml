@@ -1,6 +1,6 @@
 image:
   # -- Repository to use
-  repository: docker pull ghcr.io/bakito/vault-unsealer
+  repository: ghcr.io/bakito/vault-unsealer
   # -- Image pull policy
   pullPolicy: Always
 
