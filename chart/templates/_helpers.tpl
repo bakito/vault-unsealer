@@ -74,9 +74,9 @@ Create the name of the role to use
 {{- end -}}
 {{- end -}}
 
-{{/*
-Get the webhook cert secret name
-*/}}
-{{- define "vault-unsealer.webhookCertSecretName" -}}
-{{- default (printf "%s-webhook" (include "vault-unsealer.fullname" .))  .Values.webhook.certsSecret.name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
+
+
+
+
+
+
