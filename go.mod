@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/bakito/go-log-logr-adapter v0.0.2
 	github.com/go-logr/logr v1.2.3
-	github.com/hashicorp/serf v0.9.7
+	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.12.0
 	github.com/hashicorp/vault/api v1.8.1
 	github.com/hashicorp/vault/sdk v0.6.1-0.20221010215534-6545e24b6023
@@ -135,7 +135,7 @@ require (
 	github.com/hashicorp/hcl v1.0.1-vault-3 // indirect
 	github.com/hashicorp/hcp-sdk-go v0.22.0 // indirect
 	github.com/hashicorp/mdns v1.0.4 // indirect
-	github.com/hashicorp/memberlist v0.3.0 // indirect
+	github.com/hashicorp/memberlist v0.5.0 // indirect
 	github.com/hashicorp/raft v1.3.10 // indirect
 	github.com/hashicorp/raft-autopilot v0.1.6 // indirect
 	github.com/hashicorp/raft-boltdb/v2 v2.0.0-20210421194847-a7e34179d62c // indirect

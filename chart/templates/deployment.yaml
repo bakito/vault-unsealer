@@ -40,10 +40,10 @@ spec:
           {{- if eq (.Values.sharedCache.enabled | toString) "true" }}
           args:
             {{- range $k, $v := (include "vault-unsealer.selectorLabels" . | fromYaml ) }}
-            - "--deployment-selector"
+            - "-deployment-selector"
             - "{{ $k }}: {{ $v }}"
             {{- end }}
-            - "--shared-cache"
+            - "-shared-cache"
           {{- end }}
           resources:
           {{- toYaml .Values.resources | nindent 12 }}

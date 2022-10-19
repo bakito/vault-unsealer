@@ -4,13 +4,14 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
-	la "github.com/bakito/go-log-logr-adapter/adapter"
 	"github.com/hashicorp/serf/serf"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
@@ -23,15 +24,33 @@ type clusteredCache struct {
 // Serf
 // ----------------------------------------------------------------------------
 
+var serfLog = ctrl.Log.WithName("serf")
+
+type logrWriter struct{}
+
+func (w *logrWriter) Write(p []byte) (n int, err error) {
+	msg := strings.TrimSuffix(string(p), "\n")
+	if strings.Contains(msg, "[DEBUG] ") {
+		serfLog.V(2).Info(strings.Split(msg, "[DEBUG] ")[1])
+	} else if strings.Contains(msg, "[INFO] ") {
+		serfLog.Info(strings.Split(msg, "[INFO] ")[1])
+	} else if strings.Contains(msg, "[ERROR] ") {
+		serfLog.Error(nil, strings.Split(msg, "[ERROR] ")[1])
+	} else if strings.Contains(msg, "[WARN] ") {
+		serfLog.Error(nil, strings.Split(msg, "[WARN] ")[1])
+	}
+	return 0, nil
+}
+
 func setupSerfCluster(myIP string, clusterMembers []string, eventChannel chan<- serf.Event) (*serf.Serf, error) {
 	// Configuration values.
 	configuration := serf.DefaultConfig()
 	configuration.Init()
-	configuration.Logger = la.ToStd(log)
+	configuration.LogOutput = &logrWriter{}
 	configuration.NodeName = myIP
 
 	configuration.MemberlistConfig.AdvertiseAddr = myIP
-	configuration.MemberlistConfig.Logger = configuration.Logger
+	configuration.MemberlistConfig.LogOutput = configuration.LogOutput
 	configuration.MemberlistConfig.BindPort = 7946
 	configuration.MemberlistConfig.AdvertisePort = configuration.MemberlistConfig.BindPort
 	configuration.EventCh = eventChannel
