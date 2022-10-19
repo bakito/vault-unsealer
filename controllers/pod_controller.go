@@ -6,7 +6,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/hashicorp/vault/api"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -21,7 +23,7 @@ import (
 type PodReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
-	vaults map[string]*vaultInfo
+	Cache  cache.Cache
 }
 
 //+kubebuilder:rbac:groups=.com,resources=pods,verbs=get;list;watch;create;update;patch;delete
@@ -58,13 +60,13 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 	}
 
-	vault := r.vaults[getOwner(pod)]
+	vault := r.Cache.VaultInfoFor(getOwner(pod))
 	if vault == nil {
 		return reconcile.Result{}, nil
 	}
 
 	if st.Sealed {
-		if len(vault.unsealKeys) == 0 {
+		if len(vault.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 		}
 
@@ -73,8 +75,8 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 		l.Info("successfully unsealed vault")
 
-	} else if len(vault.unsealKeys) == 0 {
-		t, err := userpassLogin(cl, vault.username, vault.password)
+	} else if len(vault.UnsealKeys) == 0 {
+		t, err := userpassLogin(cl, vault.Username, vault.Password)
 		if err != nil {
 			return reconcile.Result{}, err
 		}
@@ -83,7 +85,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		if err := readSecret(cl, vault); err != nil {
 			return reconcile.Result{}, err
 		}
-		l.WithValues("count", len(vault.unsealKeys)).Info("successfully read unseal keys from vault")
+		l.WithValues("count", len(vault.UnsealKeys)).Info("successfully read unseal keys from vault")
 	}
 
 	return ctrl.Result{}, nil
@@ -91,26 +93,28 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secret) error {
-	r.vaults = make(map[string]*vaultInfo)
 	for _, s := range secrets {
-		v := &vaultInfo{
-			username: string(s.Data[constants.KeyUsername]),
-			password: string(s.Data[constants.KeyPassword]),
-			owner:    s.GetLabels()[constants.LabelStatefulSetName],
-		}
-		if p, ok := s.Data[constants.KeySecretPath]; ok {
-			v.secretPath = string(p)
-		} else {
-			v.secretPath = constants.DefaultSecretPath
-		}
-
-		for key, val := range s.Data {
-			if strings.HasPrefix(key, constants.KeyPrefixUnsealKey) {
-				v.unsealKeys = append(v.unsealKeys, string(val))
+		owner := s.GetLabels()[constants.LabelStatefulSetName]
+		if r.Cache.VaultInfoFor(owner) == nil {
+			v := &types.VaultInfo{
+				Username: string(s.Data[constants.KeyUsername]),
+				Password: string(s.Data[constants.KeyPassword]),
+				Owner:    owner,
 			}
-		}
+			if p, ok := s.Data[constants.KeySecretPath]; ok {
+				v.SecretPath = string(p)
+			} else {
+				v.SecretPath = constants.DefaultSecretPath
+			}
 
-		r.vaults[v.owner] = v
+			for key, val := range s.Data {
+				if strings.HasPrefix(key, constants.KeyPrefixUnsealKey) {
+					v.UnsealKeys = append(v.UnsealKeys, string(val))
+				}
+			}
+
+			r.Cache.SetVaultInfoFor(owner, v)
+		}
 	}
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Pod{}).
@@ -118,8 +122,8 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 		Complete(r)
 }
 
-func (r *PodReconciler) unseal(ctx context.Context, cl *api.Client, vault *vaultInfo) error {
-	for _, key := range vault.unsealKeys {
+func (r *PodReconciler) unseal(ctx context.Context, cl *api.Client, vault *types.VaultInfo) error {
+	for _, key := range vault.UnsealKeys {
 		resp, err := cl.Sys().UnsealWithContext(ctx, key)
 		if err != nil {
 			return err
@@ -129,12 +133,4 @@ func (r *PodReconciler) unseal(ctx context.Context, cl *api.Client, vault *vault
 		}
 	}
 	return errors.New("could not unseal vault")
-}
-
-type vaultInfo struct {
-	owner      string
-	username   string
-	password   string
-	unsealKeys []string
-	secretPath string
 }

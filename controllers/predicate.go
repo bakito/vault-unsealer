@@ -32,6 +32,5 @@ func (r *PodReconciler) matches(m metav1.Object) bool {
 
 func (r *PodReconciler) hasCorrectOwner(pod *corev1.Pod) bool {
 	owner := getOwner(pod)
-	_, ok := r.vaults[owner]
-	return ok
+	return r.Cache.VaultInfoFor(owner) != nil
 }

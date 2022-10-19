@@ -3,6 +3,7 @@ package controllers
 import (
 	"net"
 
+	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/hashicorp/vault/api"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -27,18 +28,18 @@ var _ = Describe("Vault", func() {
 				"unsealKey1": "foo",
 				"unsealKey2": "bar",
 			})
-			vi := &vaultInfo{secretPath: "secret/foo"}
+			vi := &types.VaultInfo{SecretPath: "secret/foo"}
 			Ω(readSecret(client, vi)).ShouldNot(HaveOccurred())
-			Ω(vi.unsealKeys).Should(ContainElements("foo", "bar"))
+			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 		It("read unseal keys from secret v2", func() {
 			server, client = createTestVault(2, "secret/data/foo", map[string]interface{}{
 				"unsealKey1": "foo",
 				"unsealKey2": "bar",
 			})
-			vi := &vaultInfo{secretPath: "secret/data/foo"}
+			vi := &types.VaultInfo{SecretPath: "secret/data/foo"}
 			Ω(readSecret(client, vi)).ShouldNot(HaveOccurred())
-			Ω(vi.unsealKeys).Should(ContainElements("foo", "bar"))
+			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 	})
 })

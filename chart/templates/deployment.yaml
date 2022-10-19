@@ -6,10 +6,12 @@ metadata:
   labels:
   {{- include "vault-unsealer.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
   {{- include "vault-unsealer.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -35,6 +37,14 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
+          {{- if eq (.Values.sharedCache.enabled | toString) "true" }}
+          args:
+            {{- range $k, $v := (include "vault-unsealer.selectorLabels" . | fromYaml ) }}
+            - "-deployment-selector"
+            - "{{ $k }}: {{ $v }}"
+            {{- end }}
+            - "-shared-cache"
+          {{- end }}
           resources:
           {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
