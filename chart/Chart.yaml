@@ -2,7 +2,6 @@ apiVersion: v2
 name: vault-unsealer
 description: A kubernetes controller that can auto unseal vault pods.
 type: application
-version: "0.0.2"
-appVersion: "v0.0.2"
-# icon from https://www.flaticon.com/free-icon/seal_2437200
-icon: https://raw.githubusercontent.com/bakito/vault-unsealer/main/chart/logo.png
+version: "0.0.7"
+appVersion: "v0.0.7"
+icon: https://emojigraph.org/media/google/seal_1f9ad.png
