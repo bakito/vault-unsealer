@@ -115,6 +115,7 @@ func (c clusteredCache) serfEventHandler(event serf.Event) error {
 		if err := json.Unmarshal(ue.Payload, info); err != nil {
 			return err
 		}
+		log.WithValues("owner", ue.Name).Info("received vault info from clustered cache")
 		c.simpleCache.SetVaultInfoFor(ue.Name, info)
 	}
 	return nil
