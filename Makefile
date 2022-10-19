@@ -101,7 +101,7 @@ release: semver
 docs: helm-docs
 	@$(LOCALBIN)/helm-docs
 
-helm-lint: docs
+helm-lint:
 	helm lint ./chart
 
 helm-template:
