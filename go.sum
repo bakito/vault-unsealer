@@ -183,8 +183,6 @@ github.com/aws/aws-sdk-go-v2/service/s3 v1.12.0 h1:cxZbzTYXgiQrZ6u2/RJZAkkgZssqY
 github.com/aws/smithy-go v1.7.0 h1:+cLHMRrDZvQ4wk+KuQ9yH6eEg6KZEJ9RI2IkDqnygCg=
 github.com/axiomhq/hyperloglog v0.0.0-20220105174342-98591331716a h1:eqjiAL3qooftPm8b9C1GsSSRcmlw7iOva8vdBTmV2PY=
 github.com/axiomhq/hyperloglog v0.0.0-20220105174342-98591331716a/go.mod h1:2stgcRjl6QmW+gU2h5E7BQXg4HU0gzxKWDuT5HviN9s=
-github.com/bakito/go-log-logr-adapter v0.0.2 h1:epK+VaMPkK7dK+Vs78xo0BABqN1lIXD3IXX1VUj4PcM=
-github.com/bakito/go-log-logr-adapter v0.0.2/go.mod h1:B2tvB31L1Sxpkfhpj13QkJEisDNNKcC9FoYU8KL87AA=
 github.com/benbjohnson/clock v1.1.0 h1:Q92kusRqC1XV2MjkWETPvjJVqKetz1OzxZB7mHJLju8=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=

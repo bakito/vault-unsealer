@@ -128,8 +128,6 @@ func serfEventHandler(event serf.Event) {
 		queryResponse(event)
 	case serf.EventUser:
 		l.Info("EventUser")
-	default:
-		l.Info("[WARN] on: Unhandled Serf Event")
 	}
 }
 
