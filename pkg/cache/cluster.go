@@ -1,16 +1,18 @@
 package cache
 
 import (
+	"context"
 	"os"
 	"os/signal"
-	"strconv"
-	"strings"
 	"syscall"
 	"time"
 
 	la "github.com/bakito/go-log-logr-adapter/adapter"
 	"github.com/hashicorp/serf/serf"
 	"github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 type clusteredCache struct {
@@ -21,25 +23,17 @@ type clusteredCache struct {
 // Serf
 // ----------------------------------------------------------------------------
 
-// Setup the Serf Cluster
-func setupSerfCluster(advertiseAddr string, clusterAddr string, eventChannel chan<- serf.Event) (*serf.Serf, error) {
+func setupSerfCluster(myIP string, clusterMembers []string, eventChannel chan<- serf.Event) (*serf.Serf, error) {
 	// Configuration values.
 	configuration := serf.DefaultConfig()
 	configuration.Init()
 	configuration.Logger = la.ToStd(log)
-	configuration.NodeName = advertiseAddr
+	configuration.NodeName = myIP
 
-	addrPort := strings.Split(advertiseAddr, ":")
-	configuration.MemberlistConfig.AdvertiseAddr = addrPort[0]
+	configuration.MemberlistConfig.AdvertiseAddr = myIP
 	configuration.MemberlistConfig.Logger = configuration.Logger
-	if len(addrPort) > 1 {
-		p, err := strconv.Atoi(addrPort[1])
-		if err != nil {
-			return nil, err
-		}
-		configuration.MemberlistConfig.BindPort = p
-		configuration.MemberlistConfig.AdvertisePort = p
-	}
+	configuration.MemberlistConfig.BindPort = 7946
+	configuration.MemberlistConfig.AdvertisePort = configuration.MemberlistConfig.BindPort
 	configuration.EventCh = eventChannel
 
 	// Create the Serf cluster with the configuration.
@@ -50,8 +44,8 @@ func setupSerfCluster(advertiseAddr string, clusterAddr string, eventChannel cha
 	}
 
 	// Try to join an existing Serf cluster.  If not, start a new cluster.
-	if len(clusterAddr) > 0 {
-		_, err = cluster.Join(strings.Split(clusterAddr, ","), true)
+	if len(clusterMembers) > 0 {
+		_, err = cluster.Join(clusterMembers, true)
 		if err != nil {
 			log.Error(err, "Couldn't join cluster, starting own")
 		}
@@ -61,22 +55,24 @@ func setupSerfCluster(advertiseAddr string, clusterAddr string, eventChannel cha
 }
 
 // Get a list of members in the cluster.
-//func getClusterMembers(cluster *serf.Serf) []serf.Member {
-//	var result []serf.Member
 //
-//	// Get all members in all states.
-//
-//	members := cluster.Members()
-//
-//	// Filter list. Don't add this instance nor failed instances.
-//
-//	for _, member := range members {
-//		if member.Name != cluster.LocalMember().Name && member.Status == serf.StatusAlive {
-//			result = append(result, member)
-//		}
-//	}
-//	return result
-//}
+//nolint:unused
+func getClusterMembers(cluster *serf.Serf) []serf.Member {
+	var result []serf.Member
+
+	// Get all members in all states.
+
+	members := cluster.Members()
+
+	// Filter list. Don't add this instance nor failed instances.
+
+	for _, member := range members {
+		if member.Name != cluster.LocalMember().Name && member.Status == serf.StatusAlive {
+			result = append(result, member)
+		}
+	}
+	return result
+}
 
 // Example query responses.
 func queryResponse(event serf.Event) {
@@ -118,7 +114,7 @@ func serfEventHandler(event serf.Event) {
 	}
 }
 
-func (c clusteredCache) Start() error {
+func (c clusteredCache) Start(myIP string, clusterMembers []string) error {
 	// Create a channel to receive Serf events.
 
 	eventChannel := make(chan serf.Event, 256)
@@ -126,8 +122,8 @@ func (c clusteredCache) Start() error {
 	// Initialize or join Serf cluster.
 
 	serfCluster, err := setupSerfCluster(
-		os.Getenv("ADVERTISE_ADDR"),
-		os.Getenv("CLUSTER_ADDR"),
+		myIP,
+		clusterMembers,
 		eventChannel)
 	if err != nil {
 		return err
@@ -145,4 +141,30 @@ func (c clusteredCache) Start() error {
 	log.WithValues("signal", sig).Info("Caught signal")
 
 	return serfCluster.Leave()
+}
+
+func FindMemberPodIPs(ctx context.Context, mgr manager.Manager, watchNamespace string, deploymentSelector map[string]string) (string, []string, error) {
+	pods := &corev1.PodList{}
+	if err := mgr.GetAPIReader().List(
+		ctx,
+		pods,
+		client.MatchingLabels(deploymentSelector),
+		client.InNamespace(watchNamespace),
+	); err != nil {
+		return "", nil, err
+	}
+
+	hostName := os.Getenv("HOSTNAME")
+
+	var myIP string
+	var members []string
+	for _, pod := range pods.Items {
+		if pod.Name == hostName {
+			myIP = pod.Status.PodIP
+		} else if pod.Status.Phase == corev1.PodRunning {
+			members = append(members, pod.Status.PodIP)
+		}
+	}
+
+	return myIP, members, nil
 }

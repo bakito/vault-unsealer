@@ -15,7 +15,7 @@ type Cache interface {
 }
 type RunnableCache interface {
 	Cache
-	Start() error
+	Start(myIP string, clusterMembers []string) error
 }
 
 func NewSimple() Cache {
