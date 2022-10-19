@@ -3,7 +3,7 @@ replicas: 1
 
 image:
   # -- Repository to use
-  repository: localhost:5001/vault-unsealer
+  repository: ghcr.io/bakito/vault-unsealer
   # -- Image pull policy
   pullPolicy: Always
 
