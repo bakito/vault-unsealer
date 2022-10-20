@@ -79,10 +79,14 @@ func main() {
 			os.Exit(1)
 		}
 
-		c := cache.NewClustered()
-		go run(ctx, mgr, watchNamespace, c)
-		err = c.Start(myIP, members)
+		c, err := cache.NewClustered(myIP, members)
 		if err != nil {
+			setupLog.Error(err, "unable to setup cache")
+			os.Exit(1)
+		}
+		go run(ctx, mgr, watchNamespace, c)
+
+		if err = c.Start(); err != nil {
 			setupLog.Error(err, "unable to start cache")
 			os.Exit(1)
 		}

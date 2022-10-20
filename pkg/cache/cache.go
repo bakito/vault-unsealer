@@ -15,7 +15,7 @@ type Cache interface {
 }
 type RunnableCache interface {
 	Cache
-	Start(myIP string, clusterMembers []string) error
+	Start() error
 }
 
 func NewSimple() Cache {
@@ -36,8 +36,4 @@ func (s simpleCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 
 func (s simpleCache) Start(_ context.Context) error {
 	return nil
-}
-
-func NewClustered() RunnableCache {
-	return &clusteredCache{simpleCache: simpleCache{vaults: make(map[string]*types.VaultInfo)}}
 }

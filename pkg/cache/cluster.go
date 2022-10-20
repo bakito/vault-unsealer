@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/bakito/vault-unsealer/pkg/types"
@@ -19,7 +18,8 @@ import (
 
 type clusteredCache struct {
 	simpleCache
-	serfCluster *serf.Serf
+	serfCluster  *serf.Serf
+	eventChannel chan serf.Event
 }
 
 // ----------------------------------------------------------------------------
@@ -28,20 +28,22 @@ type clusteredCache struct {
 
 var serfLog = ctrl.Log.WithName("serf")
 
-type logrWriter struct{}
-
-func (w *logrWriter) Write(p []byte) (n int, err error) {
-	msg := strings.TrimSuffix(string(p), "\n")
-	if strings.Contains(msg, "[DEBUG] ") {
-		serfLog.V(2).Info(strings.Split(msg, "[DEBUG] ")[1])
-	} else if strings.Contains(msg, "[INFO] ") {
-		serfLog.Info(strings.Split(msg, "[INFO] ")[1])
-	} else if strings.Contains(msg, "[ERROR] ") {
-		serfLog.Error(nil, strings.Split(msg, "[ERROR] ")[1])
-	} else if strings.Contains(msg, "[WARN] ") {
-		serfLog.Error(nil, strings.Split(msg, "[WARN] ")[1])
+func NewClustered(myIP string, clusterMembers []string) (RunnableCache, error) {
+	c := &clusteredCache{
+		simpleCache:  simpleCache{vaults: make(map[string]*types.VaultInfo)},
+		eventChannel: make(chan serf.Event, 256),
 	}
-	return 0, nil
+	// Initialize or join Serf cluster.
+	var err error
+	c.serfCluster, err = setupSerfCluster(
+		myIP,
+		clusterMembers,
+		c.eventChannel)
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func setupSerfCluster(myIP string, clusterMembers []string, eventChannel chan<- serf.Event) (*serf.Serf, error) {
@@ -50,6 +52,8 @@ func setupSerfCluster(myIP string, clusterMembers []string, eventChannel chan<- 
 	configuration.Init()
 	configuration.LogOutput = &logrWriter{}
 	configuration.NodeName = myIP
+	configuration.EnableNameConflictResolution = false
+	configuration.UserEventSizeLimit = 1024
 
 	configuration.MemberlistConfig.AdvertiseAddr = myIP
 	configuration.MemberlistConfig.LogOutput = configuration.LogOutput
@@ -68,33 +72,21 @@ func setupSerfCluster(myIP string, clusterMembers []string, eventChannel chan<- 
 	if len(clusterMembers) > 0 {
 		_, err = cluster.Join(clusterMembers, true)
 		if err != nil {
-			log.Error(err, "Couldn't join cluster, starting own")
+			log.Info("starting new serf cluster")
 		}
 	}
 
 	return cluster, nil
 }
 
-func (c clusteredCache) Start(myIP string, clusterMembers []string) error {
+func (c *clusteredCache) Start() error {
 	// Create a channel to receive Serf events.
-
-	eventChannel := make(chan serf.Event, 256)
-
-	// Initialize or join Serf cluster.
-	var err error
-	c.serfCluster, err = setupSerfCluster(
-		myIP,
-		clusterMembers,
-		eventChannel)
-	if err != nil {
-		return err
-	}
 
 	cancelChan := make(chan os.Signal, 1)
 	// catch SIGETRM or SIGINTERRUPT
 	signal.Notify(cancelChan, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
-		for event := range eventChannel {
+		for event := range c.eventChannel {
 			err := c.serfEventHandler(event)
 			if err != nil {
 				log.Error(err, "error handling event")
@@ -108,23 +100,25 @@ func (c clusteredCache) Start(myIP string, clusterMembers []string) error {
 }
 
 // Handle any of the Serf event types.
-func (c clusteredCache) serfEventHandler(event serf.Event) error {
+func (c *clusteredCache) serfEventHandler(event serf.Event) error {
 	if event.EventType() == serf.EventUser {
 		ue := event.(serf.UserEvent)
 		info := &types.VaultInfo{}
 		if err := json.Unmarshal(ue.Payload, info); err != nil {
 			return err
 		}
-		log.WithValues("owner", ue.Name).Info("received vault info from clustered cache")
+		log.WithValues("owner", ue.Name, "count", len(info.UnsealKeys)).Info("received vault info from clustered cache")
 		c.simpleCache.SetVaultInfoFor(ue.Name, info)
 	}
 	return nil
 }
 
-func (c clusteredCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
+func (c *clusteredCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 	c.simpleCache.SetVaultInfoFor(owner, info)
-	b, _ := json.Marshal(info)
-	_ = c.serfCluster.UserEvent("owner", b, false)
+	if len(info.UnsealKeys) > 0 {
+		b, _ := json.Marshal(info)
+		_ = c.serfCluster.UserEvent(owner, b, false)
+	}
 }
 
 func FindMemberPodIPs(ctx context.Context, mgr manager.Manager, watchNamespace string, deploymentSelector map[string]string) (string, []string, error) {
