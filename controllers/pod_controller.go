@@ -87,7 +87,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 
 		r.Cache.SetVaultInfoFor(vault.Owner, vault)
-		l.WithValues("count", len(vault.UnsealKeys)).Info("successfully read unseal keys from vault")
+		l.WithValues("keys", len(vault.UnsealKeys)).Info("successfully read unseal keys from vault")
 	}
 
 	return ctrl.Result{}, nil

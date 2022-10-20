@@ -101,23 +101,31 @@ func (c *clusteredCache) Start() error {
 
 // Handle any of the Serf event types.
 func (c *clusteredCache) serfEventHandler(event serf.Event) error {
-	if event.EventType() == serf.EventUser {
+	switch event.EventType() {
+	case serf.EventUser:
 		ue := event.(serf.UserEvent)
 		info := &types.VaultInfo{}
 		if err := json.Unmarshal(ue.Payload, info); err != nil {
 			return err
 		}
-		log.WithValues("owner", ue.Name, "count", len(info.UnsealKeys)).Info("received vault info from clustered cache")
+		log.WithValues("owner", ue.Name, "keys", len(info.UnsealKeys)).Info("synced vault info from clustered cache")
 		c.simpleCache.SetVaultInfoFor(ue.Name, info)
+	case serf.EventMemberJoin:
+		log.Info("syncing clustered cache with new member")
+		for _, owner := range c.Owners() {
+			info := c.VaultInfoFor(owner)
+			if info.ShouldShare() {
+				_ = c.serfCluster.UserEvent(owner, info.JSON(), true)
+			}
+		}
 	}
 	return nil
 }
 
 func (c *clusteredCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 	c.simpleCache.SetVaultInfoFor(owner, info)
-	if len(info.UnsealKeys) > 0 {
-		b, _ := json.Marshal(info)
-		_ = c.serfCluster.UserEvent(owner, b, false)
+	if info.ShouldShare() {
+		_ = c.serfCluster.UserEvent(owner, info.JSON(), true)
 	}
 }
 

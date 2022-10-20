@@ -106,7 +106,7 @@ func run(ctx context.Context, mgr manager.Manager, watchNamespace string, cache 
 		setupLog.Error(err, "unable to find secrets")
 		os.Exit(1)
 	}
-	setupLog.WithValues("count", len(secrets.Items)).Info("found unseal secrets")
+	setupLog.WithValues("secrets", len(secrets.Items)).Info("found unseal secrets")
 
 	if err := (&controllers.PodReconciler{
 		Client: mgr.GetClient(),

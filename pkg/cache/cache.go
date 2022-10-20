@@ -10,6 +10,7 @@ import (
 var log = ctrl.Log.WithName("cache")
 
 type Cache interface {
+	Owners() []string
 	VaultInfoFor(owner string) *types.VaultInfo
 	SetVaultInfoFor(owner string, info *types.VaultInfo)
 }
@@ -24,6 +25,14 @@ func NewSimple() Cache {
 
 type simpleCache struct {
 	vaults map[string]*types.VaultInfo
+}
+
+func (s simpleCache) Owners() []string {
+	var o []string
+	for k := range s.vaults {
+		o = append(o, k)
+	}
+	return o
 }
 
 func (s simpleCache) VaultInfoFor(owner string) *types.VaultInfo {

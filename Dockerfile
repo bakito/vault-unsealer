@@ -23,4 +23,4 @@ WORKDIR /opt/go/
 USER 1001
 ENTRYPOINT ["/opt/go/vault-unsealer"]
 
-COPY --from=builder /build/vault-unsealer /opt/go//vault-unsealer
+COPY --from=builder /build/vault-unsealer /opt/go/vault-unsealer
