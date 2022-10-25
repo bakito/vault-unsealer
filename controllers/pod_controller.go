@@ -82,7 +82,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		}
 		cl.SetToken(t)
 
-		if err := readSecret(cl, vault); err != nil {
+		if err := readSecret(ctx, cl, vault); err != nil {
 			return reconcile.Result{}, err
 		}
 

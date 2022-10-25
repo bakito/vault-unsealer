@@ -1,6 +1,10 @@
 package types
 
-import "k8s.io/apimachinery/pkg/util/json"
+import (
+	"strings"
+
+	"k8s.io/apimachinery/pkg/util/json"
+)
 
 type VaultInfo struct {
 	Owner      string   `json:"owner"`
@@ -17,4 +21,10 @@ func (i *VaultInfo) ShouldShare() bool {
 func (i *VaultInfo) JSON() []byte {
 	b, _ := json.Marshal(i)
 	return b
+}
+
+func (i *VaultInfo) SecretMountAndPath() (string, string) {
+	parts := strings.SplitN(i.SecretPath, "/", 2)
+
+	return parts[0], parts[1]
 }

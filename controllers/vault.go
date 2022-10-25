@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -35,25 +36,37 @@ func userpassLogin(cl *api.Client, username string, password string) (string, er
 	return token, nil
 }
 
-func readSecret(cl *api.Client, v *types.VaultInfo) error {
-	sec, err := cl.Logical().Read(v.SecretPath)
+func readSecret(ctx context.Context, cl *api.Client, v *types.VaultInfo) error {
+	mounts, err := cl.Sys().ListMountsWithContext(ctx)
 	if err != nil {
 		return err
+	}
+	mount, path := v.SecretMountAndPath()
+	var sec *api.KVSecret
+	if m, ok := mounts[mount+"/"]; ok {
+		switch vers := m.Options["version"]; vers {
+		case "1":
+			if sec, err = cl.KVv1(mount).Get(ctx, path); err != nil {
+				return err
+			}
+		case "2":
+			if sec, err = cl.KVv2(mount).Get(ctx, path); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unsupported kv version %q", vers)
+		}
 	}
 
 	if sec == nil {
 		return fmt.Errorf("did not receive a valid secret with path %s", v.SecretPath)
 	}
 
-	if len(sec.Warnings) > 0 {
-		return errors.New(strings.Join(sec.Warnings, ","))
+	if len(sec.Raw.Warnings) > 0 {
+		return errors.New(strings.Join(sec.Raw.Warnings, ","))
 	}
 
-	if data, ok := sec.Data["data"]; ok {
-		extractUnsealKeys(data, v)
-	} else {
-		extractUnsealKeys(sec.Data, v)
-	}
+	extractUnsealKeys(sec.Data, v)
 	return nil
 }
 

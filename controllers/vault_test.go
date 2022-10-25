@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"net"
 
 	"github.com/bakito/vault-unsealer/pkg/types"
@@ -13,8 +14,10 @@ var _ = Describe("Vault", func() {
 	var (
 		server net.Listener
 		client *api.Client
+		ctx    context.Context
 	)
 	BeforeEach(func() {
+		ctx = context.TODO()
 	})
 	AfterEach(func() {
 		if server != nil {
@@ -29,7 +32,7 @@ var _ = Describe("Vault", func() {
 				"unsealKey2": "bar",
 			})
 			vi := &types.VaultInfo{SecretPath: "secret/foo"}
-			Ω(readSecret(client, vi)).ShouldNot(HaveOccurred())
+			Ω(readSecret(ctx, client, vi)).ShouldNot(HaveOccurred())
 			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 		It("read unseal keys from secret v2", func() {
@@ -37,8 +40,8 @@ var _ = Describe("Vault", func() {
 				"unsealKey1": "foo",
 				"unsealKey2": "bar",
 			})
-			vi := &types.VaultInfo{SecretPath: "secret/data/foo"}
-			Ω(readSecret(client, vi)).ShouldNot(HaveOccurred())
+			vi := &types.VaultInfo{SecretPath: "secret/foo"}
+			Ω(readSecret(ctx, client, vi)).ShouldNot(HaveOccurred())
 			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 	})
