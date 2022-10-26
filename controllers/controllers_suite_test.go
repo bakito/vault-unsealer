@@ -1,15 +1,13 @@
 package controllers
 
 import (
-	"context"
-	"fmt"
-	"net"
 	"testing"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/vault/api"
-	"github.com/hashicorp/vault/helper/namespace"
+	"github.com/hashicorp/vault/helper/benchhelpers"
+	"github.com/hashicorp/vault/helper/builtinplugins"
 	"github.com/hashicorp/vault/http"
-	"github.com/hashicorp/vault/sdk/logical"
 	"github.com/hashicorp/vault/vault"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -23,45 +21,34 @@ func TestControllers(t *testing.T) {
 	RunSpecs(t, "Controllers Suite")
 }
 
-func createTestVault(version int, secretPath string, data map[string]interface{}) (net.Listener, *api.Client) {
-	// Create an in-memory, unsealed core (the "backend", if you will).
-	core, keyShares, rootToken := vault.TestCoreUnsealed(testingT)
-	_ = keyShares
+func createTestVault(version string, secretPath string, data map[string]interface{}) (*api.Client, *vault.TestCluster) {
+	testingT.Helper()
 
-	// Start an HTTP server for the core.
-	ln, addr := http.TestServer(testingT, core)
-
-	// Create a client that talks to the server, initially authenticating with
-	// the root token.
-	conf := api.DefaultConfig()
-	conf.Address = addr
-
-	client, err := api.NewClient(conf)
-	Ω(err).ShouldNot(HaveOccurred())
-
-	client.SetToken(rootToken)
-
-	_, err = client.Logical().Delete("sys/mounts/secret")
-	Ω(err).ShouldNot(HaveOccurred())
-
-	kvReq := &logical.Request{
-		Operation:   logical.UpdateOperation,
-		ClientToken: rootToken,
-		Path:        "sys/mounts/secret",
-		Data: map[string]interface{}{
-			"type":        "kv",
-			"path":        "secret/",
-			"description": fmt.Sprintf("key/value secret storage v%d", version),
-			"options": map[string]string{
-				"version": fmt.Sprintf("%d", version),
-			},
-		},
+	coreConfig := &vault.CoreConfig{
+		DisableMlock:    true,
+		DisableCache:    true,
+		Logger:          hclog.NewNullLogger(),
+		BuiltinRegistry: builtinplugins.Registry,
 	}
-	resp, err := core.HandleRequest(namespace.RootContext(context.TODO()), kvReq)
-	Ω(err).ShouldNot(HaveOccurred())
-	Ω(resp.IsError()).Should(BeFalse())
+	opts := &vault.TestClusterOptions{
+		HandlerFunc: http.Handler,
+		NumCores:    1,
+		KVVersion:   version,
+	}
 
-	if version == 2 {
+	cluster := vault.NewTestCluster(benchhelpers.TBtoT(testingT), coreConfig, opts)
+	cluster.Start()
+
+	// Make it easy to get access to the active
+	core := cluster.Cores[0].Core
+	vault.TestWaitActive(benchhelpers.TBtoT(testingT), core)
+
+	// Get the client already setup for us!
+	client := cluster.Cores[0].Client
+	client.SetToken(cluster.RootToken)
+
+	var err error
+	if version == "2" {
 		_, err = client.Logical().Write(secretPath, map[string]interface{}{
 			"data": data,
 		})
@@ -70,5 +57,5 @@ func createTestVault(version int, secretPath string, data map[string]interface{}
 	}
 	Ω(err).ShouldNot(HaveOccurred())
 
-	return ln, client
+	return client, cluster
 }
