@@ -4,11 +4,10 @@ go 1.19
 
 require (
 	github.com/go-logr/logr v1.2.3
-	github.com/hashicorp/go-hclog v1.3.0
+	github.com/hashicorp/go-hclog v1.3.1
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.12.0
 	github.com/hashicorp/vault/api v1.8.1
-	github.com/hashicorp/vault/sdk v0.6.1-0.20221010215534-6545e24b6023
 	github.com/onsi/ginkgo/v2 v2.4.0
 	github.com/onsi/gomega v1.22.1
 	github.com/pkg/errors v0.9.1
@@ -215,6 +214,7 @@ require (
 	github.com/hashicorp/vault-plugin-secrets-mongodbatlas v0.8.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-openldap v0.9.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-terraform v0.6.0 // indirect
+	github.com/hashicorp/vault/sdk v0.6.1-0.20221010215534-6545e24b6023 // indirect
 	github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 // indirect
 	github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
