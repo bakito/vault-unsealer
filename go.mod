@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/go-logr/logr v1.2.3
-	github.com/hashicorp/go-hclog v1.3.1
+	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.12.1
 	github.com/hashicorp/vault/api v1.8.2
