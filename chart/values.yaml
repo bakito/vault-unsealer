@@ -46,3 +46,12 @@ tolerations: [ ]
 
 # -- Assign custom [affinity] rules to the deployment
 affinity: { }
+
+# -- Security Context of the deployment
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop: [ "ALL" ]
