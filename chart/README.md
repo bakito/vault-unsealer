@@ -1,6 +1,6 @@
 # vault-unsealer
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.2](https://img.shields.io/badge/AppVersion-v0.0.2-informational?style=flat-square)
+![Version: 0.0.7](https://img.shields.io/badge/Version-0.0.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.7](https://img.shields.io/badge/AppVersion-v0.0.7-informational?style=flat-square)
 
 A kubernetes controller that can auto unseal vault pods.
 
@@ -16,14 +16,18 @@ helm install vault-unsealer bakito/vault-unsealer
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Assign custom [affinity] rules to the deployment |
-| image.pullPolicy | string | `"Always"` | Image pull policy |
+| image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/bakito/vault-unsealer"` | Repository to use |
+| leaderElection.enabled | bool | `true` | Specifies whether leader election should be enabled |
 | nodeSelector | object | `{}` | [Node selector] |
 | rbac.create | bool | `true` | Specifies whether rbac should be created |
 | rbac.roleName | string | `nil` | If not set and create is true, a name is generated using the fullname template |
+| replicas | int | `1` | The deployment Replicas |
 | resources | object | `{"limits":{"cpu":"200m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource limits and requests for the controller pods. |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security Context of the deployment |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `nil` | If not set and create is true, a name is generated using the fullname template |
+| sharedCache.enabled | bool | `false` | Specifies whether a shared cache cluster should be started |
 | tolerations | list | `[]` | [Tolerations] for use with node taints |
 
 ----------------------------------------------
