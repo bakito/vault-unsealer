@@ -6,7 +6,7 @@ require (
 	github.com/go-logr/logr v1.2.3
 	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/serf v0.10.1
-	github.com/hashicorp/vault v1.12.1
+	github.com/hashicorp/vault v1.12.2
 	github.com/hashicorp/vault/api v1.8.2
 	github.com/onsi/ginkgo/v2 v2.5.1
 	github.com/onsi/gomega v1.24.1
@@ -206,15 +206,15 @@ require (
 	github.com/hashicorp/vault-plugin-database-snowflake v0.6.1 // indirect
 	github.com/hashicorp/vault-plugin-secrets-ad v0.14.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-alicloud v0.13.0 // indirect
-	github.com/hashicorp/vault-plugin-secrets-azure v0.14.0 // indirect
-	github.com/hashicorp/vault-plugin-secrets-gcp v0.14.0 // indirect
+	github.com/hashicorp/vault-plugin-secrets-azure v0.14.1 // indirect
+	github.com/hashicorp/vault-plugin-secrets-gcp v0.14.1 // indirect
 	github.com/hashicorp/vault-plugin-secrets-gcpkms v0.13.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-kubernetes v0.2.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-kv v0.13.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-mongodbatlas v0.8.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-openldap v0.9.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-terraform v0.6.0 // indirect
-	github.com/hashicorp/vault/sdk v0.6.1-0.20221012172514-e12bdc5ce648 // indirect
+	github.com/hashicorp/vault/sdk v0.6.1-0.20221102145943-1e9b0a1225c3 // indirect
 	github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 // indirect
 	github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
