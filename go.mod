@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.12.2
-	github.com/hashicorp/vault/api v1.8.2
+	github.com/hashicorp/vault/api v1.9.0
 	github.com/onsi/ginkgo/v2 v2.8.0
 	github.com/onsi/gomega v1.26.0
 	github.com/pkg/errors v0.9.1
@@ -316,7 +316,7 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/net v0.5.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220524215830-622c5d57e401 // indirect
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
