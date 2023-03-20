@@ -14,7 +14,7 @@ func (r *PodReconciler) Update(e event.UpdateEvent) bool {
 	return r.matches(e.ObjectNew)
 }
 
-func (r *PodReconciler) Delete(e event.DeleteEvent) bool {
+func (r *PodReconciler) Delete(_ event.DeleteEvent) bool {
 	return false
 }
 
