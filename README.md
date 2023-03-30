@@ -37,5 +37,16 @@ stringData:
   username: <username>
   password: <password>
   secretPath: /path/to/unsealKey/secret
+```
 
+
+#### Required Policy
+
+```hcl
+path "path/to/your/unseal/secret" {
+  capabilities = ["read"]
+}
+path "sys/mounts" {
+  capabilities = ["read"]
+}
 ```
