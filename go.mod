@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.13.0
 	github.com/hashicorp/vault/api v1.9.0
-	github.com/onsi/ginkgo/v2 v2.9.1
+	github.com/onsi/ginkgo/v2 v2.9.2
 	github.com/onsi/gomega v1.27.4
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.24.0
@@ -123,7 +123,7 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
-	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
+	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/go-test/deep v1.1.0 // indirect
 	github.com/gocql/gocql v1.0.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
