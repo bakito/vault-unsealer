@@ -3,7 +3,7 @@ module github.com/bakito/vault-unsealer
 go 1.20
 
 require (
-	github.com/go-logr/logr v1.2.3
+	github.com/go-logr/logr v1.2.4
 	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.13.0
