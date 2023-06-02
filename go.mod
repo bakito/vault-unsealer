@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.13.2
 	github.com/hashicorp/vault/api v1.9.2
-	github.com/onsi/ginkgo/v2 v2.9.5
+	github.com/onsi/ginkgo/v2 v2.9.7
 	github.com/onsi/gomega v1.27.7
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.24.0
