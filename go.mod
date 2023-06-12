@@ -6,7 +6,7 @@ require (
 	github.com/go-logr/logr v1.2.4
 	github.com/hashicorp/go-hclog v1.5.0
 	github.com/hashicorp/serf v0.10.1
-	github.com/hashicorp/vault v1.13.2
+	github.com/hashicorp/vault v1.13.3
 	github.com/hashicorp/vault/api v1.9.2
 	github.com/onsi/ginkgo/v2 v2.9.7
 	github.com/onsi/gomega v1.27.7
@@ -198,7 +198,7 @@ require (
 	github.com/hashicorp/memberlist v0.5.0 // indirect
 	github.com/hashicorp/nomad/api v0.0.0-20220707195938-75f4c2237b28 // indirect
 	github.com/hashicorp/raft v1.3.10 // indirect
-	github.com/hashicorp/raft-autopilot v0.1.6 // indirect
+	github.com/hashicorp/raft-autopilot v0.2.0 // indirect
 	github.com/hashicorp/raft-boltdb/v2 v2.0.0-20210421194847-a7e34179d62c // indirect
 	github.com/hashicorp/raft-snapshot v1.0.4 // indirect
 	github.com/hashicorp/vault-plugin-auth-alicloud v0.14.0 // indirect
@@ -313,6 +313,7 @@ require (
 	github.com/softlayer/softlayer-go v0.0.0-20180806151055-260589d94c7d // indirect
 	github.com/sony/gobreaker v0.4.2-0.20210216022020-dd874f9dd33b // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.162 // indirect
 	github.com/tilinna/clock v1.0.2 // indirect
