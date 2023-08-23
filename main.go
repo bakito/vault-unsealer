@@ -17,10 +17,13 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	ctrl "sigs.k8s.io/controller-runtime"
+	crtlcache "sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
 var (
@@ -51,10 +54,12 @@ func main() {
 	logging.PrepareLogger(true)
 	watchNamespace := os.Getenv(constants.EnvWatchNamespace)
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                  scheme,
-		Namespace:               watchNamespace,
-		MetricsBindAddress:      ":8080",
-		Port:                    9443,
+		Scheme: scheme,
+		Cache: crtlcache.Options{
+			DefaultNamespaces: map[string]crtlcache.Config{watchNamespace: {}},
+		},
+		Metrics:                 server.Options{BindAddress: ":8080"},
+		WebhookServer:           webhook.NewServer(webhook.Options{Port: 9443}),
 		HealthProbeBindAddress:  ":8081",
 		LeaderElection:          enableLeaderElection,
 		LeaderElectionID:        constants.OperatorID,
