@@ -8,6 +8,8 @@ updates:
       # covered by k8s.io/client-go
       - dependency-name: "k8s.io/api"
       - dependency-name: "k8s.io/apimachinery"
+      # for tests only
+      - dependency-name: "github.com/hashicorp/vault"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
