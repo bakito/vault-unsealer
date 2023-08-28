@@ -29,7 +29,7 @@ require (
 	k8s.io/apimachinery v0.28.1
 	k8s.io/client-go v0.28.1
 	k8s.io/klog/v2 v2.100.1
-	sigs.k8s.io/controller-runtime v0.16.0
+	sigs.k8s.io/controller-runtime v0.15.1
 )
 
 require (
@@ -176,7 +176,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gophercloud/gophercloud v0.1.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
 	github.com/hashicorp/cap v0.3.0 // indirect
