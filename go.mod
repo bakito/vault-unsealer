@@ -19,7 +19,7 @@ require (
 	github.com/go-logr/logr v1.2.4
 	github.com/hashicorp/go-hclog v1.5.0
 	github.com/hashicorp/serf v0.10.1
-	github.com/hashicorp/vault v1.14.1
+	github.com/hashicorp/vault v1.14.2
 	github.com/hashicorp/vault/api v1.10.0
 	github.com/onsi/ginkgo/v2 v2.12.0
 	github.com/onsi/gomega v1.27.10
@@ -42,7 +42,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/Azure/azure-sdk-for-go v67.2.0+incompatible // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.6.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.3.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.3.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute/v4 v4.2.1 // indirect
@@ -61,13 +61,14 @@ require (
 	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.0.0 // indirect
-	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/Jeffail/gabs v1.1.1 // indirect
 	github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
-	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
+	github.com/Masterminds/semver/v3 v3.2.1 // indirect
+	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230626094100-7e9e0395ebec // indirect
 	github.com/SAP/go-hdb v0.14.1 // indirect
@@ -78,7 +79,7 @@ require (
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
-	github.com/aws/aws-sdk-go v1.44.268 // indirect
+	github.com/aws/aws-sdk-go v1.44.269 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.17.7 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.18 // indirect
@@ -104,6 +105,7 @@ require (
 	github.com/chrismalek/oktasdk-go v0.0.0-20181212195951-3430665dfaa0 // indirect
 	github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible // indirect
 	github.com/circonus-labs/circonusllhist v0.1.3 // indirect
+	github.com/cjlapao/common-go v0.0.39 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/cloudfoundry-community/go-cfclient v0.0.0-20210823134051-721f0e559306 // indirect
 	github.com/coreos/go-oidc v2.2.1+incompatible // indirect
@@ -124,7 +126,6 @@ require (
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible // indirect
-	github.com/frankban/quicktest v1.14.4 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gammazero/deque v0.2.1 // indirect
@@ -134,6 +135,7 @@ require (
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.4 // indirect
 	github.com/go-ldap/ldif v0.0.0-20200320164324-fd88d9b715b3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-logr/zapr v1.2.4 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/analysis v0.20.0 // indirect
@@ -179,7 +181,7 @@ require (
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed // indirect
 	github.com/hashicorp/cap v0.3.0 // indirect
-	github.com/hashicorp/consul/api v1.20.0 // indirect
+	github.com/hashicorp/consul/api v1.23.0 // indirect
 	github.com/hashicorp/cronexpr v1.1.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/eventlogger v0.2.1 // indirect
@@ -188,7 +190,7 @@ require (
 	github.com/hashicorp/go-gcp-common v0.8.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-kms-wrapping/entropy/v2 v2.0.0 // indirect
-	github.com/hashicorp/go-kms-wrapping/v2 v2.0.9 // indirect
+	github.com/hashicorp/go-kms-wrapping/v2 v2.0.10 // indirect
 	github.com/hashicorp/go-kms-wrapping/wrappers/aead/v2 v2.0.7-1 // indirect
 	github.com/hashicorp/go-kms-wrapping/wrappers/alicloudkms/v2 v2.0.1 // indirect
 	github.com/hashicorp/go-kms-wrapping/wrappers/awskms/v2 v2.0.7 // indirect
@@ -196,7 +198,7 @@ require (
 	github.com/hashicorp/go-kms-wrapping/wrappers/gcpckms/v2 v2.0.8 // indirect
 	github.com/hashicorp/go-kms-wrapping/wrappers/ocikms/v2 v2.0.7 // indirect
 	github.com/hashicorp/go-kms-wrapping/wrappers/transit/v2 v2.0.7 // indirect
-	github.com/hashicorp/go-memdb v1.3.3 // indirect
+	github.com/hashicorp/go-memdb v1.3.4 // indirect
 	github.com/hashicorp/go-msgpack v1.1.5 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-plugin v1.4.9 // indirect
@@ -230,7 +232,7 @@ require (
 	github.com/hashicorp/raft-boltdb/v2 v2.0.0-20210421194847-a7e34179d62c // indirect
 	github.com/hashicorp/raft-snapshot v1.0.4 // indirect
 	github.com/hashicorp/vault-plugin-auth-alicloud v0.15.0 // indirect
-	github.com/hashicorp/vault-plugin-auth-azure v0.15.1 // indirect
+	github.com/hashicorp/vault-plugin-auth-azure v0.16.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-centrify v0.15.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-cf v0.15.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-gcp v0.16.0 // indirect
@@ -243,7 +245,7 @@ require (
 	github.com/hashicorp/vault-plugin-database-mongodbatlas v0.10.0 // indirect
 	github.com/hashicorp/vault-plugin-database-redis v0.2.1 // indirect
 	github.com/hashicorp/vault-plugin-database-redis-elasticache v0.2.1 // indirect
-	github.com/hashicorp/vault-plugin-database-snowflake v0.8.0 // indirect
+	github.com/hashicorp/vault-plugin-database-snowflake v0.9.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-ad v0.16.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-alicloud v0.15.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-azure v0.16.1 // indirect
@@ -252,9 +254,9 @@ require (
 	github.com/hashicorp/vault-plugin-secrets-kubernetes v0.5.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-kv v0.15.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-mongodbatlas v0.10.0 // indirect
-	github.com/hashicorp/vault-plugin-secrets-openldap v0.11.0 // indirect
+	github.com/hashicorp/vault-plugin-secrets-openldap v0.11.1 // indirect
 	github.com/hashicorp/vault-plugin-secrets-terraform v0.7.1 // indirect
-	github.com/hashicorp/vault/sdk v0.9.2-0.20230721171514-bf23fe8636b0 // indirect
+	github.com/hashicorp/vault/sdk v0.9.2 // indirect
 	github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
@@ -294,11 +296,19 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/mediocregopher/radix/v4 v4.1.2 // indirect
 	github.com/michaelklishin/rabbit-hole/v2 v2.12.0 // indirect
+	github.com/microsoft/kiota-abstractions-go v1.1.0 // indirect
+	github.com/microsoft/kiota-authentication-azure-go v1.0.0 // indirect
+	github.com/microsoft/kiota-http-go v1.0.0 // indirect
+	github.com/microsoft/kiota-serialization-form-go v1.0.0 // indirect
+	github.com/microsoft/kiota-serialization-json-go v1.0.4 // indirect
+	github.com/microsoft/kiota-serialization-text-go v1.0.0 // indirect
+	github.com/microsoftgraph/msgraph-sdk-go v1.13.0 // indirect
+	github.com/microsoftgraph/msgraph-sdk-go-core v1.0.0 // indirect
 	github.com/miekg/dns v1.1.43 // indirect
 	github.com/mikesmitty/edkey v0.0.0-20170222072505-3356ea4e686a // indirect
 	github.com/minio/asm2plan9s v0.0.0-20200509001527-cdd76441f9d8 // indirect
 	github.com/minio/c2goasm v0.0.0-20190812172519-36a3d3bbc4f3 // indirect
-	github.com/mitchellh/cli v1.1.2 // indirect
+	github.com/mitchellh/cli v1.1.5 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
@@ -341,10 +351,12 @@ require (
 	github.com/sethvargo/go-limiter v0.7.2 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.7 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
+	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/snowflakedb/gosnowflake v1.6.24 // indirect
 	github.com/softlayer/softlayer-go v0.0.0-20180806151055-260589d94c7d // indirect
 	github.com/sony/gobreaker v0.4.2-0.20210216022020-dd874f9dd33b // indirect
+	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
@@ -357,6 +369,7 @@ require (
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
+	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
@@ -364,6 +377,9 @@ require (
 	go.mongodb.org/atlas v0.28.0 // indirect
 	go.mongodb.org/mongo-driver v1.11.6 // indirect
 	go.opencensus.io v0.24.0 // indirect
+	go.opentelemetry.io/otel v1.16.0 // indirect
+	go.opentelemetry.io/otel/metric v1.16.0 // indirect
+	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
