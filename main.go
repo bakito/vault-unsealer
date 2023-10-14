@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"strings"
 
 	"github.com/bakito/vault-unsealer/controllers"
@@ -55,9 +56,13 @@ func main() {
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
 		Cache: crtlcache.Options{
-			Namespaces: []string{watchNamespace},
+			DefaultNamespaces: map[string]crtlcache.Config{
+				watchNamespace: {},
+			},
 		},
-		MetricsBindAddress:      ":8080",
+		Metrics: server.Options{
+			BindAddress: ":8080",
+		},
 		WebhookServer:           webhook.NewServer(webhook.Options{Port: 9443}),
 		HealthProbeBindAddress:  ":8081",
 		LeaderElection:          enableLeaderElection,
@@ -77,20 +82,20 @@ func main() {
 			os.Exit(1)
 		}
 
-		myIP, members, err := cache.FindMemberPodIPs(ctx, mgr, watchNamespace, deploymentSelector)
+		_, members, err := cache.FindMemberPodIPs(ctx, mgr, watchNamespace, deploymentSelector)
 		if err != nil {
 			setupLog.Error(err, "unable to find operator pods")
 			os.Exit(1)
 		}
 
-		c, err := cache.NewClustered(myIP, members)
+		c, err := cache.NewK8s(mgr.GetAPIReader(), members)
 		if err != nil {
 			setupLog.Error(err, "unable to setup cache")
 			os.Exit(1)
 		}
 		go run(ctx, mgr, watchNamespace, c)
 
-		if err = c.Start(); err != nil {
+		if err = c.Start(ctx); err != nil {
 			setupLog.Error(err, "unable to start cache")
 			os.Exit(1)
 		}
@@ -130,7 +135,6 @@ func run(ctx context.Context, mgr manager.Manager, watchNamespace string, cache 
 		setupLog.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
-
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")

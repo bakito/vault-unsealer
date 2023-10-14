@@ -16,7 +16,7 @@ type Cache interface {
 }
 type RunnableCache interface {
 	Cache
-	Start() error
+	Start(ctx context.Context) error
 }
 
 func NewSimple() Cache {
