@@ -82,13 +82,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		_, members, err := cache.FindMemberPodIPs(ctx, mgr, watchNamespace, deploymentSelector)
-		if err != nil {
-			setupLog.Error(err, "unable to find operator pods")
-			os.Exit(1)
-		}
-
-		c, err := cache.NewK8s(mgr.GetAPIReader(), members)
+		c, err := cache.NewK8s(mgr.GetAPIReader())
 		if err != nil {
 			setupLog.Error(err, "unable to setup cache")
 			os.Exit(1)
