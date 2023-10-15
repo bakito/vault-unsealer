@@ -13,6 +13,9 @@ type Cache interface {
 	Owners() []string
 	VaultInfoFor(owner string) *types.VaultInfo
 	SetVaultInfoFor(owner string, info *types.VaultInfo)
+	AddMember(ip string)
+	RemoveMember(ip string)
+	Sync()
 }
 type RunnableCache interface {
 	Cache
@@ -27,7 +30,16 @@ type simpleCache struct {
 	vaults map[string]*types.VaultInfo
 }
 
-func (s simpleCache) Owners() []string {
+func (s *simpleCache) AddMember(_ string) {
+}
+
+func (s *simpleCache) RemoveMember(_ string) {
+}
+
+func (s *simpleCache) Sync() {
+}
+
+func (s *simpleCache) Owners() []string {
 	var o []string
 	for k := range s.vaults {
 		o = append(o, k)
@@ -35,14 +47,14 @@ func (s simpleCache) Owners() []string {
 	return o
 }
 
-func (s simpleCache) VaultInfoFor(owner string) *types.VaultInfo {
+func (s *simpleCache) VaultInfoFor(owner string) *types.VaultInfo {
 	return s.vaults[owner]
 }
 
-func (s simpleCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
+func (s *simpleCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 	s.vaults[owner] = info
 }
 
-func (s simpleCache) Start(_ context.Context) error {
+func (s *simpleCache) Start(_ context.Context) error {
 	return nil
 }

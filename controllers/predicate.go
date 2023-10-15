@@ -35,7 +35,7 @@ func (r *PodReconciler) matches(m metav1.Object) bool {
 	}
 
 	// we have a vault pod
-	return p.DeletionTimestamp == nil && p.Status.Phase == corev1.PodRunning && r.hasCorrectOwner(p)
+	return p.DeletionTimestamp == nil && p.Status.Phase == corev1.PodRunning && r.hasCorrectOwner(p) && false
 }
 
 func (r *PodReconciler) hasCorrectOwner(pod *corev1.Pod) bool {

@@ -58,7 +58,16 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 	return r.reconcileVaultPod(ctx, l, pod)
 }
 
-func (r *PodReconciler) reconcileUnsealerPod(_ context.Context, _ logr.Logger, _ *corev1.Pod) (ctrl.Result, error) {
+func (r *PodReconciler) reconcileUnsealerPod(_ context.Context, _ logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
+	if pod.GetName() != r.myPodName {
+		if pod.Status.Phase == corev1.PodRunning {
+			r.Cache.AddMember(pod.Status.PodIP)
+		} else if pod.DeletionTimestamp == nil {
+			r.Cache.RemoveMember(pod.Status.PodIP)
+		}
+
+		r.Cache.Sync()
+	}
 	return ctrl.Result{}, nil
 }
 
