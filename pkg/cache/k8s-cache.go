@@ -2,10 +2,11 @@ package cache
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/resty.v1"
-	"net/http"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -16,11 +17,13 @@ type k8sCache struct {
 }
 
 func NewK8s(reader client.Reader) (RunnableCache, error) {
-	return &k8sCache{
+	c := &k8sCache{
 		simpleCache: simpleCache{vaults: make(map[string]*types.VaultInfo)},
 		reader:      reader,
-	}, nil
+	}
+	return c, nil
 }
+
 func (c *k8sCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 	c.simpleCache.SetVaultInfoFor(owner, info)
 	if info.ShouldShare() {

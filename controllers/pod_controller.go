@@ -3,15 +3,20 @@ package controllers
 import (
 	"context"
 	"errors"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/types"
+	"github.com/go-logr/logr"
 	"github.com/hashicorp/vault/api"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -22,8 +27,10 @@ import (
 // PodReconciler reconciles a Pod object
 type PodReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
-	Cache  cache.Cache
+	Scheme           *runtime.Scheme
+	Cache            cache.Cache
+	UnsealerSelector labels.Selector
+	myPodName        string
 }
 
 //+kubebuilder:rbac:groups=.com,resources=pods,verbs=get;list;watch;create;update;patch;delete
@@ -44,6 +51,18 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return reconcile.Result{}, err
 	}
 
+	if r.isUnsealer(pod) {
+		return r.reconcileUnsealerPod(ctx, l, pod)
+	}
+
+	return r.reconcileVaultPod(ctx, l, pod)
+}
+
+func (r *PodReconciler) reconcileUnsealerPod(_ context.Context, _ logr.Logger, _ *corev1.Pod) (ctrl.Result, error) {
+	return ctrl.Result{}, nil
+}
+
+func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
 	addr := getVaultAddress(ctx, pod)
 	cl, err := r.newClient(addr)
 	if err != nil {
@@ -94,7 +113,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secret) error {
+func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secret, depl *appsv1.Deployment) error {
 	for _, s := range secrets {
 		owner := s.GetLabels()[constants.LabelStatefulSetName]
 		if r.Cache.VaultInfoFor(owner) == nil {
@@ -118,6 +137,14 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 			r.Cache.SetVaultInfoFor(owner, v)
 		}
 	}
+
+	sel, err := metav1.LabelSelectorAsSelector(depl.Spec.Selector)
+	if err != nil {
+		return err
+	}
+	r.UnsealerSelector = sel
+	r.myPodName = os.Getenv("HOSTNAME")
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Pod{}).
 		WithEventFilter(r).

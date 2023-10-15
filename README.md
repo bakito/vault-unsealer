@@ -17,7 +17,7 @@ data:
 kind: Secret
 metadata:
   labels:
-    vault-unsealer.bison-group.com/stateful-set-disable: vault
+    vault-unsealer.bakito.net/stateful-set: vault
   name: unseal
 type: Opaque
 ```
@@ -30,7 +30,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
-    vault-unsealer.bison-group.com/stateful-set: vault
+    vault-unsealer.bakito.net/stateful-set: vault
   name: unseal-pw
 type: Opaque
 stringData:
