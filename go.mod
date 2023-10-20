@@ -2,26 +2,13 @@ module github.com/bakito/vault-unsealer
 
 go 1.21
 
-// update vault
-// https://github.com/maxb/vault-docs/blob/main/modules.md#what-about-using-githubcomhashicorpvault-itself-as-a-go-module
-// $ git ls-remote https://github.com/hashicorp/vault v1.14.1
-// bf23fe8636b04d554c0fa35a756c75c2f59026c0        refs/tags/v1.14.1
-
-// $ go get github.com/hashicorp/vault@bf23fe8636b04d554c0fa35a756c75c2f59026c0
-// ... many lines mentioning other dependencies omitted for clarity...
-// go: added github.com/hashicorp/vault v1.14.1
-// ... many lines mentioning other dependencies omitted for clarity...
-
-// $ go get github.com/hashicorp/vault/sdk@bf23fe8636b04d554c0fa35a756c75c2f59026c0
-// go: upgraded github.com/hashicorp/vault/sdk v0.9.2-0.20230530190758-08ee474850e0 => v0.9.2-0.20230721171514-bf23fe8636b0
-
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-logr/logr v1.2.4
 	github.com/google/uuid v1.3.1
 	github.com/hashicorp/go-hclog v1.5.0
 	github.com/hashicorp/vault v1.14.1
-	github.com/hashicorp/vault/api v1.10.0
+	github.com/hashicorp/vault-client-go v0.4.2
 	github.com/onsi/ginkgo/v2 v2.13.0
 	github.com/onsi/gomega v1.28.0
 	go.uber.org/zap v1.26.0
@@ -261,6 +248,7 @@ require (
 	github.com/hashicorp/vault-plugin-secrets-mongodbatlas v0.10.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-openldap v0.11.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-terraform v0.7.1 // indirect
+	github.com/hashicorp/vault/api v1.9.2 // indirect
 	github.com/hashicorp/vault/sdk v0.9.2-0.20230721171514-bf23fe8636b0 // indirect
 	github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
@@ -299,7 +287,6 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/mediocregopher/radix/v4 v4.1.2 // indirect
 	github.com/michaelklishin/rabbit-hole/v2 v2.12.0 // indirect
@@ -402,7 +389,7 @@ require (
 	google.golang.org/grpc v1.57.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	gopkg.in/ini.v1 v1.66.2 // indirect
+	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -411,8 +398,8 @@ require (
 	k8s.io/component-base v0.28.3 // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
-	layeh.com/radius v0.0.0-20190322222518-890bc1058917 // indirect
-	nhooyr.io/websocket v1.8.7 // indirect
+	layeh.com/radius v0.0.0-20230922032716-6579be8edf5d // indirect
+	nhooyr.io/websocket v1.8.9 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.3.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect

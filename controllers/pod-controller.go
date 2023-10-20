@@ -11,7 +11,8 @@ import (
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/go-logr/logr"
-	"github.com/hashicorp/vault/api"
+	"github.com/hashicorp/vault-client-go"
+	"github.com/hashicorp/vault-client-go/schema"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -77,13 +78,13 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 	if err != nil {
 		return reconcile.Result{}, err
 	}
-	st, err := cl.Sys().SealStatusWithContext(ctx)
+	st, err := cl.System.SealStatus(ctx)
 	if err != nil {
 		l.Error(err, "Error checking seal status")
 		return reconcile.Result{}, err
 	}
 
-	if !st.Initialized {
+	if !st.Data.Initialized {
 		l.Info("vault is not initialized")
 		return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 	}
@@ -93,7 +94,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		return reconcile.Result{}, nil
 	}
 
-	if st.Sealed {
+	if st.Data.Sealed {
 		if len(vault.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 		}
@@ -104,12 +105,14 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		l.Info("successfully unsealed vault")
 
 	} else if len(vault.UnsealKeys) == 0 {
-		t, err := userpassLogin(cl, vault.Username, vault.Password)
+		t, err := userpassLogin(ctx, cl, vault.Username, vault.Password)
 		if err != nil {
 			return reconcile.Result{}, err
 		}
-		cl.SetToken(t)
-
+		err = cl.SetToken(t)
+		if err != nil {
+			return reconcile.Result{}, err
+		}
 		if err := readSecret(ctx, cl, vault); err != nil {
 			return reconcile.Result{}, err
 		}
@@ -160,13 +163,13 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 		Complete(r)
 }
 
-func (r *PodReconciler) unseal(ctx context.Context, cl *api.Client, vault *types.VaultInfo) error {
+func (r *PodReconciler) unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
 	for _, key := range vault.UnsealKeys {
-		resp, err := cl.Sys().UnsealWithContext(ctx, key)
+		resp, err := cl.System.Unseal(ctx, schema.UnsealRequest{Key: key})
 		if err != nil {
 			return err
 		}
-		if !resp.Sealed {
+		if !resp.Data.Sealed {
 			return nil
 		}
 	}

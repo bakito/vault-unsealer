@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/bakito/vault-unsealer/pkg/types"
-	"github.com/hashicorp/vault/api"
+	vc "github.com/hashicorp/vault-client-go"
 	"github.com/hashicorp/vault/vault"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -13,7 +13,7 @@ import (
 var _ = Describe("Vault", func() {
 	var (
 		cluster *vault.TestCluster
-		client  *api.Client
+		client  *vc.Client
 		ctx     context.Context
 	)
 	BeforeEach(func() {

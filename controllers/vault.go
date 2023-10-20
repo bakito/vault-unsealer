@@ -4,78 +4,94 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
+	"time"
 
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/types"
-	"github.com/hashicorp/vault/api"
+	"github.com/hashicorp/vault-client-go"
+	"github.com/hashicorp/vault-client-go/schema"
 )
 
-func (r *PodReconciler) newClient(address string) (*api.Client, error) {
-	cfg := api.DefaultConfig()
-	cfg.Address = address
-	cfg.HttpClient.Transport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = true
-	return api.NewClient(cfg)
+func (r *PodReconciler) newClient(address string) (*vault.Client, error) {
+	return vault.New(
+		vault.WithAddress(address),
+		vault.WithRequestTimeout(30*time.Second),
+		vault.WithTLS(vault.TLSConfiguration{InsecureSkipVerify: true}),
+	)
 }
 
-func userpassLogin(cl *api.Client, username string, password string) (string, error) {
-	// to pass the password
-	options := map[string]interface{}{
-		"password": password,
-	}
-	path := fmt.Sprintf("auth/userpass/login/%s", username)
-
+func userpassLogin(ctx context.Context, cl *vault.Client, username string, password string) (string, error) {
 	// PUT call to get a token
-	secret, err := cl.Logical().Write(path, options)
+	secret, err := cl.Auth.UserpassLogin(ctx, username, schema.UserpassLoginRequest{Password: password})
 	if err != nil {
 		return "", err
 	}
-
 	token := secret.Auth.ClientToken
 	return token, nil
 }
 
-func readSecret(ctx context.Context, cl *api.Client, v *types.VaultInfo) error {
-	mounts, err := cl.Sys().ListMountsWithContext(ctx)
+func readSecret(ctx context.Context, cl *vault.Client, v *types.VaultInfo) error {
+	mounts, err := cl.System.MountsListSecretsEngines(ctx)
 	if err != nil {
 		return err
 	}
 	mount, path := v.SecretMountAndPath()
-	var sec *api.KVSecret
-	if m, ok := mounts[mount+"/"]; ok {
-		switch vers := m.Options["version"]; vers {
-		case "1":
-			if sec, err = cl.KVv1(mount).Get(ctx, path); err != nil {
-				return err
-			}
-		case "2":
-			if sec, err = cl.KVv2(mount).Get(ctx, path); err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf("unsupported kv version %q", vers)
+
+	var data map[string]interface{}
+	var warnings []string
+
+	vers := childOf[string](mounts.Data, mount+"/", "options", "version")
+	switch vers {
+	case "1":
+		sec, err := cl.Secrets.KvV1Read(ctx, path, vault.WithMountPath(mount))
+		if err != nil {
+			return err
 		}
+		data = sec.Data
+		warnings = sec.Warnings
+	case "2":
+		sec, err := cl.Secrets.KvV2Read(ctx, path, vault.WithMountPath(mount))
+		if err != nil {
+			return err
+		}
+		data = sec.Data.Data
+		warnings = sec.Warnings
+	default:
+		return fmt.Errorf("unsupported kv version %q", vers)
 	}
 
-	if sec == nil {
+	if data == nil {
 		return fmt.Errorf("did not receive a valid secret with path %s", v.SecretPath)
 	}
 
-	if len(sec.Raw.Warnings) > 0 {
-		return errors.New(strings.Join(sec.Raw.Warnings, ","))
+	if len(warnings) > 0 {
+		return errors.New(strings.Join(warnings, ","))
 	}
 
-	extractUnsealKeys(sec.Data, v)
+	extractUnsealKeys(data, v)
 	return nil
 }
 
-func extractUnsealKeys(data interface{}, v *types.VaultInfo) {
-	if m, o := data.(map[string]interface{}); o {
-		for k, val := range m {
-			if strings.HasPrefix(k, constants.KeyPrefixUnsealKey) {
-				v.UnsealKeys = append(v.UnsealKeys, fmt.Sprintf("%v", val))
+func childOf[T interface{}](m interface{}, key ...string) T {
+	var empty T
+	if mm, ok := m.(map[string]interface{}); ok {
+		if len(key) == 1 {
+			if t, ok := mm[key[0]].(T); ok {
+				return t
 			}
+			return empty
+		}
+		return childOf[T](mm[key[0]], key[1:]...)
+	}
+	return empty
+}
+
+func extractUnsealKeys(data map[string]interface{}, v *types.VaultInfo) {
+	m := childOf[map[string]interface{}](data, "data")
+	for k, val := range m {
+		if strings.HasPrefix(k, constants.KeyPrefixUnsealKey) {
+			v.UnsealKeys = append(v.UnsealKeys, fmt.Sprintf("%v", val))
 		}
 	}
 }
