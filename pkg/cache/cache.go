@@ -14,6 +14,7 @@ type Cache interface {
 	RemoveMember(ip string)
 	Sync()
 }
+
 type RunnableCache interface {
 	Cache
 	Start(ctx context.Context) error
