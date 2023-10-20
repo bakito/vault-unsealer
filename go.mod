@@ -1,6 +1,6 @@
 module github.com/bakito/vault-unsealer
 
-go 1.20
+go 1.21
 
 // update vault
 // https://github.com/maxb/vault-docs/blob/main/modules.md#what-about-using-githubcomhashicorpvault-itself-as-a-go-module
@@ -18,6 +18,7 @@ go 1.20
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-logr/logr v1.2.4
+	github.com/google/uuid v1.3.1
 	github.com/hashicorp/go-hclog v1.5.0
 	github.com/hashicorp/vault v1.14.1
 	github.com/hashicorp/vault/api v1.10.0
@@ -178,7 +179,6 @@ require (
 	github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1 // indirect
 	github.com/google/s2a-go v0.1.5 // indirect
 	github.com/google/tink/go v1.7.0 // indirect
-	github.com/google/uuid v1.3.1 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gophercloud/gophercloud v0.1.0 // indirect

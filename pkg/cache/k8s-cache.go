@@ -93,18 +93,18 @@ func (c *k8sCache) Start(_ context.Context) error {
 func (c *k8sCache) handleAuth(ctx *gin.Context) bool {
 	auth := ctx.GetHeader("Authorization")
 	if auth == "" {
-		ctx.JSON(http.StatusUnauthorized, gin.H{})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
 		return false
 	}
 
 	t := strings.Split(auth, "Bearer ")
 	if len(t) != 2 {
-		ctx.JSON(http.StatusUnauthorized, gin.H{})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
 		return false
 	}
 	if c.token != "" {
 		if c.token != t[1] {
-			ctx.JSON(http.StatusUnauthorized, gin.H{})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
 			return false
 		}
 	} else {
