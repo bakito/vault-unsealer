@@ -17,11 +17,6 @@ test-ci: manifests generate ## Run tests.
 lint: golangci-lint
 	$(GOLANGCI_LINT) run --fix
 
-## Location to install dependencies to
-LOCALBIN ?= $(shell pwd)/bin
-$(LOCALBIN):
-	mkdir -p $(LOCALBIN)
-
 ## Tool Binaries
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 SEMVER ?= $(LOCALBIN)/semver
