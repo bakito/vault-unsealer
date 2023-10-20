@@ -12,8 +12,11 @@ import (
 	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/resty.v1"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+var log = ctrl.Log.WithName("cache")
 
 type k8sCache struct {
 	simpleCache
@@ -41,7 +44,7 @@ func (c *k8sCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 			}
 			_, err := client.R().SetBody(info).Post(fmt.Sprintf("http://%s:8866/sync/%s", member, owner))
 			if err != nil {
-				println(err.Error())
+				log.WithValues("member", member, "owner", owner).Error(err, "could not send owner info")
 			}
 		}
 	}
@@ -58,6 +61,7 @@ func (c *k8sCache) Start(_ context.Context) error {
 			ctx.JSON(http.StatusOK, gin.H{
 				"error": err.Error(),
 			})
+			log.WithValues("owner", owner).Error(err, "could parse owner info")
 			return
 		}
 		c.simpleCache.SetVaultInfoFor(owner, info)

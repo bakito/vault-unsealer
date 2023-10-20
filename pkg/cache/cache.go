@@ -4,10 +4,7 @@ import (
 	"context"
 
 	"github.com/bakito/vault-unsealer/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
 )
-
-var log = ctrl.Log.WithName("cache")
 
 type Cache interface {
 	Owners() []string
