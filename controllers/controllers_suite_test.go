@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"strings"
 	"testing"
 	"time"
 
@@ -25,7 +24,7 @@ func TestControllers(t *testing.T) {
 	RunSpecs(t, "Controllers Suite")
 }
 
-func createTestVault(version string, secretPath string, data map[string]interface{}) (*vc.Client, *vault.TestCluster) {
+func createTestVault(version string, path string, data map[string]interface{}) (*vc.Client, *vault.TestCluster) {
 	testingT.Helper()
 
 	coreConfig := &vault.CoreConfig{
@@ -61,7 +60,7 @@ func createTestVault(version string, secretPath string, data map[string]interfac
 	if version == "2" {
 		_, err = cl.Secrets.KvV2Write(
 			ctx,
-			strings.Split(secretPath, "/data/")[1],
+			path,
 			schema.KvV2WriteRequest{
 				Data: map[string]any{
 					"data": data,
@@ -72,7 +71,7 @@ func createTestVault(version string, secretPath string, data map[string]interfac
 	} else {
 		_, err = cl.Secrets.KvV1Write(
 			ctx,
-			strings.Split(secretPath, "/")[1],
+			path,
 			map[string]any{
 				"data": data,
 			},
