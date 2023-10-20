@@ -15,7 +15,14 @@ spec:
   template:
     metadata:
       labels:
-    {{- include "vault-unsealer.selectorLabels" . | nindent 8 }}
+      {{- include "vault-unsealer.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podLabels }}
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
     spec:
       serviceAccountName: {{ include "vault-unsealer.serviceAccountName" . }}
       containers:

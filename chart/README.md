@@ -20,6 +20,8 @@ helm install vault-unsealer bakito/vault-unsealer
 | image.repository | string | `"ghcr.io/bakito/vault-unsealer"` | Repository to use |
 | leaderElection.enabled | bool | `true` | Specifies whether leader election should be enabled |
 | nodeSelector | object | `{}` | [Node selector] |
+| podAnnotations | object | `{}` | Pod Annotations |
+| podLabels | object | `{}` | Pod Labels |
 | rbac.create | bool | `true` | Specifies whether rbac should be created |
 | rbac.roleName | string | `nil` | If not set and create is true, a name is generated using the fullname template |
 | replicas | int | `1` | The deployment Replicas |

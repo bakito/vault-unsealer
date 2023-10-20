@@ -55,3 +55,9 @@ securityContext:
     type: RuntimeDefault
   capabilities:
     drop: [ "ALL" ]
+
+# -- Pod Labels
+podLabels: { }
+
+# -- Pod Annotations
+podAnnotations: { }
