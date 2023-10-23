@@ -107,7 +107,7 @@ func run(ctx context.Context, mgr manager.Manager, watchNamespace string, cache 
 	depl := &appsv1.Deployment{}
 	if err := mgr.GetAPIReader().Get(
 		ctx,
-		client.ObjectKey{Name: os.Getenv("DEPLOYMENT_NAME"), Namespace: watchNamespace},
+		client.ObjectKey{Name: os.Getenv(constants.EnvDeploymentName), Namespace: watchNamespace},
 		depl); err != nil {
 		setupLog.Error(err, "unable to find deployment of unsealer")
 		os.Exit(1)
