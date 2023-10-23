@@ -62,7 +62,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 func (r *PodReconciler) reconcileUnsealerPod(_ context.Context, _ logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
 	if pod.GetName() != r.myPodName {
 		if pod.Status.Phase == corev1.PodRunning {
-			r.Cache.AddMember(pod.Status.PodIP)
+			r.Cache.AddMember(pod.Status.PodIP, pod.GetName())
 		} else if pod.DeletionTimestamp == nil {
 			r.Cache.RemoveMember(pod.Status.PodIP)
 		}
@@ -89,23 +89,23 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 	}
 
-	vault := r.Cache.VaultInfoFor(getOwner(pod))
-	if vault == nil {
+	vi := r.Cache.VaultInfoFor(getOwner(pod))
+	if vi == nil {
 		return reconcile.Result{}, nil
 	}
 
 	if st.Data.Sealed {
-		if len(vault.UnsealKeys) == 0 {
+		if len(vi.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 		}
 
-		if err := r.unseal(ctx, cl, vault); err != nil {
+		if err := r.unseal(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 		l.Info("successfully unsealed vault")
 
-	} else if len(vault.UnsealKeys) == 0 {
-		t, err := userpassLogin(ctx, cl, vault.Username, vault.Password)
+	} else if len(vi.UnsealKeys) == 0 {
+		t, err := userpassLogin(ctx, cl, vi.Username, vi.Password)
 		if err != nil {
 			return reconcile.Result{}, err
 		}
@@ -113,12 +113,12 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		if err != nil {
 			return reconcile.Result{}, err
 		}
-		if err := readSecret(ctx, cl, vault); err != nil {
+		if err := readSecret(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 
-		r.Cache.SetVaultInfoFor(vault.Owner, vault)
-		l.WithValues("keys", len(vault.UnsealKeys)).Info("successfully read unseal keys from vault")
+		r.Cache.SetVaultInfoFor(vi.Owner, vi)
+		l.WithValues("keys", len(vi.UnsealKeys)).Info("successfully read unseal keys from vault")
 	}
 
 	return ctrl.Result{}, nil

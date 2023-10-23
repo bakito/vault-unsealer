@@ -26,7 +26,7 @@ var (
 type k8sCache struct {
 	simpleCache
 	reader         client.Reader
-	clusterMembers map[string]bool
+	clusterMembers map[string]string
 	token          string
 	client         *resty.Client
 }
@@ -35,7 +35,7 @@ func NewK8s(reader client.Reader) (RunnableCache, error) {
 	c := &k8sCache{
 		simpleCache:    simpleCache{vaults: make(map[string]*types.VaultInfo)},
 		reader:         reader,
-		clusterMembers: map[string]bool{},
+		clusterMembers: map[string]string{},
 	}
 	return c, nil
 }
@@ -52,13 +52,13 @@ func (c *k8sCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 		})
 
 		c.client.SetTimeout(time.Second)
-		for member := range c.clusterMembers {
+		for ip, name := range c.clusterMembers {
 			if strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
-				member = "localhost"
+				ip = "localhost"
 			}
-			_, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:8866/sync/%s", member, owner))
+			_, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:8866/sync/%s", ip, owner))
 			if err != nil {
-				log.WithValues("member", member, "owner", owner).Error(err, "could not send owner info")
+				log.WithValues("pod", name, "owner", owner).Error(err, "could not send owner info")
 			}
 		}
 	}
@@ -113,8 +113,8 @@ func (c *k8sCache) handleAuth(ctx *gin.Context) bool {
 	return true
 }
 
-func (c *k8sCache) AddMember(ip string) {
-	c.clusterMembers[ip] = true
+func (c *k8sCache) AddMember(ip string, name string) {
+	c.clusterMembers[ip] = name
 }
 
 func (c *k8sCache) RemoveMember(ip string) {
