@@ -16,6 +16,14 @@ rules:
       - get
       - list
       - watch
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - 'apps'
+    resources:
+      - deployments
   # start leader election
   - apiGroups:
       - ""
