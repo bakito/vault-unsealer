@@ -16,7 +16,7 @@ go 1.20
 // go: upgraded github.com/hashicorp/vault/sdk v0.9.2-0.20230530190758-08ee474850e0 => v0.9.2-0.20230721171514-bf23fe8636b0
 
 require (
-	github.com/go-logr/logr v1.2.4
+	github.com/go-logr/logr v1.3.0
 	github.com/hashicorp/go-hclog v1.5.0
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.14.1
