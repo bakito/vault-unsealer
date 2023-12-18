@@ -17,7 +17,7 @@ go 1.20
 
 require (
 	github.com/go-logr/logr v1.3.0
-	github.com/hashicorp/go-hclog v1.6.1
+	github.com/hashicorp/go-hclog v1.6.2
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.14.1
 	github.com/hashicorp/vault/api v1.10.0
