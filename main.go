@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"strings"
 
 	"github.com/bakito/vault-unsealer/controllers"
@@ -52,12 +53,22 @@ func main() {
 	flag.Parse()
 	logging.PrepareLogger(true)
 	watchNamespace := os.Getenv(constants.EnvWatchNamespace)
+
+	defaultNamespaces := map[string]crtlcache.Config{
+		watchNamespace: {},
+	}
+	if watchNamespace == "" {
+		defaultNamespaces = nil
+	}
+
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
 		Cache: crtlcache.Options{
-			Namespaces: []string{watchNamespace},
+			DefaultNamespaces: defaultNamespaces,
 		},
-		MetricsBindAddress:      ":8080",
+		Metrics: server.Options{
+			BindAddress: ":8080",
+		},
 		WebhookServer:           webhook.NewServer(webhook.Options{Port: 9443}),
 		HealthProbeBindAddress:  ":8081",
 		LeaderElection:          enableLeaderElection,
