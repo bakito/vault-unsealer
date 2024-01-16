@@ -45,39 +45,13 @@ fmt: ## Run go fmt against code.
 vet: ## Run go vet against code.
 	go vet ./...
 
+# Run go lint against code
+lint: golangci-lint
+	$(GOLANGCI_LINT) run --fix
+
 .PHONY: test
 test: manifests generate fmt vet ## Run tests.
 	go test ./... -coverprofile cover.out
-
-## Location to install dependencies to
-LOCALBIN ?= $(shell pwd)/bin
-$(LOCALBIN):
-	mkdir -p $(LOCALBIN)
-
-## Tool Binaries
-CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
-SEMVER ?= $(LOCALBIN)/semver
-HELM_DOCS ?= $(LOCALBIN)/helm-docs
-
-## Tool Versions
-CONTROLLER_TOOLS_VERSION ?= v0.9.2
-SEMVER_VERSION ?= latest
-HELM_DOCS_VERSION ?= v1.11.0
-
-.PHONY: controller-gen
-controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
-$(CONTROLLER_GEN): $(LOCALBIN)
-	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
-
-.PHONY: semver
-semver: $(SEMVER) ## Download semver locally if necessary.
-$(SEMVER): $(LOCALBIN)
-	test -s $(LOCALBIN)/semver || GOBIN=$(LOCALBIN) go install github.com/bakito/semver@$(SEMVER_VERSION)
-
-.PHONY: helm-docs
-helm-docs: $(HELM_DOCS) ## Download helm-docs locally if necessary.
-$(HELM_DOCS): $(LOCALBIN)
-	test -s $(LOCALBIN)/helm-docs || GOBIN=$(LOCALBIN) go install github.com/norwoodj/helm-docs/cmd/helm-docs@$(HELM_DOCS_VERSION)
 
 port-forward:
 	kubectl port-forward pod/vault-0 8200:8200 &
@@ -93,10 +67,16 @@ docker-build:
 docker-push: docker-build
 	docker push ghcr.io/bakito/vault-unsealer
 
-release: semver
+.PHONY: release
+release: goreleaser
 	@version=$$(semver); \
 	git tag -s $$version -m"Release $$version"
-	goreleaser --clean
+	$(GORELEASER) --clean
+
+.PHONY: test-release
+test-release: goreleaser
+	$(GORELEASER) --skip-publish --snapshot --clean
+
 
 docs: helm-docs
 	@$(LOCALBIN)/helm-docs
@@ -106,3 +86,56 @@ helm-lint:
 
 helm-template:
 	helm template ./chart
+
+## toolbox - start
+## Current working directory
+LOCALDIR ?= $(shell which cygpath > /dev/null 2>&1 && cygpath -m $$(pwd) || pwd)
+## Location to install dependencies to
+LOCALBIN ?= $(LOCALDIR)/bin
+$(LOCALBIN):
+	mkdir -p $(LOCALBIN)
+
+## Tool Binaries
+CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
+GOLANGCI_LINT ?= $(LOCALBIN)/golangci-lint
+GORELEASER ?= $(LOCALBIN)/goreleaser
+HELM_DOCS ?= $(LOCALBIN)/helm-docs
+SEMVER ?= $(LOCALBIN)/semver
+
+## Tool Versions
+GORELEASER_VERSION ?= v1.23.0
+
+## Tool Installer
+.PHONY: controller-gen
+controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
+$(CONTROLLER_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen
+.PHONY: golangci-lint
+golangci-lint: $(GOLANGCI_LINT) ## Download golangci-lint locally if necessary.
+$(GOLANGCI_LINT): $(LOCALBIN)
+	test -s $(LOCALBIN)/golangci-lint || GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint
+.PHONY: goreleaser
+goreleaser: $(GORELEASER) ## Download goreleaser locally if necessary.
+$(GORELEASER): $(LOCALBIN)
+	test -s $(LOCALBIN)/goreleaser || GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser@$(GORELEASER_VERSION)
+.PHONY: helm-docs
+helm-docs: $(HELM_DOCS) ## Download helm-docs locally if necessary.
+$(HELM_DOCS): $(LOCALBIN)
+	test -s $(LOCALBIN)/helm-docs || GOBIN=$(LOCALBIN) go install github.com/norwoodj/helm-docs/cmd/helm-docs
+.PHONY: semver
+semver: $(SEMVER) ## Download semver locally if necessary.
+$(SEMVER): $(LOCALBIN)
+	test -s $(LOCALBIN)/semver || GOBIN=$(LOCALBIN) go install github.com/bakito/semver
+
+## Update Tools
+.PHONY: update-toolbox-tools
+update-toolbox-tools:
+	@rm -f \
+		$(LOCALBIN)/controller-gen \
+		$(LOCALBIN)/golangci-lint \
+		$(LOCALBIN)/goreleaser \
+		$(LOCALBIN)/helm-docs \
+		$(LOCALBIN)/semver
+	toolbox makefile -f $(LOCALDIR)/Makefile \
+		github.com/goreleaser/goreleaser
+## toolbox - end
