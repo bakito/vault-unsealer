@@ -22,6 +22,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
@@ -52,12 +53,22 @@ func main() {
 	flag.Parse()
 	logging.PrepareLogger(true)
 	watchNamespace := os.Getenv(constants.EnvWatchNamespace)
+
+	defaultNamespaces := map[string]crtlcache.Config{
+		watchNamespace: {},
+	}
+	if watchNamespace == "" {
+		defaultNamespaces = nil
+	}
+
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
 		Cache: crtlcache.Options{
-			Namespaces: []string{watchNamespace},
+			DefaultNamespaces: defaultNamespaces,
 		},
-		MetricsBindAddress:      ":8080",
+		Metrics: server.Options{
+			BindAddress: ":8080",
+		},
 		WebhookServer:           webhook.NewServer(webhook.Options{Port: 9443}),
 		HealthProbeBindAddress:  ":8081",
 		LeaderElection:          enableLeaderElection,
