@@ -17,20 +17,22 @@ go 1.21
 
 require (
 	github.com/bakito/semver v1.1.3
+	github.com/gin-gonic/gin v1.6.3
 	github.com/go-logr/logr v1.4.1
 	github.com/golangci/golangci-lint v1.55.2
+	github.com/google/uuid v1.3.1
 	github.com/hashicorp/go-hclog v1.6.2
-	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.14.1
-	github.com/hashicorp/vault/api v1.10.0
+	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/norwoodj/helm-docs v1.12.0
 	github.com/onsi/ginkgo/v2 v2.14.0
 	github.com/onsi/gomega v1.30.0
-	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.26.0
+	gopkg.in/resty.v1 v1.12.0
 	k8s.io/api v0.29.0
 	k8s.io/apimachinery v0.29.0
 	k8s.io/client-go v0.29.0
+	k8s.io/code-generator v0.29.0
 	k8s.io/klog/v2 v2.120.0
 	sigs.k8s.io/controller-runtime v0.17.0
 	sigs.k8s.io/controller-tools v0.14.0
@@ -171,6 +173,7 @@ require (
 	github.com/gammazero/deque v0.2.1 // indirect
 	github.com/gammazero/workerpool v1.1.3 // indirect
 	github.com/ghostiam/protogetter v0.2.3 // indirect
+	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.4 // indirect
 	github.com/go-critic/go-critic v0.9.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
@@ -190,6 +193,9 @@ require (
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/go-openapi/validate v0.20.2 // indirect
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible // indirect
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/go-playground/validator/v10 v10.2.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/go-test/deep v1.1.0 // indirect
@@ -223,7 +229,6 @@ require (
 	github.com/golangci/misspell v0.4.1 // indirect
 	github.com/golangci/revgrep v0.5.2 // indirect
 	github.com/golangci/unconvert v0.0.0-20180507085042-28b1c447d1f4 // indirect
-	github.com/google/btree v1.0.1 // indirect
 	github.com/google/flatbuffers v23.1.21+incompatible // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
@@ -234,7 +239,6 @@ require (
 	github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1 // indirect
 	github.com/google/s2a-go v0.1.5 // indirect
 	github.com/google/tink/go v1.7.0 // indirect
-	github.com/google/uuid v1.3.1 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gophercloud/gophercloud v0.1.0 // indirect
@@ -291,12 +295,12 @@ require (
 	github.com/hashicorp/hcp-sdk-go v0.23.0 // indirect
 	github.com/hashicorp/jsonapi v0.0.0-20210826224640-ee7dae0fb22d // indirect
 	github.com/hashicorp/mdns v1.0.4 // indirect
-	github.com/hashicorp/memberlist v0.5.0 // indirect
 	github.com/hashicorp/nomad/api v0.0.0-20230519153805-2275a83cbfdf // indirect
 	github.com/hashicorp/raft v1.3.10 // indirect
 	github.com/hashicorp/raft-autopilot v0.2.0 // indirect
 	github.com/hashicorp/raft-boltdb/v2 v2.0.0-20210421194847-a7e34179d62c // indirect
 	github.com/hashicorp/raft-snapshot v1.0.4 // indirect
+	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-alicloud v0.15.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-azure v0.15.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-centrify v0.15.1 // indirect
@@ -322,6 +326,7 @@ require (
 	github.com/hashicorp/vault-plugin-secrets-mongodbatlas v0.10.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-openldap v0.11.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-terraform v0.7.1 // indirect
+	github.com/hashicorp/vault/api v1.10.0 // indirect
 	github.com/hashicorp/vault/sdk v0.9.2-0.20230721171514-bf23fe8636b0 // indirect
 	github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
@@ -368,6 +373,7 @@ require (
 	github.com/kyoh86/exportloopref v0.1.11 // indirect
 	github.com/ldez/gomoddirectives v0.2.3 // indirect
 	github.com/ldez/tagliatelle v0.5.0 // indirect
+	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/leonklingele/grouper v1.1.1 // indirect
 	github.com/linode/linodego v0.7.1 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
@@ -423,6 +429,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pires/go-proxyproto v0.6.1 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/polyfloyd/go-errorlint v1.4.5 // indirect
 	github.com/posener/complete v1.2.3 // indirect
@@ -446,7 +453,6 @@ require (
 	github.com/sasha-s/go-deadlock v0.2.0 // indirect
 	github.com/sashamelentyev/interfacebloat v1.1.0 // indirect
 	github.com/sashamelentyev/usestdlibvars v1.24.0 // indirect
-	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/securego/gosec/v2 v2.18.2 // indirect
 	github.com/sethvargo/go-limiter v0.7.2 // indirect
 	github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c // indirect
@@ -485,6 +491,7 @@ require (
 	github.com/tomarrell/wrapcheck/v2 v2.8.1 // indirect
 	github.com/tommy-muehle/go-mnd/v2 v2.5.1 // indirect
 	github.com/tv42/httpunix v0.0.0-20191220191345-2ba4b9c3382c // indirect
+	github.com/ugorji/go/codec v1.1.7 // indirect
 	github.com/ultraware/funlen v0.1.0 // indirect
 	github.com/ultraware/whitespace v0.0.5 // indirect
 	github.com/uudashr/gocognit v1.1.2 // indirect
@@ -532,13 +539,13 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
-	gopkg.in/resty.v1 v1.12.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.4.6 // indirect
 	k8s.io/apiextensions-apiserver v0.29.0 // indirect
 	k8s.io/component-base v0.29.0 // indirect
+	k8s.io/gengo v0.0.0-20230829151522-9cce18d56c01 // indirect
 	k8s.io/helm v2.14.3+incompatible // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect

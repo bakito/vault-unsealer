@@ -1,33 +1,33 @@
 run:
-  timeout: 10m
+  timeout: 5m
 
 linters:
   enable:
-  - asciicheck
-  - bodyclose
-  - dogsled
-  - durationcheck
-  - errcheck
-  - errorlint
-  - exportloopref
-  - gci
-  - gofmt
-  - gofumpt
-  - goimports
-  - gosec
-  - gosimple
-  - govet
-  - importas
-  - ineffassign
-  - megacheck
-  - misspell
-  - nakedret
-  - nolintlint
-  - staticcheck
-  - unconvert
-  - unparam
-  - unused
-  - wastedassign
+    - asciicheck
+    - bodyclose
+    - dogsled
+    - durationcheck
+    - errcheck
+    - errorlint
+    - exportloopref
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - importas
+    - ineffassign
+    - megacheck
+    - misspell
+    - nakedret
+    - nolintlint
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
 linters-settings:
   gosec:
     # Exclude generated files
@@ -35,4 +35,3 @@ linters-settings:
   gofmt:
     # simplify code: gofmt with `-s` option, true by default
     simplify: true
-

@@ -32,7 +32,7 @@ spec:
           command:
             - /opt/go/vault-unsealer
           env:
-            - name: OPERATOR_NAME
+            - name: DEPLOYMENT_NAME
               value: {{ include "vault-unsealer.fullname" . }}
             - name: WATCH_NAMESPACE
               valueFrom:

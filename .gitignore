@@ -26,3 +26,4 @@ testbin/*
 config
 dist
 helm-setup.md
+.run

@@ -1,10 +1,13 @@
 package controllers
 
 import (
+	"context"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/go-hclog"
-	"github.com/hashicorp/vault/api"
+	vc "github.com/hashicorp/vault-client-go"
+	"github.com/hashicorp/vault-client-go/schema"
 	"github.com/hashicorp/vault/helper/benchhelpers"
 	"github.com/hashicorp/vault/helper/builtinplugins"
 	"github.com/hashicorp/vault/http"
@@ -21,7 +24,7 @@ func TestControllers(t *testing.T) {
 	RunSpecs(t, "Controllers Suite")
 }
 
-func createTestVault(version string, secretPath string, data map[string]interface{}) (*api.Client, *vault.TestCluster) {
+func createTestVault(version string, path string, data map[string]interface{}) (*vc.Client, *vault.TestCluster) {
 	testingT.Helper()
 
 	coreConfig := &vault.CoreConfig{
@@ -43,19 +46,39 @@ func createTestVault(version string, secretPath string, data map[string]interfac
 	core := cluster.Cores[0].Core
 	vault.TestWaitActive(benchhelpers.TBtoT(testingT), core)
 
-	// Get the client already setup for us!
-	client := cluster.Cores[0].Client
-	client.SetToken(cluster.RootToken)
+	cl, err := vc.New(
+		vc.WithAddress(cluster.Cores[0].Client.Address()),
+		vc.WithRequestTimeout(30*time.Second),
+		vc.WithTLS(vc.TLSConfiguration{InsecureSkipVerify: true}),
+	)
+	Ω(err).ShouldNot(HaveOccurred())
 
-	var err error
+	err = cl.SetToken(cluster.RootToken)
+	Ω(err).ShouldNot(HaveOccurred())
+
+	ctx := context.TODO()
 	if version == "2" {
-		_, err = client.Logical().Write(secretPath, map[string]interface{}{
-			"data": data,
-		})
+		_, err = cl.Secrets.KvV2Write(
+			ctx,
+			path,
+			schema.KvV2WriteRequest{
+				Data: map[string]any{
+					"data": data,
+				},
+			},
+			vc.WithMountPath("secret"),
+		)
 	} else {
-		_, err = client.Logical().Write(secretPath, data)
+		_, err = cl.Secrets.KvV1Write(
+			ctx,
+			path,
+			map[string]any{
+				"data": data,
+			},
+			vc.WithMountPath("secret"),
+		)
 	}
 	Ω(err).ShouldNot(HaveOccurred())
 
-	return client, cluster
+	return cl, cluster
 }

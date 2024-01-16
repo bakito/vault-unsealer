@@ -3,15 +3,21 @@ package controllers
 import (
 	"context"
 	"errors"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/types"
-	"github.com/hashicorp/vault/api"
+	"github.com/go-logr/logr"
+	"github.com/hashicorp/vault-client-go"
+	"github.com/hashicorp/vault-client-go/schema"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -22,8 +28,10 @@ import (
 // PodReconciler reconciles a Pod object
 type PodReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
-	Cache  cache.Cache
+	Scheme           *runtime.Scheme
+	Cache            cache.Cache
+	UnsealerSelector labels.Selector
+	myPodName        string
 }
 
 //+kubebuilder:rbac:groups=.com,resources=pods,verbs=get;list;watch;create;update;patch;delete
@@ -44,57 +52,80 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		return reconcile.Result{}, err
 	}
 
+	if r.isUnsealer(pod) {
+		return r.reconcileUnsealerPod(ctx, l, pod)
+	}
+
+	return r.reconcileVaultPod(ctx, l, pod)
+}
+
+func (r *PodReconciler) reconcileUnsealerPod(_ context.Context, _ logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
+	if pod.GetName() != r.myPodName {
+		if pod.Status.Phase == corev1.PodRunning {
+			r.Cache.AddMember(pod.Status.PodIP, pod.GetName())
+		} else if pod.DeletionTimestamp == nil {
+			r.Cache.RemoveMember(pod.Status.PodIP)
+		}
+
+		r.Cache.Sync()
+	}
+	return ctrl.Result{}, nil
+}
+
+func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
 	addr := getVaultAddress(ctx, pod)
 	cl, err := r.newClient(addr)
 	if err != nil {
 		return reconcile.Result{}, err
 	}
-	st, err := cl.Sys().SealStatusWithContext(ctx)
+	st, err := cl.System.SealStatus(ctx)
 	if err != nil {
 		l.Error(err, "Error checking seal status")
 		return reconcile.Result{}, err
 	}
 
-	if !st.Initialized {
+	if !st.Data.Initialized {
 		l.Info("vault is not initialized")
 		return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 	}
 
-	vault := r.Cache.VaultInfoFor(getOwner(pod))
-	if vault == nil {
+	vi := r.Cache.VaultInfoFor(getOwner(pod))
+	if vi == nil {
 		return reconcile.Result{}, nil
 	}
 
-	if st.Sealed {
-		if len(vault.UnsealKeys) == 0 {
+	if st.Data.Sealed {
+		if len(vi.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 		}
 
-		if err := r.unseal(ctx, cl, vault); err != nil {
+		if err := r.unseal(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 		l.Info("successfully unsealed vault")
 
-	} else if len(vault.UnsealKeys) == 0 {
-		t, err := userpassLogin(cl, vault.Username, vault.Password)
+	} else if len(vi.UnsealKeys) == 0 {
+		t, err := userpassLogin(ctx, cl, vi.Username, vi.Password)
 		if err != nil {
 			return reconcile.Result{}, err
 		}
-		cl.SetToken(t)
-
-		if err := readSecret(ctx, cl, vault); err != nil {
+		err = cl.SetToken(t)
+		if err != nil {
+			return reconcile.Result{}, err
+		}
+		if err := readSecret(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 
-		r.Cache.SetVaultInfoFor(vault.Owner, vault)
-		l.WithValues("keys", len(vault.UnsealKeys)).Info("successfully read unseal keys from vault")
+		r.Cache.SetVaultInfoFor(vi.Owner, vi)
+		l.WithValues("keys", len(vi.UnsealKeys)).Info("successfully read unseal keys from vault")
 	}
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secret) error {
+func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secret, depl *appsv1.Deployment) error {
 	for _, s := range secrets {
 		owner := s.GetLabels()[constants.LabelStatefulSetName]
 		if r.Cache.VaultInfoFor(owner) == nil {
@@ -118,19 +149,27 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 			r.Cache.SetVaultInfoFor(owner, v)
 		}
 	}
+
+	sel, err := metav1.LabelSelectorAsSelector(depl.Spec.Selector)
+	if err != nil {
+		return err
+	}
+	r.UnsealerSelector = sel
+	r.myPodName = os.Getenv("HOSTNAME")
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Pod{}).
 		WithEventFilter(r).
 		Complete(r)
 }
 
-func (r *PodReconciler) unseal(ctx context.Context, cl *api.Client, vault *types.VaultInfo) error {
+func (r *PodReconciler) unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
 	for _, key := range vault.UnsealKeys {
-		resp, err := cl.Sys().UnsealWithContext(ctx, key)
+		resp, err := cl.System.Unseal(ctx, schema.UnsealRequest{Key: key})
 		if err != nil {
 			return err
 		}
-		if !resp.Sealed {
+		if !resp.Data.Sealed {
 			return nil
 		}
 	}
