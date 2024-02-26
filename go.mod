@@ -1,6 +1,7 @@
 module github.com/bakito/vault-unsealer
 
 go 1.21
+toolchain go1.22.0
 
 // update vault
 // https://github.com/maxb/vault-docs/blob/main/modules.md#what-about-using-githubcomhashicorpvault-itself-as-a-go-module
@@ -23,7 +24,7 @@ require (
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.14.1
 	github.com/hashicorp/vault/api v1.12.0
-	github.com/norwoodj/helm-docs v1.12.0
+	github.com/norwoodj/helm-docs v1.13.0
 	github.com/onsi/ginkgo/v2 v2.15.0
 	github.com/onsi/gomega v1.31.1
 	github.com/pkg/errors v0.9.1
