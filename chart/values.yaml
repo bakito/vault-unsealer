@@ -39,13 +39,13 @@ resources:
     memory: 512Mi
 
 # -- [Node selector]
-nodeSelector: { }
+nodeSelector: {}
 
 # -- [Tolerations] for use with node taints
-tolerations: [ ]
+tolerations: []
 
 # -- Assign custom [affinity] rules to the deployment
-affinity: { }
+affinity: {}
 
 # -- Security Context of the deployment
 securityContext:
@@ -54,10 +54,11 @@ securityContext:
   seccompProfile:
     type: RuntimeDefault
   capabilities:
-    drop: [ "ALL" ]
+    drop:
+      - "ALL"
 
 # -- Pod Labels
-podLabels: { }
+podLabels: {}
 
 # -- Pod Annotations
-podAnnotations: { }
+podAnnotations: {}
