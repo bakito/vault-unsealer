@@ -1,7 +1,6 @@
 module github.com/bakito/vault-unsealer
 
-go 1.21
-toolchain go1.22.0
+go 1.22
 
 // update vault
 // https://github.com/maxb/vault-docs/blob/main/modules.md#what-about-using-githubcomhashicorpvault-itself-as-a-go-module

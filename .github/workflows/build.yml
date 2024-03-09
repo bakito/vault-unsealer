@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: Go Lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out code into the Go module directory
@@ -53,6 +53,12 @@ jobs:
 
       - name: Lint
         run: make helm-lint
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (lint)
+        run: ct lint --config .github/linters/ct.yaml
 
       - name: Template
         run: make helm-template
