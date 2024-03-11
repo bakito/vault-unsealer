@@ -24,7 +24,7 @@ require (
 	github.com/hashicorp/vault v1.14.1
 	github.com/hashicorp/vault/api v1.12.0
 	github.com/norwoodj/helm-docs v1.13.1
-	github.com/onsi/ginkgo/v2 v2.15.0
+	github.com/onsi/ginkgo/v2 v2.16.0
 	github.com/onsi/gomega v1.31.1
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.27.0
