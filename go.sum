@@ -1173,8 +1173,8 @@ github.com/hashicorp/vault-testing-stepwise v0.1.3 h1:GYvm98EB4nUKUntkBcLicnKseb
 github.com/hashicorp/vault-testing-stepwise v0.1.3/go.mod h1:Ym1T/kMM2sT6qgCIIJ3an7uaSWCJ8O7ohsWB9UiB5tI=
 github.com/hashicorp/vault/api v1.9.0/go.mod h1:lloELQP4EyhjnCQhF8agKvWIVTmxbpEJj70b98959sM=
 github.com/hashicorp/vault/api v1.9.1/go.mod h1:78kktNcQYbBGSrOjQfHjXN32OhhxXnbYl3zxpd2uPUs=
-github.com/hashicorp/vault/api v1.12.0 h1:meCpJSesvzQyao8FCOgk2fGdoADAnbDu2WPJN1lDLJ4=
-github.com/hashicorp/vault/api v1.12.0/go.mod h1:si+lJCYO7oGkIoNPAN8j3azBLTn9SjMGS+jFaHd1Cck=
+github.com/hashicorp/vault/api v1.12.1 h1:WzGN4X5jrJdNO39g6Sa55djNio3I9DxEBOTmCZE7tm0=
+github.com/hashicorp/vault/api v1.12.1/go.mod h1:1pqP/sErScodde+ybJCyP+ONC4jzEg7Dmawg/QLWo1k=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0 h1:C6OdAYczMbzd1Pe1LLf2SHDulxOq/iybWV3kbgV/PS4=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0/go.mod h1:0orUbtkEwbEPmaQ+wvfrOddGBimLJnuN8A/J0PNfBks=
 github.com/hashicorp/vault/sdk v0.9.0/go.mod h1:VX9d+xF62YBNtiEc4l3Z2aea9HVtAS49EoniuXzHtC4=
