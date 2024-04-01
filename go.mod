@@ -22,7 +22,7 @@ require (
 	github.com/hashicorp/go-hclog v1.6.2
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.14.1
-	github.com/hashicorp/vault/api v1.12.1
+	github.com/hashicorp/vault/api v1.12.2
 	github.com/norwoodj/helm-docs v1.13.1
 	github.com/onsi/ginkgo/v2 v2.17.1
 	github.com/onsi/gomega v1.32.0
@@ -174,7 +174,7 @@ require (
 	github.com/go-asn1-ber/asn1-ber v1.5.4 // indirect
 	github.com/go-critic/go-critic v0.11.1 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
-	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/go-ldap/ldap/v3 v3.4.4 // indirect
 	github.com/go-ldap/ldif v0.0.0-20200320164324-fd88d9b715b3 // indirect
 	github.com/go-logr/zapr v1.3.0 // indirect
