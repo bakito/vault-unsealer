@@ -19,7 +19,7 @@ require (
 	github.com/bakito/semver v1.1.3
 	github.com/go-logr/logr v1.4.1
 	github.com/golangci/golangci-lint v1.57.2
-	github.com/hashicorp/go-hclog v1.6.2
+	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/serf v0.10.1
 	github.com/hashicorp/vault v1.14.1
 	github.com/hashicorp/vault/api v1.12.2
