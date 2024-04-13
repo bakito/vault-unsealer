@@ -5,3 +5,8 @@ type: application
 version: "0.0.7"
 appVersion: "v0.0.7"
 icon: https://emojigraph.org/media/google/seal_1f9ad.png
+sources:
+  - https://github.com/bakito/vault-unsealer
+maintainers:
+  - name: bakito
+    url: https://github.com/bakito

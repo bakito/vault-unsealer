@@ -4,10 +4,20 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      k8s:
+        patterns:
+          - "k8s.io/*"
+        update-types:
+          - "minor"
+          - "patch"
+      onsi:
+        patterns:
+          - "github.com/onsi/*"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
-      # covered by k8s.io/client-go
-      - dependency-name: "k8s.io/api"
-      - dependency-name: "k8s.io/apimachinery"
       # updates via vault
       - dependency-name: "github.com/hashicorp/vault/sdk"
   - package-ecosystem: "github-actions"

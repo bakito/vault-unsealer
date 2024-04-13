@@ -19,7 +19,7 @@ jobs:
           go-version-file: "go.mod"
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v4
         with:
           skip-pkg-cache: true
 
@@ -54,6 +54,12 @@ jobs:
 
       - name: Lint
         run: make helm-lint
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (lint)
+        run: ct lint --config .github/linters/ct.yaml
 
       - name: Template
         run: make helm-template
