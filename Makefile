@@ -49,8 +49,14 @@ release: semver goreleaser
 test-release: goreleaser
 	$(GORELEASER) --skip=publish --snapshot --clean
 
-docs: helm-docs
+docs: helm-docs update-docs
 	@$(LOCALBIN)/helm-docs
+
+update-docs: semver
+	@version=$$($(LOCALBIN)/semver -next); \
+	versionNum=$$($(LOCALBIN)/semver -next -numeric); \
+	sed -i "s/^version:.*$$/version: $${versionNum}/"    ./chart/Chart.yaml; \
+	sed -i "s/^appVersion:.*$$/appVersion: $${version}/" ./chart/Chart.yaml
 
 helm-lint:
 	helm lint ./chart
