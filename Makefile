@@ -1,34 +1,3 @@
-# Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
-ifeq (,$(shell go env GOBIN))
-GOBIN=$(shell go env GOPATH)/bin
-else
-GOBIN=$(shell go env GOBIN)
-endif
-
-# Setting SHELL to bash allows bash commands to be executed by recipes.
-# Options are set to exit when a recipe line exits non-zero or a piped command fails.
-SHELL = /usr/bin/env bash -o pipefail
-.SHELLFLAGS = -ec
-
-##@ General
-
-# The help target prints out all targets with their descriptions organized
-# beneath their categories. The categories are represented by '##@' and the
-# target descriptions by '##'. The awk commands is responsible for reading the
-# entire set of makefiles included in this invocation, looking for lines of the
-# file as xyz: ## something, and then pretty-format the target and help. Then,
-# if there's a line with ##@ something, that gets pretty-printed as a category.
-# More info on the usage of ANSI control characters for terminal formatting:
-# https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters
-# More info on the awk command:
-# http://linuxcommand.org/lc3_adv_awk.php
-
-.PHONY: help
-help: ## Display this help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
-
-##@ Development
-
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
@@ -37,21 +6,26 @@ manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and Cust
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
-.PHONY: fmt
-fmt: ## Run go fmt against code.
-	go fmt ./...
+.PHONY: test
+test:  lint test-ci ## Run tests.
 
-.PHONY: vet
-vet: ## Run go vet against code.
-	go vet ./...
+.PHONY: test-ci
+test-ci: manifests generate ## Run tests.
+	go test ./... -coverprofile cover.out
 
 # Run go lint against code
 lint: golangci-lint
 	$(GOLANGCI_LINT) run --fix
 
-.PHONY: test
-test: manifests generate fmt vet ## Run tests.
-	go test ./... -coverprofile cover.out
+## Tool Binaries
+CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
+SEMVER ?= $(LOCALBIN)/semver
+HELM_DOCS ?= $(LOCALBIN)/helm-docs
+
+## Tool Versions
+CONTROLLER_TOOLS_VERSION ?= v0.9.2
+SEMVER_VERSION ?= latest
+HELM_DOCS_VERSION ?= v1.11.0
 
 port-forward:
 	kubectl port-forward pod/vault-0 8200:8200 &
@@ -67,16 +41,13 @@ docker-build:
 docker-push: docker-build
 	docker push ghcr.io/bakito/vault-unsealer
 
-.PHONY: release
-release: goreleaser
-	@version=$$(semver); \
+release: semver goreleaser
+	@version=$$($(LOCALBIN)/semver); \
 	git tag -s $$version -m"Release $$version"
 	$(GORELEASER) --clean
 
-.PHONY: test-release
 test-release: goreleaser
-	$(GORELEASER) --skip-publish --snapshot --clean
-
+	$(GORELEASER) --skip=publish --snapshot --clean
 
 docs: helm-docs
 	@$(LOCALBIN)/helm-docs
@@ -97,19 +68,24 @@ $(LOCALBIN):
 
 ## Tool Binaries
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
+DEEPCOPY_GEN ?= $(LOCALBIN)/deepcopy-gen
 GOLANGCI_LINT ?= $(LOCALBIN)/golangci-lint
 GORELEASER ?= $(LOCALBIN)/goreleaser
 HELM_DOCS ?= $(LOCALBIN)/helm-docs
 SEMVER ?= $(LOCALBIN)/semver
 
 ## Tool Versions
-GORELEASER_VERSION ?= v1.23.0
+GORELEASER_VERSION ?= v1.25.1
 
 ## Tool Installer
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
 $(CONTROLLER_GEN): $(LOCALBIN)
 	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen
+.PHONY: deepcopy-gen
+deepcopy-gen: $(DEEPCOPY_GEN) ## Download deepcopy-gen locally if necessary.
+$(DEEPCOPY_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/deepcopy-gen || GOBIN=$(LOCALBIN) go install k8s.io/code-generator/cmd/deepcopy-gen
 .PHONY: golangci-lint
 golangci-lint: $(GOLANGCI_LINT) ## Download golangci-lint locally if necessary.
 $(GOLANGCI_LINT): $(LOCALBIN)
@@ -132,6 +108,7 @@ $(SEMVER): $(LOCALBIN)
 update-toolbox-tools:
 	@rm -f \
 		$(LOCALBIN)/controller-gen \
+		$(LOCALBIN)/deepcopy-gen \
 		$(LOCALBIN)/golangci-lint \
 		$(LOCALBIN)/goreleaser \
 		$(LOCALBIN)/helm-docs \

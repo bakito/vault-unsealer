@@ -6,14 +6,15 @@ const (
 
 	DefaultSecretPath = "vault/data/unseal-keys" // #nosec G101 not a secret
 
-	KeyUsername        = "username"
 	KeyPassword        = "password"
-	KeySecretPath      = "secretPath"
 	KeyPrefixUnsealKey = "unsealKey"
+	KeySecretPath      = "secretPath"
+	KeyUsername        = "username"
 
-	EnvVaultAddr             = "VAULT_ADDR"
+	EnvDeploymentName        = "DEPLOYMENT_NAME"
 	EnvDevelopmentMode       = "DEVELOPMENT_MODE"
 	EnvDevelopmentModeSchema = "DEVELOPMENT_MODE_SCHEMA"
+	EnvVaultAddr             = "VAULT_ADDR"
 	EnvWatchNamespace        = "WATCH_NAMESPACE"
 
 	ContainerNameVault = "vault"
