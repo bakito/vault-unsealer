@@ -46,6 +46,9 @@ release: semver goreleaser
 	git tag -s $$version -m"Release $$version"
 	$(GORELEASER) --clean
 
+test-release: goreleaser
+	$(GORELEASER) --skip=publish --snapshot --clean
+
 docs: helm-docs
 	@$(LOCALBIN)/helm-docs
 
@@ -72,7 +75,7 @@ HELM_DOCS ?= $(LOCALBIN)/helm-docs
 SEMVER ?= $(LOCALBIN)/semver
 
 ## Tool Versions
-GORELEASER_VERSION ?= v1.23.0
+GORELEASER_VERSION ?= v1.25.1
 
 ## Tool Installer
 .PHONY: controller-gen
