@@ -78,7 +78,7 @@ func (c *k8sCache) Start(_ context.Context) error {
 		info := &types.VaultInfo{}
 		err := ctx.ShouldBindJSON(info)
 		if err != nil {
-			ctx.JSON(http.StatusOK, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 			log.WithValues("owner", owner).Error(err, "could parse owner info")
@@ -89,6 +89,10 @@ func (c *k8sCache) Start(_ context.Context) error {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "ok",
 		})
+	})
+	r.GET("/info", func(ctx *gin.Context) {
+		// TODO check if pod belongs to same deployment
+		ctx.JSON(http.StatusOK, c.vaults)
 	})
 	return r.Run(":8866")
 }
