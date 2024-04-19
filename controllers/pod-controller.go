@@ -61,15 +61,29 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 
 func (r *PodReconciler) reconcileUnsealerPod(_ context.Context, _ logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
 	if pod.GetName() != r.myPodName {
-		if pod.Status.Phase == corev1.PodRunning {
+		if pod.DeletionTimestamp != nil {
+			r.Cache.RemoveMember(pod.Status.PodIP, pod.GetName())
+		} else if pod.Status.Phase == corev1.PodRunning && isReady(pod) {
 			r.Cache.AddMember(pod.Status.PodIP, pod.GetName())
-		} else if pod.DeletionTimestamp == nil {
-			r.Cache.RemoveMember(pod.Status.PodIP)
 		}
-
 		r.Cache.Sync()
 	}
 	return ctrl.Result{}, nil
+}
+
+func isReady(pod *corev1.Pod) bool {
+	if pod.Status.Phase != corev1.PodRunning {
+		return false
+	}
+	if len(pod.Status.Conditions) > 0 {
+		for _, condition := range pod.Status.Conditions {
+			if condition.Type == corev1.PodReady &&
+				condition.Status == corev1.ConditionTrue {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {

@@ -11,7 +11,7 @@ type Cache interface {
 	VaultInfoFor(owner string) *types.VaultInfo
 	SetVaultInfoFor(owner string, info *types.VaultInfo)
 	AddMember(ip string, name string)
-	RemoveMember(ip string)
+	RemoveMember(ip string, name string)
 	Sync()
 }
 
@@ -31,7 +31,7 @@ type simpleCache struct {
 func (s *simpleCache) AddMember(_ string, _ string) {
 }
 
-func (s *simpleCache) RemoveMember(_ string) {
+func (s *simpleCache) RemoveMember(_ string, _ string) {
 }
 
 func (s *simpleCache) Sync() {

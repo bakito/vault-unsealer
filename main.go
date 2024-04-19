@@ -79,6 +79,7 @@ func main() {
 			setupLog.Error(err, "unable to setup cache")
 			os.Exit(1)
 		}
+		setupLog.Info("starting shared cache")
 		go run(ctx, mgr, watchNamespace, c)
 
 		if err = c.Start(ctx); err != nil {
