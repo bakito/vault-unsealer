@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -35,7 +36,7 @@ func (r *PodReconciler) matches(m metav1.Object) bool {
 	}
 
 	// we have a vault pod
-	return p.DeletionTimestamp == nil && isReady(p) && r.hasCorrectOwner(p)
+	return p.DeletionTimestamp == nil && hierarchy.IsReady(p) && r.hasCorrectOwner(p)
 }
 
 func (r *PodReconciler) hasCorrectOwner(pod *corev1.Pod) bool {

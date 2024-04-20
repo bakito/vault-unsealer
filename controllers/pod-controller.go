@@ -9,6 +9,7 @@ import (
 
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/go-logr/logr"
 	"github.com/hashicorp/vault-client-go"
@@ -63,27 +64,12 @@ func (r *PodReconciler) reconcileUnsealerPod(_ context.Context, _ logr.Logger, p
 	if pod.GetName() != r.myPodName {
 		if pod.DeletionTimestamp != nil {
 			r.Cache.RemoveMember(pod.Status.PodIP, pod.GetName())
-		} else if pod.Status.Phase == corev1.PodRunning && isReady(pod) {
+		} else if pod.Status.Phase == corev1.PodRunning && hierarchy.IsReady(pod) {
 			r.Cache.AddMember(pod.Status.PodIP, pod.GetName())
 		}
 		r.Cache.Sync()
 	}
 	return ctrl.Result{}, nil
-}
-
-func isReady(pod *corev1.Pod) bool {
-	if pod.Status.Phase != corev1.PodRunning {
-		return false
-	}
-	if len(pod.Status.Conditions) > 0 {
-		for _, condition := range pod.Status.Conditions {
-			if condition.Type == corev1.PodReady &&
-				condition.Status == corev1.ConditionTrue {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
@@ -169,7 +155,7 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 		return err
 	}
 	r.UnsealerSelector = sel
-	r.myPodName = os.Getenv("HOSTNAME")
+	r.myPodName = os.Getenv(constants.EnvPodName)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Pod{}).

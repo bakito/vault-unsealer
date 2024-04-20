@@ -11,6 +11,7 @@ const (
 	KeySecretPath      = "secretPath"
 	KeyUsername        = "username"
 
+	EnvDeploymentName        = "DEPLOYMENT_NAME"
 	EnvDevelopmentMode       = "DEVELOPMENT_MODE"
 	EnvDevelopmentModeSchema = "DEVELOPMENT_MODE_SCHEMA"
 	EnvVaultAddr             = "VAULT_ADDR"

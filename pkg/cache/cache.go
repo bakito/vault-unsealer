@@ -17,7 +17,7 @@ type Cache interface {
 
 type RunnableCache interface {
 	Cache
-	Start(ctx context.Context) error
+	StartCache(ctx context.Context) error
 }
 
 func NewSimple() Cache {
@@ -53,6 +53,6 @@ func (s *simpleCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 	s.vaults[owner] = info
 }
 
-func (s *simpleCache) Start(_ context.Context) error {
+func (s *simpleCache) StartCache(_ context.Context) error {
 	return nil
 }

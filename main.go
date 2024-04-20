@@ -74,25 +74,34 @@ func main() {
 
 	ctx := context.TODO()
 
+	// get the owner of this pod
+	depl, err := hierarchy.GetOwningDeployment(ctx, mgr.GetAPIReader())
+	if err != nil {
+		setupLog.Error(err, "unable to find deployment of unsealer")
+		os.Exit(1)
+	}
+
 	if enableSharedCache {
-		c, err := cache.NewK8s(mgr.GetAPIReader())
+		c, le, err := cache.NewK8s(mgr.GetAPIReader(), depl)
 		if err != nil {
 			setupLog.Error(err, "unable to setup cache")
 			os.Exit(1)
 		}
-		setupLog.Info("starting shared cache")
-		go run(ctx, mgr, podNamespace, c)
+		if enableLeaderElection {
+			_ = mgr.Add(le)
+		}
+		go run(ctx, mgr, podNamespace, c, depl)
 
-		if err = c.Start(ctx); err != nil {
+		if err = c.StartCache(ctx); err != nil {
 			setupLog.Error(err, "unable to start cache")
 			os.Exit(1)
 		}
 	} else {
-		run(ctx, mgr, podNamespace, cache.NewSimple())
+		run(ctx, mgr, podNamespace, cache.NewSimple(), depl)
 	}
 }
 
-func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache) {
+func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache, depl *appsv1.Deployment) {
 	secrets := &corev1.SecretList{}
 	if err := mgr.GetAPIReader().List(
 		ctx,
@@ -104,21 +113,6 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 		os.Exit(1)
 	}
 	setupLog.WithValues("secrets", len(secrets.Items)).Info("found unseal secrets")
-
-	// get the owner of this pod
-	n, err := hierarchy.GetOwningDeployment(ctx, mgr.GetAPIReader(), podNamespace)
-	if err != nil {
-		setupLog.Error(err, "unable to find deployment of unsealer")
-		os.Exit(1)
-	}
-	depl := &appsv1.Deployment{}
-	if err := mgr.GetAPIReader().Get(
-		ctx,
-		client.ObjectKey{Name: n, Namespace: podNamespace},
-		depl); err != nil {
-		setupLog.Error(err, "unable to find deployment of unsealer")
-		os.Exit(1)
-	}
 
 	if err := (&controllers.PodReconciler{
 		Client: mgr.GetClient(),
