@@ -8,6 +8,7 @@ import (
 	"github.com/bakito/vault-unsealer/controllers"
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	"github.com/bakito/vault-unsealer/pkg/logging"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -49,12 +50,12 @@ func main() {
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 	logging.PrepareLogger(true)
-	watchNamespace := os.Getenv(constants.EnvWatchNamespace)
+	podNamespace := os.Getenv(constants.EnvPodNamespace)
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
 		Cache: crtlcache.Options{
 			DefaultNamespaces: map[string]crtlcache.Config{
-				watchNamespace: {},
+				podNamespace: {},
 			},
 		},
 		Metrics: server.Options{
@@ -64,7 +65,7 @@ func main() {
 		HealthProbeBindAddress:  ":8081",
 		LeaderElection:          enableLeaderElection,
 		LeaderElectionID:        constants.OperatorID,
-		LeaderElectionNamespace: watchNamespace,
+		LeaderElectionNamespace: podNamespace,
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
@@ -80,35 +81,36 @@ func main() {
 			os.Exit(1)
 		}
 		setupLog.Info("starting shared cache")
-		go run(ctx, mgr, watchNamespace, c)
+		go run(ctx, mgr, podNamespace, c)
 
 		if err = c.Start(ctx); err != nil {
 			setupLog.Error(err, "unable to start cache")
 			os.Exit(1)
 		}
 	} else {
-		run(ctx, mgr, watchNamespace, cache.NewSimple())
+		run(ctx, mgr, podNamespace, cache.NewSimple())
 	}
 }
 
-func run(ctx context.Context, mgr manager.Manager, watchNamespace string, cache cache.Cache) {
+func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache) {
 	secrets := &corev1.SecretList{}
 	if err := mgr.GetAPIReader().List(
 		ctx,
 		secrets,
 		client.HasLabels{constants.LabelStatefulSetName},
-		client.InNamespace(watchNamespace),
+		client.InNamespace(podNamespace),
 	); err != nil {
 		setupLog.Error(err, "unable to find secrets")
 		os.Exit(1)
 	}
 	setupLog.WithValues("secrets", len(secrets.Items)).Info("found unseal secrets")
 
-	// get the name of this pod and its deployment selector
+	// get the owner of this pod
+	n, _ := hierarchy.GetOwningDeployment(ctx, mgr.GetAPIReader(), podNamespace)
 	depl := &appsv1.Deployment{}
 	if err := mgr.GetAPIReader().Get(
 		ctx,
-		client.ObjectKey{Name: os.Getenv(constants.EnvDeploymentName), Namespace: watchNamespace},
+		client.ObjectKey{Name: n, Namespace: podNamespace},
 		depl); err != nil {
 		setupLog.Error(err, "unable to find deployment of unsealer")
 		os.Exit(1)

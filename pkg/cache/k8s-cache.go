@@ -92,6 +92,17 @@ func (c *k8sCache) Start(_ context.Context) error {
 	})
 	r.GET("/info", func(ctx *gin.Context) {
 		// TODO check if pod belongs to same deployment
+		// need pod name
+		// check if pod name is owned by dame deployment
+		// send post
+		// return
+		ctx.JSON(http.StatusOK, c.vaults)
+	})
+	r.POST("/info", func(ctx *gin.Context) {
+		// TODO check if pod belongs to same deployment
+		// check token must be the same as in GET request
+		// store the info
+		// reset the token
 		ctx.JSON(http.StatusOK, c.vaults)
 	})
 	return r.Run(":8866")

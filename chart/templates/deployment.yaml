@@ -34,7 +34,7 @@ spec:
           env:
             - name: DEPLOYMENT_NAME
               value: {{ include "vault-unsealer.fullname" . }}
-            - name: WATCH_NAMESPACE
+            - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
                   apiVersion: v1
