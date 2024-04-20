@@ -7,9 +7,9 @@ import (
 )
 
 type Cache interface {
-	Owners() []string
-	VaultInfoFor(owner string) *types.VaultInfo
-	SetVaultInfoFor(owner string, info *types.VaultInfo)
+	Vaults() []string
+	VaultInfoFor(vaultName string) *types.VaultInfo
+	SetVaultInfoFor(vaultName string, info *types.VaultInfo)
 	Sync()
 	SetMember(map[string]string) bool
 }
@@ -34,7 +34,7 @@ func (s *simpleCache) SetMember(_ map[string]string) bool {
 func (s *simpleCache) Sync() {
 }
 
-func (s *simpleCache) Owners() []string {
+func (s *simpleCache) Vaults() []string {
 	var o []string
 	for k := range s.vaults {
 		o = append(o, k)
@@ -42,12 +42,12 @@ func (s *simpleCache) Owners() []string {
 	return o
 }
 
-func (s *simpleCache) VaultInfoFor(owner string) *types.VaultInfo {
-	return s.vaults[owner]
+func (s *simpleCache) VaultInfoFor(vaultName string) *types.VaultInfo {
+	return s.vaults[vaultName]
 }
 
-func (s *simpleCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
-	s.vaults[owner] = info
+func (s *simpleCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
+	s.vaults[vaultName] = info
 }
 
 func (s *simpleCache) StartCache(_ context.Context) error {

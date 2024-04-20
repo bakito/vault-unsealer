@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -16,7 +18,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gopkg.in/resty.v1"
-	"maps"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -52,8 +53,8 @@ func NewK8s(reader client.Reader) (RunnableCache, manager.Runnable, error) {
 	return c, c, nil
 }
 
-func (c *k8sCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
-	c.simpleCache.SetVaultInfoFor(owner, info)
+func (c *k8sCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
+	c.simpleCache.SetVaultInfoFor(vaultName, info)
 	if info.ShouldShare() {
 		for ip, name := range c.clusterMembers {
 			once.Do(func() {
@@ -66,11 +67,11 @@ func (c *k8sCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 			if strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
 				ip = "localhost"
 			}
-			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:8866/sync/%s", ip, owner))
+			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:8866/sync/%s", ip, vaultName))
 			if err != nil {
-				log.WithValues("pod", name, "owner", owner).Error(err, "could not send owner info")
+				log.WithValues("pod", name, "vault", vaultName).Error(err, "could not send owner info")
 			} else if resp.StatusCode() != http.StatusOK {
-				log.WithValues("pod", name, "owner", owner, "status", resp.StatusCode()).
+				log.WithValues("pod", name, "vault", vaultName, "status", resp.StatusCode()).
 					Error(errors.New("could not send owner info"), "could not send owner info")
 			}
 		}
@@ -81,29 +82,29 @@ func (c *k8sCache) StartCache(_ context.Context) error {
 	log.Info("starting shared cache")
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.POST("/sync/:owner", func(ctx *gin.Context) {
+	r.POST("/sync/:vaultName", func(ctx *gin.Context) {
 		if !c.handleAuth(ctx) {
 			return
 		}
 
-		owner := ctx.Param("owner")
+		vaultName := ctx.Param("vaultName")
 		info := &types.VaultInfo{}
 		err := ctx.ShouldBindJSON(info)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
-			log.WithValues("from", ctx.ClientIP(), "owner", owner).Error(err, "could not parse owner info")
+			log.WithValues("from", ctx.ClientIP(), "vault", vaultName).Error(err, "could not parse owner info")
 			return
 		}
-		c.simpleCache.SetVaultInfoFor(owner, info)
-		log.WithValues("from", ctx.ClientIP(), "owner", owner).Info("received vault info")
+		c.simpleCache.SetVaultInfoFor(vaultName, info)
+		log.WithValues("from", ctx.ClientIP(), "vault", vaultName).Info("received vault info")
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "ok",
 		})
 	})
 	r.GET("/info", func(ctx *gin.Context) {
-		log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method).Info("info requested")
+		log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method, "vaults", c.vaultKeys()).Info("info requested")
 		token, ok := c.getAuthToken(ctx)
 		if !ok {
 			return
@@ -125,10 +126,10 @@ func (c *k8sCache) StartCache(_ context.Context) error {
 
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			log.WithValues("ip", ctx.ClientIP()).Error(err, "could send info")
+			log.WithValues("ip", ctx.ClientIP()).Error(err, "could not send info")
 
 		} else if resp.StatusCode() != http.StatusOK {
-			err = errors.New("could send info")
+			err = errors.New("could not send info")
 			log.WithValues("ip", ctx.ClientIP(), "status", resp.StatusCode()).Error(err, err.Error())
 			ctx.JSON(resp.StatusCode(), gin.H{"error": err.Error()})
 		}
@@ -158,7 +159,7 @@ func (c *k8sCache) StartCache(_ context.Context) error {
 		if c.client != nil {
 			c.client.Token = i.Token
 		}
-		log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method, "vaults", len(c.vaults)).
+		log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method, "vaults", c.vaultKeys()).
 			Info("received info from peer")
 		ctx.JSON(http.StatusOK, c.vaults)
 	})
@@ -206,8 +207,8 @@ func (c *k8sCache) SetMember(members map[string]string) bool {
 }
 
 func (c *k8sCache) Sync() {
-	for _, owner := range c.Owners() {
-		c.SetVaultInfoFor(owner, c.VaultInfoFor(owner))
+	for _, vaultName := range c.Vaults() {
+		c.SetVaultInfoFor(vaultName, c.VaultInfoFor(vaultName))
 	}
 }
 
@@ -249,4 +250,12 @@ func (c *k8sCache) AskPeers(ctx context.Context) error {
 		return nil
 	}
 	return nil
+}
+
+func (c *k8sCache) vaultKeys() (keys []string) {
+	for k := range c.vaults {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return
 }
