@@ -11,6 +11,7 @@ const (
 	KeySecretPath      = "secretPath"
 	KeyUsername        = "username"
 
+	EnvLogLevel              = "LOG_LEVEL"
 	EnvDeploymentName        = "UNSEALER_DEPLOYMENT_NAME"
 	EnvDevelopmentMode       = "UNSEALER_DEVELOPMENT_MODE"
 	EnvDevelopmentModeSchema = "UNSEALER_DEVELOPMENT_MODE_SCHEMA"

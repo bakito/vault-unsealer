@@ -73,11 +73,16 @@ func main() {
 
 	ctx := context.TODO()
 	if enableSharedCache {
-		c, _, err := cache.NewK8s(mgr.GetAPIReader())
+		c, ler, err := cache.NewK8s(mgr.GetAPIReader())
 		if err != nil {
 			setupLog.Error(err, "unable to setup cache")
 			os.Exit(1)
 		}
+
+		if enableLeaderElection {
+			_ = mgr.Add(ler)
+		}
+
 		go run(ctx, mgr, podNamespace, c)
 
 		if err = c.StartCache(ctx); err != nil {

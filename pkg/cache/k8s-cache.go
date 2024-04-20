@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"maps"
 	"net/http"
 	"os"
 	"strings"
@@ -17,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gopkg.in/resty.v1"
+	"maps"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -28,8 +28,8 @@ var (
 )
 
 type info struct {
-	vaults map[string]*types.VaultInfo
-	token  string
+	Vaults map[string]*types.VaultInfo `json:"vaults"`
+	Token  string                      `json:"token"`
 }
 
 type k8sCache struct {
@@ -103,7 +103,7 @@ func (c *k8sCache) StartCache(_ context.Context) error {
 		})
 	})
 	r.GET("/info", func(ctx *gin.Context) {
-		log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method).Info("INFO")
+		log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method).Info("info requested")
 		token, ok := c.getAuthToken(ctx)
 		if !ok {
 			return
@@ -121,8 +121,7 @@ func (c *k8sCache) StartCache(_ context.Context) error {
 
 		cl := resty.New().SetAuthToken(token)
 		cl.SetTimeout(time.Second)
-		log.WithValues("token", c.token, "vaults", c.vaults).Info("########################")
-		resp, err := cl.R().SetBody(&info{vaults: c.vaults, token: c.token}).Put(fmt.Sprintf("http://%s:8866/info", ctx.ClientIP()))
+		resp, err := cl.R().SetBody(&info{Vaults: c.vaults, Token: c.token}).Put(fmt.Sprintf("http://%s:8866/info", ctx.ClientIP()))
 
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -154,10 +153,10 @@ func (c *k8sCache) StartCache(_ context.Context) error {
 			log.WithValues("from", ctx.ClientIP()).Error(err, "could parse info")
 			return
 		}
-		c.vaults = i.vaults
-		c.token = i.token
+		c.vaults = i.Vaults
+		c.token = i.Token
 		if c.client != nil {
-			c.client.Token = i.token
+			c.client.Token = i.Token
 		}
 		log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method, "vaults", len(c.vaults)).
 			Info("received info from peer")
