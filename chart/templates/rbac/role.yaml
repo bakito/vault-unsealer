@@ -12,6 +12,7 @@ rules:
     resources:
       - pods
       - secrets
+      - endpoints
     verbs:
       - get
       - list
@@ -26,18 +27,6 @@ rules:
       - list
       - watch
   # start leader election
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-      - delete
   - apiGroups:
       - coordination.k8s.io
     resources:

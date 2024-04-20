@@ -11,12 +11,13 @@ const (
 	KeySecretPath      = "secretPath"
 	KeyUsername        = "username"
 
-	EnvDeploymentName        = "DEPLOYMENT_NAME"
-	EnvDevelopmentMode       = "DEVELOPMENT_MODE"
-	EnvDevelopmentModeSchema = "DEVELOPMENT_MODE_SCHEMA"
+	EnvDeploymentName        = "UNSEALER_DEPLOYMENT_NAME"
+	EnvDevelopmentMode       = "UNSEALER_DEVELOPMENT_MODE"
+	EnvDevelopmentModeSchema = "UNSEALER_DEVELOPMENT_MODE_SCHEMA"
 	EnvVaultAddr             = "VAULT_ADDR"
-	EnvPodNamespace          = "POD_NAMESPACE"
-	EnvPodName               = "POD_NAME"
+	EnvNamespace             = "UNSEALER_NAMESPACE"
+	EnvPodName               = "UNSEALER_POD_NAME"
+	EnvPodIP                 = "UNSEALER_POD_IP"
 	EnvHostname              = "HOSTNAME"
 
 	ContainerNameVault = "vault"

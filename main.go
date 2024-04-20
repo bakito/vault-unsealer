@@ -10,7 +10,6 @@ import (
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	"github.com/bakito/vault-unsealer/pkg/logging"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -50,7 +49,7 @@ func main() {
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 	logging.PrepareLogger(true)
-	podNamespace := os.Getenv(constants.EnvPodNamespace)
+	podNamespace := os.Getenv(constants.EnvNamespace)
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
 		Cache: crtlcache.Options{
@@ -73,35 +72,24 @@ func main() {
 	}
 
 	ctx := context.TODO()
-
-	// get the owner of this pod
-	depl, err := hierarchy.GetOwningDeployment(ctx, mgr.GetAPIReader())
-	if err != nil {
-		setupLog.Error(err, "unable to find deployment of unsealer")
-		os.Exit(1)
-	}
-
 	if enableSharedCache {
-		c, le, err := cache.NewK8s(mgr.GetAPIReader(), depl)
+		c, _, err := cache.NewK8s(mgr.GetAPIReader())
 		if err != nil {
 			setupLog.Error(err, "unable to setup cache")
 			os.Exit(1)
 		}
-		if enableLeaderElection {
-			_ = mgr.Add(le)
-		}
-		go run(ctx, mgr, podNamespace, c, depl)
+		go run(ctx, mgr, podNamespace, c)
 
 		if err = c.StartCache(ctx); err != nil {
 			setupLog.Error(err, "unable to start cache")
 			os.Exit(1)
 		}
 	} else {
-		run(ctx, mgr, podNamespace, cache.NewSimple(), depl)
+		run(ctx, mgr, podNamespace, cache.NewSimple())
 	}
 }
 
-func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache, depl *appsv1.Deployment) {
+func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache) {
 	secrets := &corev1.SecretList{}
 	if err := mgr.GetAPIReader().List(
 		ctx,
@@ -114,11 +102,26 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 	}
 	setupLog.WithValues("secrets", len(secrets.Items)).Info("found unseal secrets")
 
+	sel, err := hierarchy.GetDeploymentSelector(ctx, mgr.GetAPIReader())
+	if err != nil {
+		setupLog.Error(err, "unable to find deployment of unsealer")
+		os.Exit(1)
+	}
+
+	if err := (&controllers.EndpintsReconciler{
+		Client:           mgr.GetClient(),
+		Scheme:           mgr.GetScheme(),
+		Cache:            cache,
+		UnsealerSelector: sel,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Endpoint")
+		os.Exit(1)
+	}
 	if err := (&controllers.PodReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 		Cache:  cache,
-	}).SetupWithManager(mgr, secrets.Items, depl); err != nil {
+	}).SetupWithManager(mgr, secrets.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 	"os"
 	"strings"
@@ -16,7 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gopkg.in/resty.v1"
-	appsv1 "k8s.io/api/apps/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -34,21 +34,19 @@ type info struct {
 
 type k8sCache struct {
 	simpleCache
-	mu             sync.Mutex
-	reader         client.Reader
+	reader client.Reader
+	// clusterMembers map of cache members / key: ip value: name
 	clusterMembers map[string]string
 	token          string
 	peerToken      string
 	client         *resty.Client
-	depl           *appsv1.Deployment
 }
 
-func NewK8s(reader client.Reader, depl *appsv1.Deployment) (RunnableCache, manager.Runnable, error) {
+func NewK8s(reader client.Reader) (RunnableCache, manager.Runnable, error) {
 	c := &k8sCache{
 		simpleCache:    simpleCache{vaults: make(map[string]*types.VaultInfo)},
 		reader:         reader,
 		clusterMembers: map[string]string{},
-		depl:           depl,
 	}
 
 	return c, c, nil
@@ -111,12 +109,12 @@ func (c *k8sCache) StartCache(_ context.Context) error {
 			return
 		}
 
-		pods, err := hierarchy.GetOwnedPod(ctx, c.reader, c.depl)
+		peer, err := hierarchy.GetPeers(ctx, c.reader)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			log.WithValues("ip", ctx.ClientIP()).Error(err, "could not verify client")
 		}
-		if _, ok := pods[ctx.ClientIP()]; !ok {
+		if _, ok := peer[ctx.ClientIP()]; !ok {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
 			return
 		}
@@ -199,22 +197,13 @@ func (c *k8sCache) getAuthToken(ctx *gin.Context) (string, bool) {
 	return t[1], true
 }
 
-func (c *k8sCache) AddMember(ip string, name string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if _, ok := c.clusterMembers[ip]; !ok {
-		log.WithValues("name", name, "ip", ip).Info("adding pod to cache")
-		c.clusterMembers[ip] = name
+func (c *k8sCache) SetMember(members map[string]string) bool {
+	if maps.Equal(members, c.clusterMembers) {
+		return false
 	}
-}
 
-func (c *k8sCache) RemoveMember(ip string, name string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if _, ok := c.clusterMembers[ip]; ok {
-		log.WithValues("name", name, "ip", ip).Info("removing pod from cache")
-		delete(c.clusterMembers, ip)
-	}
+	c.clusterMembers = members
+	return true
 }
 
 func (c *k8sCache) Sync() {
@@ -234,11 +223,11 @@ func (c *k8sCache) NeedLeaderElection() bool {
 }
 
 func (c *k8sCache) AskPeers(ctx context.Context) error {
-	pods, err := hierarchy.GetOwnedPod(ctx, c.reader, c.depl)
+	peers, err := hierarchy.GetPeers(ctx, c.reader)
 	if err != nil {
 		return err
 	}
-	if len(pods) == 0 {
+	if len(peers) == 0 {
 		return nil
 	}
 	c.peerToken = uuid.NewString()
@@ -247,16 +236,15 @@ func (c *k8sCache) AskPeers(ctx context.Context) error {
 	cl := resty.New().SetAuthToken(c.peerToken)
 	cl.SetTimeout(time.Second)
 
-	for ip, pod := range pods {
-		if pod.Name != os.Getenv(constants.EnvPodName) {
-			log.WithValues("pod", pod.Name, "ip", ip).Info("requesting cache info from peer")
-			resp, err := cl.R().Get(fmt.Sprintf("http://%s:8866/info", ip))
+	for ip, name := range peers {
+		l := log.WithValues("name", name, "ip", ip)
+		l.Info("requesting cache info from peer")
+		resp, err := cl.R().Get(fmt.Sprintf("http://%s:8866/info", ip))
 
-			if err != nil {
-				log.WithValues("pod", pod.Name, "ip", ip).Error(err, "could request info")
-			} else if resp.StatusCode() != http.StatusOK {
-				log.WithValues("pod", pod.Name, "ip", ip, "status", resp.StatusCode()).Error(err, "could request info")
-			}
+		if err != nil {
+			l.Error(err, "could request info")
+		} else if resp.StatusCode() != http.StatusOK {
+			l.WithValues("status", resp.StatusCode()).Error(err, "could request info")
 		}
 
 		return nil
