@@ -1,9 +1,6 @@
 package logging
 
 import (
-	"os"
-
-	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/go-logr/logr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -30,12 +27,6 @@ func NewLogger(json bool) logr.Logger {
 
 	if !json {
 		opts.Encoder = zapcore.NewConsoleEncoder(encCfg)
-	}
-	if ll, ok := os.LookupEnv(constants.EnvLogLevel); ok {
-		l, err := zapcore.ParseLevel(ll)
-		if err != nil {
-			opts.Level = l
-		}
 	}
 	return crzap.New(crzap.UseFlagOptions(&opts))
 }

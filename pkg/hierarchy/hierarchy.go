@@ -63,7 +63,7 @@ func GetDeploymentSelector(ctx context.Context, r client.Reader) (labels.Selecto
 		}
 	}
 	pod := &corev1.Pod{}
-	if err := r.Get(ctx, client.ObjectKey{Name: os.Getenv(constants.EnvHostname), Namespace: ns}, pod); err != nil {
+	if err := r.Get(ctx, client.ObjectKey{Name: os.Getenv(constants.EnvPodName), Namespace: ns}, pod); err != nil {
 		return nil, err
 	}
 
