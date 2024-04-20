@@ -106,7 +106,11 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 	setupLog.WithValues("secrets", len(secrets.Items)).Info("found unseal secrets")
 
 	// get the owner of this pod
-	n, _ := hierarchy.GetOwningDeployment(ctx, mgr.GetAPIReader(), podNamespace)
+	n, err := hierarchy.GetOwningDeployment(ctx, mgr.GetAPIReader(), podNamespace)
+	if err != nil {
+		setupLog.Error(err, "unable to find deployment of unsealer")
+		os.Exit(1)
+	}
 	depl := &appsv1.Deployment{}
 	if err := mgr.GetAPIReader().Get(
 		ctx,
