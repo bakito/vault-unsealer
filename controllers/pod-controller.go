@@ -100,6 +100,19 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 	return ctrl.Result{}, nil
 }
 
+func (r *PodReconciler) unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
+	for _, key := range vault.UnsealKeys {
+		resp, err := cl.System.Unseal(ctx, schema.UnsealRequest{Key: key})
+		if err != nil {
+			return err
+		}
+		if !resp.Data.Sealed {
+			return nil
+		}
+	}
+	return errors.New("could not unseal vault")
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secret) error {
 	for _, s := range secrets {
@@ -130,17 +143,4 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 		For(&corev1.Pod{}).
 		WithEventFilter(r).
 		Complete(r)
-}
-
-func (r *PodReconciler) unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
-	for _, key := range vault.UnsealKeys {
-		resp, err := cl.System.Unseal(ctx, schema.UnsealRequest{Key: key})
-		if err != nil {
-			return err
-		}
-		if !resp.Data.Sealed {
-			return nil
-		}
-	}
-	return errors.New("could not unseal vault")
 }

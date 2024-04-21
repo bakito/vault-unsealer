@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/bakito/vault-unsealer/pkg/types"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 type Cache interface {
@@ -16,7 +18,8 @@ type Cache interface {
 
 type RunnableCache interface {
 	Cache
-	StartCache(ctx context.Context) error
+	manager.Runnable
+	SetupWithManager(mgr ctrl.Manager) error
 }
 
 func NewSimple() Cache {
