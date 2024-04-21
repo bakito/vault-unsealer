@@ -62,9 +62,7 @@ func createTestVault(version string, path string, data map[string]interface{}) (
 			ctx,
 			path,
 			schema.KvV2WriteRequest{
-				Data: map[string]any{
-					"data": data,
-				},
+				Data: data,
 			},
 			vc.WithMountPath("secret"),
 		)
@@ -72,9 +70,7 @@ func createTestVault(version string, path string, data map[string]interface{}) (
 		_, err = cl.Secrets.KvV1Write(
 			ctx,
 			path,
-			map[string]any{
-				"data": data,
-			},
+			data,
 			vc.WithMountPath("secret"),
 		)
 	}

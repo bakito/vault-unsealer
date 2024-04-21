@@ -53,7 +53,7 @@ func kubernetesLogin(ctx context.Context, cl *vault.Client, role string) (string
 	return token, nil
 }
 
-func readSecret(ctx context.Context, cl *vault.Client, v *types.VaultInfo) error {
+func readUnsealKeys(ctx context.Context, cl *vault.Client, v *types.VaultInfo) error {
 	mounts, err := cl.System.MountsListSecretsEngines(ctx)
 	if err != nil {
 		return err
@@ -63,8 +63,8 @@ func readSecret(ctx context.Context, cl *vault.Client, v *types.VaultInfo) error
 	var data map[string]interface{}
 	var warnings []string
 
-	vers := childOf[string](mounts.Data, mount+"/", "options", "version")
-	switch vers {
+	version := childOf[string](mounts.Data, mount+"/", "options", "version")
+	switch version {
 	case "1":
 		sec, err := cl.Secrets.KvV1Read(ctx, path, vault.WithMountPath(mount))
 		if err != nil {
@@ -80,7 +80,7 @@ func readSecret(ctx context.Context, cl *vault.Client, v *types.VaultInfo) error
 		data = sec.Data.Data
 		warnings = sec.Warnings
 	default:
-		return fmt.Errorf("unsupported kv version %q", vers)
+		return fmt.Errorf("unsupported kv version %q", version)
 	}
 
 	if data == nil {
@@ -110,8 +110,7 @@ func childOf[T interface{}](m interface{}, key ...string) T {
 }
 
 func extractUnsealKeys(data map[string]interface{}, v *types.VaultInfo) {
-	m := childOf[map[string]interface{}](data, "data")
-	for k, val := range m {
+	for k, val := range data {
 		if strings.HasPrefix(k, constants.KeyPrefixUnsealKey) {
 			v.UnsealKeys = append(v.UnsealKeys, fmt.Sprintf("%v", val))
 		}

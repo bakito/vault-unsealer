@@ -32,7 +32,7 @@ var _ = Describe("Vault", func() {
 				"unsealKey2": "bar",
 			})
 			vi := &types.VaultInfo{SecretPath: "secret/foo"}
-			Ω(readSecret(ctx, client, vi)).ShouldNot(HaveOccurred())
+			Ω(readUnsealKeys(ctx, client, vi)).ShouldNot(HaveOccurred())
 			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 		It("read unseal keys from secret v2", func() {
@@ -41,7 +41,7 @@ var _ = Describe("Vault", func() {
 				"unsealKey2": "bar",
 			})
 			vi := &types.VaultInfo{SecretPath: "secret/foo"}
-			Ω(readSecret(ctx, client, vi)).ShouldNot(HaveOccurred())
+			Ω(readUnsealKeys(ctx, client, vi)).ShouldNot(HaveOccurred())
 			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 	})

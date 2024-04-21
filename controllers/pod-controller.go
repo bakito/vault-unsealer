@@ -100,7 +100,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		if err != nil {
 			return reconcile.Result{}, err
 		}
-		if err := readSecret(ctx, cl, vi); err != nil {
+		if err := readUnsealKeys(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 
