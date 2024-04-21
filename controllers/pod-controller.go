@@ -70,6 +70,8 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		return reconcile.Result{}, nil
 	}
 
+	vaultLog := ctrl.Log.WithName("vault").WithValues("vault", vi.Owner)
+
 	if st.Data.Sealed {
 		if len(vi.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
@@ -78,7 +80,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		if err := r.unseal(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
-		l.Info("successfully unsealed vault")
+		vaultLog.Info("successfully unsealed vault")
 
 	} else if len(vi.UnsealKeys) == 0 {
 		var token string
@@ -105,7 +107,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		}
 
 		r.Cache.SetVaultInfoFor(vi.Owner, vi)
-		l.WithValues("keys", len(vi.UnsealKeys), "method", method).
+		vaultLog.WithValues("keys", len(vi.UnsealKeys), "method", method).
 			Info("successfully read unseal keys from vault")
 	}
 
