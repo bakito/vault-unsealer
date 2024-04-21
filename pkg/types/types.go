@@ -12,6 +12,7 @@ type VaultInfo struct {
 	Password   string   `json:"password,omitempty"`
 	UnsealKeys []string `json:"unsealKeys,omitempty"`
 	SecretPath string   `json:"secretPath,omitempty"`
+	Role       string   `json:"role,omitempty"`
 }
 
 func (i *VaultInfo) ShouldShare() bool {
