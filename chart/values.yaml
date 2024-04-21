@@ -4,6 +4,8 @@ replicas: 1
 image:
   # -- Repository to use
   repository: ghcr.io/bakito/vault-unsealer
+  # -- Tag to use
+  tag:
   # -- Image pull policy
   pullPolicy: IfNotPresent
 

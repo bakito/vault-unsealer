@@ -27,7 +27,7 @@ spec:
       serviceAccountName: {{ include "vault-unsealer.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
-          image: '{{ .Values.image.repository }}:{{ .Chart.AppVersion }}'
+          image: '{{ .Values.image.repository }}:{{- .Values.image.tag | default .Chart.AppVersion }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - /opt/go/vault-unsealer
@@ -53,10 +53,6 @@ spec:
           {{- if or (eq (.Values.sharedCache.enabled | toString) "true") (eq (.Values.leaderElection.enabled | toString) "true")  }}
           args:
           {{- if eq (.Values.sharedCache.enabled | toString) "true" }}
-            {{- range $k, $v := (include "vault-unsealer.selectorLabels" . | fromYaml ) }}
-            - '-deployment-selector'
-            - '{{ $k }}: {{ $v }}'
-            {{- end }}
             - '-shared-cache'
           {{- end }}
           {{- if eq (.Values.leaderElection.enabled | toString) "true" }}
