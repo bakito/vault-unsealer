@@ -3,9 +3,10 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"net/url"
+
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	corev1 "k8s.io/api/core/v1"
-	"net/url"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
