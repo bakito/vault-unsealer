@@ -65,12 +65,12 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 	}
 
-	vi := r.Cache.VaultInfoFor(getOwner(pod))
+	vi := r.Cache.VaultInfoFor(getStatefulSetFor(pod))
 	if vi == nil {
 		return reconcile.Result{}, nil
 	}
 
-	vaultLog := ctrl.Log.WithName("vault").WithValues("vault", vi.Owner)
+	vaultLog := ctrl.Log.WithName("vault").WithValues("stateful-set", vi.StatefulSet)
 
 	if st.Data.Sealed {
 		if len(vi.UnsealKeys) == 0 {
@@ -106,7 +106,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 			return reconcile.Result{}, err
 		}
 
-		r.Cache.SetVaultInfoFor(vi.Owner, vi)
+		r.Cache.SetVaultInfoFor(vi.StatefulSet, vi)
 		vaultLog.WithValues("keys", len(vi.UnsealKeys), "method", method).
 			Info("successfully read unseal keys from vault")
 	}
@@ -130,14 +130,14 @@ func (r *PodReconciler) unseal(ctx context.Context, cl *vault.Client, vault *typ
 // SetupWithManager sets up the controller with the Manager.
 func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secret) error {
 	for _, s := range secrets {
-		owner := s.GetLabels()[constants.LabelStatefulSetName]
-		if r.Cache.VaultInfoFor(owner) == nil {
+		statefulSet := s.GetLabels()[constants.LabelStatefulSetName]
+		if r.Cache.VaultInfoFor(statefulSet) == nil {
 			v := &types.VaultInfo{
-				Username:   string(s.Data[constants.KeyUsername]),
-				Password:   string(s.Data[constants.KeyPassword]),
-				Role:       string(s.Data[constants.KeyRole]),
-				SecretPath: string(s.Data[constants.KeySecretPath]),
-				Owner:      owner,
+				Username:    string(s.Data[constants.KeyUsername]),
+				Password:    string(s.Data[constants.KeyPassword]),
+				Role:        string(s.Data[constants.KeyRole]),
+				SecretPath:  string(s.Data[constants.KeySecretPath]),
+				StatefulSet: statefulSet,
 			}
 
 			for key, val := range s.Data {
@@ -146,7 +146,7 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 				}
 			}
 
-			r.Cache.SetVaultInfoFor(owner, v)
+			r.Cache.SetVaultInfoFor(statefulSet, v)
 		}
 	}
 

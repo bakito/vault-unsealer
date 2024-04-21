@@ -76,7 +76,7 @@ func (c *k8sCache) Start(ctx context.Context) error {
 	log.Info("starting shared cache")
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.POST("/sync/:vaultName", c.webPostSync)
+	r.POST("/sync/:statefulSet", c.webPostSync)
 	r.GET("/info", c.webGetInfo)
 	r.PUT("/info", c.webPutInfo)
 
@@ -107,8 +107,8 @@ func (c *k8sCache) Start(ctx context.Context) error {
 	return nil
 }
 
-func (c *k8sCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
-	c.simpleCache.SetVaultInfoFor(vaultName, info)
+func (c *k8sCache) SetVaultInfoFor(statefulSet string, info *types.VaultInfo) {
+	c.simpleCache.SetVaultInfoFor(statefulSet, info)
 	if info.ShouldShare() {
 		for ip, name := range c.clusterMembers {
 			once.Do(func() {
@@ -121,11 +121,11 @@ func (c *k8sCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
 			if constants.IsDevMode() {
 				ip = "localhost"
 			}
-			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:%d/sync/%s", ip, apiPort, vaultName))
+			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:%d/sync/%s", ip, apiPort, statefulSet))
 			if err != nil {
-				log.WithValues("pod", name, "vault", vaultName).Error(err, "could not send owner info")
+				log.WithValues("pod", name, "stateful-set", statefulSet).Error(err, "could not send owner info")
 			} else if resp.StatusCode() != http.StatusOK {
-				log.WithValues("pod", name, "vault", vaultName, "status", resp.StatusCode()).
+				log.WithValues("pod", name, "stateful-set", statefulSet, "status", resp.StatusCode()).
 					Error(errors.New("could not send owner info"), "could not send owner info")
 			}
 		}
@@ -173,8 +173,8 @@ func (c *k8sCache) SetMember(members map[string]string) bool {
 }
 
 func (c *k8sCache) Sync() {
-	for _, vaultName := range c.Vaults() {
-		c.SetVaultInfoFor(vaultName, c.VaultInfoFor(vaultName))
+	for _, statefulSet := range c.Vaults() {
+		c.SetVaultInfoFor(statefulSet, c.VaultInfoFor(statefulSet))
 	}
 }
 

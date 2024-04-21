@@ -33,6 +33,6 @@ func (r *PodReconciler) matches(m metav1.Object) bool {
 }
 
 func (r *PodReconciler) hasCorrectOwner(pod *corev1.Pod) bool {
-	owner := getOwner(pod)
+	owner := getStatefulSetFor(pod)
 	return r.Cache.VaultInfoFor(owner) != nil
 }

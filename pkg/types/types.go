@@ -7,12 +7,12 @@ import (
 )
 
 type VaultInfo struct {
-	Owner      string   `json:"owner"`
-	Username   string   `json:"username,omitempty"`
-	Password   string   `json:"password,omitempty"`
-	UnsealKeys []string `json:"unsealKeys,omitempty"`
-	SecretPath string   `json:"secretPath,omitempty"`
-	Role       string   `json:"role,omitempty"`
+	StatefulSet string   `json:"statefulSet"`
+	Username    string   `json:"username,omitempty"`
+	Password    string   `json:"password,omitempty"`
+	UnsealKeys  []string `json:"unsealKeys,omitempty"`
+	SecretPath  string   `json:"secretPath,omitempty"`
+	Role        string   `json:"role,omitempty"`
 }
 
 func (i *VaultInfo) ShouldShare() bool {

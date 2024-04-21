@@ -10,8 +10,8 @@ import (
 
 type Cache interface {
 	Vaults() []string
-	VaultInfoFor(vaultName string) *types.VaultInfo
-	SetVaultInfoFor(vaultName string, info *types.VaultInfo)
+	VaultInfoFor(statefulSet string) *types.VaultInfo
+	SetVaultInfoFor(statefulSet string, info *types.VaultInfo)
 	Sync()
 	SetMember(map[string]string) bool
 }
@@ -45,12 +45,12 @@ func (s *simpleCache) Vaults() []string {
 	return o
 }
 
-func (s *simpleCache) VaultInfoFor(vaultName string) *types.VaultInfo {
-	return s.vaults[vaultName]
+func (s *simpleCache) VaultInfoFor(statefulSet string) *types.VaultInfo {
+	return s.vaults[statefulSet]
 }
 
-func (s *simpleCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
-	s.vaults[vaultName] = info
+func (s *simpleCache) SetVaultInfoFor(statefulSet string, info *types.VaultInfo) {
+	s.vaults[statefulSet] = info
 }
 
 func (s *simpleCache) StartCache(_ context.Context) error {

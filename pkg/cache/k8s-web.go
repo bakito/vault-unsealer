@@ -17,20 +17,20 @@ func (c *k8sCache) webPostSync(ctx *gin.Context) {
 		return
 	}
 
-	vaultName := ctx.Param("vaultName")
+	statefulSet := ctx.Param("statefulSet")
 	info := &types.VaultInfo{}
 	err := ctx.ShouldBindJSON(info)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
-		log.WithValues("from", ctx.ClientIP(), "vault", vaultName).Error(err, "could not parse owner info")
+		log.WithValues("from", ctx.ClientIP(), "stateful-set", statefulSet).Error(err, "could not parse owner info")
 		return
 	}
-	c.simpleCache.SetVaultInfoFor(vaultName, info)
+	c.simpleCache.SetVaultInfoFor(statefulSet, info)
 	log.WithValues(
 		"from", ctx.ClientIP(),
-		"vault", fmt.Sprintf("%s (keys: %d)", vaultName, len(info.UnsealKeys)),
+		"stateful-set", fmt.Sprintf("%s (keys: %d)", statefulSet, len(info.UnsealKeys)),
 	).Info("received vault info")
 	ctx.JSON(http.StatusOK, gin.H{"message": "ok"})
 }

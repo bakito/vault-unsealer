@@ -10,7 +10,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-func getOwner(pod *corev1.Pod) string {
+func getStatefulSetFor(pod *corev1.Pod) string {
 	for _, or := range pod.OwnerReferences {
 		if or.Kind == "StatefulSet" {
 			return or.Name
