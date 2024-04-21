@@ -24,7 +24,7 @@ func (r *PodReconciler) newClient(address string) (*vault.Client, error) {
 	)
 }
 
-func userpassLogin(ctx context.Context, cl *vault.Client, username string, password string) (string, error) {
+func userPassLogin(ctx context.Context, cl *vault.Client, username string, password string) (string, error) {
 	secret, err := cl.Auth.UserpassLogin(ctx, username, schema.UserpassLoginRequest{Password: password})
 	if err != nil {
 		return "", err
@@ -33,13 +33,7 @@ func userpassLogin(ctx context.Context, cl *vault.Client, username string, passw
 	return token, nil
 }
 
-func serviceAccountLogin(ctx context.Context, cl *vault.Client, role string) (string, error) {
-	// read the vault token
-	// `vault write auth/kubernetes/login role=demo jwt=...`
-
-	// generate a new service account token:
-	// `kubectl create token my-vault-unsealer`
-
+func kubernetesLogin(ctx context.Context, cl *vault.Client, role string) (string, error) {
 	tokenFile := defaultK8sTokenFile
 
 	if path, ok := os.LookupEnv(constants.EnvDevelopmentModeK8sTokenFile); ok &&

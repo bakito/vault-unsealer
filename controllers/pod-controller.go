@@ -85,13 +85,16 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		var method string
 		if len(vi.Username) != 0 && len(vi.Password) != 0 {
 			method = "userpass"
-			token, err = userpassLogin(ctx, cl, vi.Username, vi.Password)
+			token, err = userPassLogin(ctx, cl, vi.Username, vi.Password)
 		} else if len(strings.TrimSpace(vi.Role)) != 0 {
 			method = "kubernetes"
-			token, err = serviceAccountLogin(ctx, cl, vi.Role)
+			token, err = kubernetesLogin(ctx, cl, vi.Role)
 		}
 		if err != nil {
 			return reconcile.Result{}, err
+		}
+		if token == "" {
+			return reconcile.Result{Requeue: false}, errors.New("no supported auth method is used")
 		}
 		err = cl.SetToken(token)
 		if err != nil {
