@@ -68,7 +68,7 @@ vault read kv/data/unsealer
 
 Another option to access unseal keys stored in vault is to
 use [`kubernetes`](https://developer.hashicorp.com/vault/docs/auth/kubernetes) auth, where the service account of the
-unsealer ust be granted access to vault.
+unsealer must be granted access to vault.
 
 | Key        | Description                                                                                                      |
 |------------|------------------------------------------------------------------------------------------------------------------|
