@@ -59,8 +59,11 @@ func (c *k8sCache) SetupWithManager(mgr ctrl.Manager) error {
 		// to handle that.
 		<-mgr.Elected()
 
-		if err := c.AskPeers(context.Background()); err != nil {
-			log.Error(err, "error asking peers")
+		// ask peers if we do not have vaults yet
+		if len(c.vaults) == 0 || len(c.token) == 0 {
+			if err := c.AskPeers(context.Background()); err != nil {
+				log.Error(err, "error asking peers")
+			}
 		}
 	}()
 	return mgr.Add(c)
@@ -178,7 +181,7 @@ func (c *k8sCache) Sync() {
 
 func (c *k8sCache) vaultString() (keys []string) {
 	for k, i := range c.vaults {
-		keys = append(keys, fmt.Sprintf("%s (uk: %d)", k, len(i.UnsealKeys)))
+		keys = append(keys, fmt.Sprintf("%s (keys: %d)", k, len(i.UnsealKeys)))
 	}
 	sort.Strings(keys)
 	return

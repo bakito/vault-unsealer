@@ -30,7 +30,7 @@ func (c *k8sCache) webPostSync(ctx *gin.Context) {
 	c.simpleCache.SetVaultInfoFor(vaultName, info)
 	log.WithValues(
 		"from", ctx.ClientIP(),
-		"vault", fmt.Sprintf("%s (uk: %d)", vaultName, len(info.UnsealKeys)),
+		"vault", fmt.Sprintf("%s (keys: %d)", vaultName, len(info.UnsealKeys)),
 	).Info("received vault info")
 	ctx.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
