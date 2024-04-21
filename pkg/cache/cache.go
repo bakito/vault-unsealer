@@ -4,20 +4,22 @@ import (
 	"context"
 
 	"github.com/bakito/vault-unsealer/pkg/types"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 type Cache interface {
-	Owners() []string
-	VaultInfoFor(owner string) *types.VaultInfo
-	SetVaultInfoFor(owner string, info *types.VaultInfo)
-	AddMember(ip string, name string)
-	RemoveMember(ip string, name string)
+	Vaults() []string
+	VaultInfoFor(vaultName string) *types.VaultInfo
+	SetVaultInfoFor(vaultName string, info *types.VaultInfo)
 	Sync()
+	SetMember(map[string]string) bool
 }
 
 type RunnableCache interface {
 	Cache
-	Start(ctx context.Context) error
+	manager.Runnable
+	SetupWithManager(mgr ctrl.Manager) error
 }
 
 func NewSimple() Cache {
@@ -28,16 +30,14 @@ type simpleCache struct {
 	vaults map[string]*types.VaultInfo
 }
 
-func (s *simpleCache) AddMember(_ string, _ string) {
-}
-
-func (s *simpleCache) RemoveMember(_ string, _ string) {
+func (s *simpleCache) SetMember(_ map[string]string) bool {
+	return false
 }
 
 func (s *simpleCache) Sync() {
 }
 
-func (s *simpleCache) Owners() []string {
+func (s *simpleCache) Vaults() []string {
 	var o []string
 	for k := range s.vaults {
 		o = append(o, k)
@@ -45,14 +45,14 @@ func (s *simpleCache) Owners() []string {
 	return o
 }
 
-func (s *simpleCache) VaultInfoFor(owner string) *types.VaultInfo {
-	return s.vaults[owner]
+func (s *simpleCache) VaultInfoFor(vaultName string) *types.VaultInfo {
+	return s.vaults[vaultName]
 }
 
-func (s *simpleCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
-	s.vaults[owner] = info
+func (s *simpleCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
+	s.vaults[vaultName] = info
 }
 
-func (s *simpleCache) Start(_ context.Context) error {
+func (s *simpleCache) StartCache(_ context.Context) error {
 	return nil
 }

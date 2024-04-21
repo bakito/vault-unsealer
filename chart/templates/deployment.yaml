@@ -32,18 +32,24 @@ spec:
           command:
             - /opt/go/vault-unsealer
           env:
-            - name: DEPLOYMENT_NAME
+            - name: UNSEALER_DEPLOYMENT_NAME
               value: {{ include "vault-unsealer.fullname" . }}
-            - name: WATCH_NAMESPACE
+            - name: UNSEALER_SERVICE_NAME
+              value: {{ include "vault-unsealer.fullname" . }}
+            - name: UNSEALER_NAMESPACE
               valueFrom:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
-            - name: POD_NAME
+            - name: UNSEALER_POD_NAME
               valueFrom:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
+            - name: UNSEALER_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           {{- if or (eq (.Values.sharedCache.enabled | toString) "true") (eq (.Values.leaderElection.enabled | toString) "true")  }}
           args:
           {{- if eq (.Values.sharedCache.enabled | toString) "true" }}

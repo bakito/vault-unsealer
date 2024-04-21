@@ -8,8 +8,8 @@ import (
 	"github.com/bakito/vault-unsealer/controllers"
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	"github.com/bakito/vault-unsealer/pkg/logging"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -49,12 +49,12 @@ func main() {
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 	logging.PrepareLogger(true)
-	watchNamespace := os.Getenv(constants.EnvWatchNamespace)
+	podNamespace := os.Getenv(constants.EnvNamespace)
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
 		Cache: crtlcache.Options{
 			DefaultNamespaces: map[string]crtlcache.Config{
-				watchNamespace: {},
+				podNamespace: {},
 			},
 		},
 		Metrics: server.Options{
@@ -64,7 +64,7 @@ func main() {
 		HealthProbeBindAddress:  ":8081",
 		LeaderElection:          enableLeaderElection,
 		LeaderElectionID:        constants.OperatorID,
-		LeaderElectionNamespace: watchNamespace,
+		LeaderElectionNamespace: podNamespace,
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
@@ -72,53 +72,58 @@ func main() {
 	}
 
 	ctx := context.TODO()
-
+	var c cache.Cache
 	if enableSharedCache {
-		c, err := cache.NewK8s(mgr.GetAPIReader())
+		k8sCache, err := cache.NewK8s(mgr.GetAPIReader())
 		if err != nil {
+			setupLog.Error(err, "unable to create cache")
+			os.Exit(1)
+		}
+
+		if err := k8sCache.SetupWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to setup cache")
 			os.Exit(1)
 		}
-		setupLog.Info("starting shared cache")
-		go run(ctx, mgr, watchNamespace, c)
-
-		if err = c.Start(ctx); err != nil {
-			setupLog.Error(err, "unable to start cache")
-			os.Exit(1)
-		}
+		c = k8sCache
 	} else {
-		run(ctx, mgr, watchNamespace, cache.NewSimple())
+		c = cache.NewSimple()
 	}
+	run(ctx, mgr, podNamespace, c)
 }
 
-func run(ctx context.Context, mgr manager.Manager, watchNamespace string, cache cache.Cache) {
+func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache) {
 	secrets := &corev1.SecretList{}
 	if err := mgr.GetAPIReader().List(
 		ctx,
 		secrets,
 		client.HasLabels{constants.LabelStatefulSetName},
-		client.InNamespace(watchNamespace),
+		client.InNamespace(podNamespace),
 	); err != nil {
 		setupLog.Error(err, "unable to find secrets")
 		os.Exit(1)
 	}
 	setupLog.WithValues("secrets", len(secrets.Items)).Info("found unseal secrets")
 
-	// get the name of this pod and its deployment selector
-	depl := &appsv1.Deployment{}
-	if err := mgr.GetAPIReader().Get(
-		ctx,
-		client.ObjectKey{Name: os.Getenv(constants.EnvDeploymentName), Namespace: watchNamespace},
-		depl); err != nil {
+	sel, err := hierarchy.GetDeploymentSelector(ctx, mgr.GetAPIReader())
+	if err != nil {
 		setupLog.Error(err, "unable to find deployment of unsealer")
 		os.Exit(1)
 	}
 
+	if err := (&controllers.EndpintsReconciler{
+		Client:           mgr.GetClient(),
+		Scheme:           mgr.GetScheme(),
+		Cache:            cache,
+		UnsealerSelector: sel,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Endpoint")
+		os.Exit(1)
+	}
 	if err := (&controllers.PodReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 		Cache:  cache,
-	}).SetupWithManager(mgr, secrets.Items, depl); err != nil {
+	}).SetupWithManager(mgr, secrets.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)
 	}

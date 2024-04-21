@@ -2,9 +2,12 @@ package cache
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -16,19 +19,26 @@ import (
 	"gopkg.in/resty.v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
+
+const apiPort = 8866
 
 var (
 	log  = ctrl.Log.WithName("cache")
 	once sync.Once
+
+	_ manager.Runnable               = &k8sCache{}
+	_ manager.LeaderElectionRunnable = &k8sCache{}
 )
 
 type k8sCache struct {
 	simpleCache
-	mu             sync.Mutex
-	reader         client.Reader
+	reader client.Reader
+	// clusterMembers map of cache members / key: ip value: name
 	clusterMembers map[string]string
 	token          string
+	peerToken      string
 	client         *resty.Client
 }
 
@@ -38,11 +48,68 @@ func NewK8s(reader client.Reader) (RunnableCache, error) {
 		reader:         reader,
 		clusterMembers: map[string]string{},
 	}
+
 	return c, nil
 }
 
-func (c *k8sCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
-	c.simpleCache.SetVaultInfoFor(owner, info)
+func (c *k8sCache) SetupWithManager(mgr ctrl.Manager) error {
+	go func() {
+		// Block until our controller manager is elected leader. We presume our
+		// entire process will terminate if we lose leadership, so we don't need
+		// to handle that.
+		<-mgr.Elected()
+
+		// ask peers if we do not have vaults yet
+		if len(c.vaults) == 0 || len(c.token) == 0 {
+			if err := c.AskPeers(context.Background()); err != nil {
+				log.Error(err, "error asking peers")
+			}
+		}
+	}()
+	return mgr.Add(c)
+}
+
+func (c *k8sCache) NeedLeaderElection() bool {
+	return false
+}
+
+func (c *k8sCache) Start(ctx context.Context) error {
+	log.Info("starting shared cache")
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
+	r.POST("/sync/:vaultName", c.webPostSync)
+	r.GET("/info", c.webGetInfo)
+	r.PUT("/info", c.webPutInfo)
+
+	// Start the server in a separate goroutine
+	server := &http.Server{
+		Addr:         fmt.Sprintf(":%d", apiPort),
+		Handler:      r,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	serverShutdown := make(chan struct{})
+	go func() {
+		<-ctx.Done()
+		log.Info("shutting down cache server")
+		if err := server.Shutdown(context.Background()); err != nil {
+			log.Error(err, "error shutting down cache server")
+		}
+		close(serverShutdown)
+	}()
+
+	log.Info("starting cache server")
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+
+	<-serverShutdown
+	return nil
+}
+
+func (c *k8sCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
+	c.simpleCache.SetVaultInfoFor(vaultName, info)
 	if info.ShouldShare() {
 		for ip, name := range c.clusterMembers {
 			once.Do(func() {
@@ -55,87 +122,67 @@ func (c *k8sCache) SetVaultInfoFor(owner string, info *types.VaultInfo) {
 			if strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
 				ip = "localhost"
 			}
-			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:8866/sync/%s", ip, owner))
+			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:%d/sync/%s", ip, apiPort, vaultName))
 			if err != nil {
-				log.WithValues("pod", name, "owner", owner).Error(err, "could not send owner info")
+				log.WithValues("pod", name, "vault", vaultName).Error(err, "could not send owner info")
 			} else if resp.StatusCode() != http.StatusOK {
-				log.WithValues("pod", name, "owner", owner, "status", resp.StatusCode()).
-					Error(err, "could not send owner info")
+				log.WithValues("pod", name, "vault", vaultName, "status", resp.StatusCode()).
+					Error(errors.New("could not send owner info"), "could not send owner info")
 			}
 		}
 	}
 }
 
-func (c *k8sCache) Start(_ context.Context) error {
-	gin.SetMode(gin.ReleaseMode)
-	r := gin.New()
-	r.POST("/sync/:owner", func(ctx *gin.Context) {
-		if !c.handleAuth(ctx) {
-			return
+func (c *k8sCache) handleAuth(ctx *gin.Context) bool {
+	token, ok := c.getAuthToken(ctx)
+	if !ok {
+		return false
+	}
+	if c.token != "" {
+		if c.token != token {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
+			return false
 		}
-
-		owner := ctx.Param("owner")
-		info := &types.VaultInfo{}
-		err := ctx.ShouldBindJSON(info)
-		if err != nil {
-			ctx.JSON(http.StatusOK, gin.H{
-				"error": err.Error(),
-			})
-			log.WithValues("owner", owner).Error(err, "could parse owner info")
-			return
-		}
-		c.simpleCache.SetVaultInfoFor(owner, info)
-		log.WithValues("owner", owner).Info("received vault info")
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "ok",
-		})
-	})
-	return r.Run(":8866")
+	} else {
+		c.token = token
+	}
+	return true
 }
 
-func (c *k8sCache) handleAuth(ctx *gin.Context) bool {
+func (c *k8sCache) getAuthToken(ctx *gin.Context) (string, bool) {
 	auth := ctx.GetHeader("Authorization")
 	if auth == "" {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
-		return false
+		return "", false
 	}
 
 	t := strings.Split(auth, "Bearer ")
 	if len(t) != 2 {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
+		return "", false
+	}
+	return t[1], true
+}
+
+func (c *k8sCache) SetMember(members map[string]string) bool {
+	if maps.Equal(members, c.clusterMembers) {
 		return false
 	}
-	if c.token != "" {
-		if c.token != t[1] {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})
-			return false
-		}
-	} else {
-		c.token = t[1]
-	}
+
+	c.clusterMembers = members
 	return true
 }
 
-func (c *k8sCache) AddMember(ip string, name string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if _, ok := c.clusterMembers[ip]; !ok {
-		log.WithValues("name", name, "ip", ip).Info("adding pod to cache")
-		c.clusterMembers[ip] = name
-	}
-}
-
-func (c *k8sCache) RemoveMember(ip string, name string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if _, ok := c.clusterMembers[ip]; ok {
-		log.WithValues("name", name, "ip", ip).Info("removing pod from cache")
-		delete(c.clusterMembers, ip)
-	}
-}
-
 func (c *k8sCache) Sync() {
-	for _, owner := range c.Owners() {
-		c.SetVaultInfoFor(owner, c.VaultInfoFor(owner))
+	for _, vaultName := range c.Vaults() {
+		c.SetVaultInfoFor(vaultName, c.VaultInfoFor(vaultName))
 	}
+}
+
+func (c *k8sCache) vaultString() (keys []string) {
+	for k, i := range c.vaults {
+		keys = append(keys, fmt.Sprintf("%s (keys: %d)", k, len(i.UnsealKeys)))
+	}
+	sort.Strings(keys)
+	return
 }
