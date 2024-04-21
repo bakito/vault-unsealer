@@ -36,8 +36,7 @@ func userPassLogin(ctx context.Context, cl *vault.Client, username string, passw
 func kubernetesLogin(ctx context.Context, cl *vault.Client, role string) (string, error) {
 	tokenFile := defaultK8sTokenFile
 
-	if path, ok := os.LookupEnv(constants.EnvDevelopmentModeK8sTokenFile); ok &&
-		strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
+	if path, ok := constants.DevFlag(constants.EnvDevelopmentModeK8sTokenFile); ok {
 		tokenFile = path
 	}
 

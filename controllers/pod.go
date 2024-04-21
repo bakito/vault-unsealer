@@ -3,12 +3,9 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"net/url"
-	"os"
-	"strings"
-
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	corev1 "k8s.io/api/core/v1"
+	"net/url"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
@@ -22,11 +19,7 @@ func getOwner(pod *corev1.Pod) string {
 }
 
 func getVaultAddress(ctx context.Context, pod *corev1.Pod) string {
-	if strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
-		schema := "https"
-		if s, ok := os.LookupEnv(constants.EnvDevelopmentModeSchema); ok {
-			schema = s
-		}
+	if schema, ok := constants.DevFlag(constants.EnvDevelopmentModeSchema); ok {
 		if pod.Name == "vault-0" {
 			return fmt.Sprintf("%s://localhost:8200", schema)
 		}

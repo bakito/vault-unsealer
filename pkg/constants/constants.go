@@ -1,5 +1,10 @@
 package constants
 
+import (
+	"os"
+	"strings"
+)
+
 const (
 	OperatorID           = "vault-unsealer.bakito.net"
 	LabelStatefulSetName = OperatorID + "/stateful-set"
@@ -10,7 +15,7 @@ const (
 	KeyUsername        = "username"
 	KeyRole            = "role"
 
-	EnvDevelopmentMode             = "UNSEALER_DEVELOPMENT_MODE"
+	envDevelopmentMode             = "UNSEALER_DEVELOPMENT_MODE"
 	EnvDevelopmentModeSchema       = "UNSEALER_DEVELOPMENT_MODE_SCHEMA"
 	EnvDevelopmentModeK8sTokenFile = "UNSEALER_DEVELOPMENT_MODE_K8S_TOKEN_FILE"
 
@@ -22,3 +27,14 @@ const (
 
 	ContainerNameVault = "vault"
 )
+
+func DevFlag(name string) (string, bool) {
+	if !IsDevMode() {
+		return "", false
+	}
+	return os.LookupEnv(name)
+}
+
+func IsDevMode() bool {
+	return strings.EqualFold(os.Getenv(envDevelopmentMode), "true")
+}

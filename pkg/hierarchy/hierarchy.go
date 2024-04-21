@@ -4,14 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
-
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -57,10 +55,8 @@ func GetPeersFrom(ep *corev1.Endpoints) map[string]string {
 
 func GetDeploymentSelector(ctx context.Context, r client.Reader) (labels.Selector, error) {
 	ns := os.Getenv(constants.EnvNamespace)
-	if strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
-		if n := os.Getenv(constants.EnvDeploymentName); n != "" {
-			return getDeploymentSelector(ctx, r, ns, n)
-		}
+	if name, ok := constants.DevFlag(constants.EnvDeploymentName); ok {
+		return getDeploymentSelector(ctx, r, ns, name)
 	}
 	pod := &corev1.Pod{}
 	if err := r.Get(ctx, client.ObjectKey{Name: os.Getenv(constants.EnvPodName), Namespace: ns}, pod); err != nil {

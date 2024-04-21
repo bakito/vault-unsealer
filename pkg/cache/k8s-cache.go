@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"maps"
 	"net/http"
-	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -119,7 +118,7 @@ func (c *k8sCache) SetVaultInfoFor(vaultName string, info *types.VaultInfo) {
 				c.client = resty.New().SetAuthToken(c.token)
 				c.client.SetTimeout(time.Second)
 			})
-			if strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
+			if constants.IsDevMode() {
 				ip = "localhost"
 			}
 			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:%d/sync/%s", ip, apiPort, vaultName))
