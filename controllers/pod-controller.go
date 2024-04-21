@@ -81,11 +81,19 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		l.Info("successfully unsealed vault")
 
 	} else if len(vi.UnsealKeys) == 0 {
-		t, err := userpassLogin(ctx, cl, vi.Username, vi.Password)
+		var token string
+		var method string
+		if len(vi.Username) != 0 && len(vi.Password) != 0 {
+			method = "userpass"
+			token, err = userpassLogin(ctx, cl, vi.Username, vi.Password)
+		} else if len(strings.TrimSpace(vi.Role)) != 0 {
+			method = "kubernetes"
+			token, err = serviceAccountLogin(ctx, cl, vi.Role)
+		}
 		if err != nil {
 			return reconcile.Result{}, err
 		}
-		err = cl.SetToken(t)
+		err = cl.SetToken(token)
 		if err != nil {
 			return reconcile.Result{}, err
 		}
@@ -94,7 +102,8 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		}
 
 		r.Cache.SetVaultInfoFor(vi.Owner, vi)
-		l.WithValues("keys", len(vi.UnsealKeys)).Info("successfully read unseal keys from vault")
+		l.WithValues("keys", len(vi.UnsealKeys), "method", method).
+			Info("successfully read unseal keys from vault")
 	}
 
 	return ctrl.Result{}, nil
@@ -119,14 +128,11 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 		owner := s.GetLabels()[constants.LabelStatefulSetName]
 		if r.Cache.VaultInfoFor(owner) == nil {
 			v := &types.VaultInfo{
-				Username: string(s.Data[constants.KeyUsername]),
-				Password: string(s.Data[constants.KeyPassword]),
-				Owner:    owner,
-			}
-			if p, ok := s.Data[constants.KeySecretPath]; ok {
-				v.SecretPath = string(p)
-			} else {
-				v.SecretPath = constants.DefaultSecretPath
+				Username:   string(s.Data[constants.KeyUsername]),
+				Password:   string(s.Data[constants.KeyPassword]),
+				Role:       string(s.Data[constants.KeyRole]),
+				SecretPath: string(s.Data[constants.KeySecretPath]),
+				Owner:      owner,
 			}
 
 			for key, val := range s.Data {

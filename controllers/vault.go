@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/hashicorp/vault-client-go"
 	"github.com/hashicorp/vault-client-go/schema"
 )
+
+const defaultK8sTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 not a secret
 
 func (r *PodReconciler) newClient(address string) (*vault.Client, error) {
 	return vault.New(
@@ -22,8 +25,34 @@ func (r *PodReconciler) newClient(address string) (*vault.Client, error) {
 }
 
 func userpassLogin(ctx context.Context, cl *vault.Client, username string, password string) (string, error) {
-	// PUT call to get a token
 	secret, err := cl.Auth.UserpassLogin(ctx, username, schema.UserpassLoginRequest{Password: password})
+	if err != nil {
+		return "", err
+	}
+	token := secret.Auth.ClientToken
+	return token, nil
+}
+
+func serviceAccountLogin(ctx context.Context, cl *vault.Client, role string) (string, error) {
+	// read the vault token
+	// `vault write auth/kubernetes/login role=demo jwt=...`
+
+	// generate a new service account token:
+	// `kubectl create token my-vault-unsealer`
+
+	tokenFile := defaultK8sTokenFile
+
+	if path, ok := os.LookupEnv(constants.EnvDevelopmentModeK8sTokenFile); ok &&
+		strings.EqualFold(os.Getenv(constants.EnvDevelopmentMode), "true") {
+		tokenFile = path
+	}
+
+	saToken, err := os.ReadFile(tokenFile)
+	if err != nil {
+		return "", err
+	}
+
+	secret, err := cl.Auth.KubernetesLogin(ctx, schema.KubernetesLoginRequest{Jwt: strings.TrimSpace(string(saToken)), Role: role})
 	if err != nil {
 		return "", err
 	}
