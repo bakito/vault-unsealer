@@ -13,7 +13,7 @@ require (
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/norwoodj/helm-docs v1.13.1
 	github.com/onsi/ginkgo/v2 v2.17.1
-	github.com/onsi/gomega v1.32.0
+	github.com/onsi/gomega v1.33.0
 	go.uber.org/zap v1.27.0
 	gopkg.in/resty.v1 v1.12.0
 	k8s.io/api v0.29.3
@@ -546,7 +546,7 @@ require (
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240314144324-c7f7c6466f7f // indirect
 	golang.org/x/mod v0.16.0 // indirect
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
