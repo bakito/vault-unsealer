@@ -48,7 +48,7 @@ func main() {
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
-	logging.PrepareLogger(true)
+	logging.SetupLogger(true)
 	podNamespace := os.Getenv(constants.EnvNamespace)
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,

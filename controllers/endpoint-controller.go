@@ -28,6 +28,7 @@ type EndpintsReconciler struct {
 //+kubebuilder:rbac:groups=,resources=endpoints,verbs=get;list;watch
 //+kubebuilder:rbac:groups=apps,resources=deployments;replicasets,verbs=get;list;watch
 
+// Reconcile reconciles the Endpoints object.
 func (r *EndpintsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	l := log.FromContext(ctx)
 
@@ -42,8 +43,8 @@ func (r *EndpintsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return reconcile.Result{}, err
 	}
 
+	// Update the cache members if needed and sync the cache.
 	if r.Cache.SetMember(hierarchy.GetPeersFrom(ep)) {
-		// sync if cache members changed
 		r.Cache.Sync()
 	}
 

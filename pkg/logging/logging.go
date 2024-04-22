@@ -9,24 +9,27 @@ import (
 	crzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
-// PrepareLogger prepare logging configuration for controller runtime
-func PrepareLogger(json bool) {
-	ctrl.SetLogger(NewLogger(json))
-	// replace klog logger
+// SetupLogger configures logging for the controller runtime.
+func SetupLogger(json bool) {
+	ctrl.SetLogger(newLogger(json))
+	// Replace klog logger with controller-runtime logger
 	klog.SetLogger(ctrl.Log)
 }
 
-// NewLogger create a new logger
-func NewLogger(json bool) logr.Logger {
-	// Use json encoder with iso timestamps
+// newLogger creates a new logger based on the provided configuration.
+func newLogger(json bool) logr.Logger {
+	// Use JSON encoder with ISO timestamps by default
 	encCfg := zap.NewProductionEncoderConfig()
 	encCfg.EncodeTime = zapcore.ISO8601TimeEncoder
-	opts := crzap.Options{
-		Encoder: zapcore.NewJSONEncoder(encCfg),
+
+	// Use console encoder if JSON format is not requested
+	encoder := zapcore.NewJSONEncoder(encCfg)
+	if !json {
+		encoder = zapcore.NewConsoleEncoder(encCfg)
 	}
 
-	if !json {
-		opts.Encoder = zapcore.NewConsoleEncoder(encCfg)
+	opts := crzap.Options{
+		Encoder: encoder,
 	}
 	return crzap.New(crzap.UseFlagOptions(&opts))
 }
