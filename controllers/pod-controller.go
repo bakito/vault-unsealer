@@ -76,7 +76,11 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		return reconcile.Result{}, nil
 	}
 
-	vaultLog := ctrl.Log.WithName("vault").WithValues("stateful-set", vi.StatefulSet)
+	vaultLog := ctrl.Log.WithName("vault").WithValues(
+		"namespace", pod.GetNamespace(),
+		"pod", pod.GetName(),
+		"stateful-set", vi.StatefulSet,
+	)
 
 	// If the Vault server is sealed, unseal it.
 	if st.Data.Sealed {
