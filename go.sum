@@ -2312,8 +2312,8 @@ github.com/hashicorp/go-kms-wrapping/wrappers/awskms/v2 v2.0.9 h1:qdxeZvDMRGZ3YS
 github.com/hashicorp/go-kms-wrapping/wrappers/awskms/v2 v2.0.9/go.mod h1:DcXbvVpgNWbxGmxgmu3QN64bEydMu14Cpe34RRR30HY=
 github.com/hashicorp/go-kms-wrapping/wrappers/azurekeyvault/v2 v2.0.11 h1:/7SKkYIhA8cr3l8m1EKT6Q90bPoSVqqVBuQ6HgoMIkw=
 github.com/hashicorp/go-kms-wrapping/wrappers/azurekeyvault/v2 v2.0.11/go.mod h1:LepS5s6ESGE0qQMpYaui5lX+mQYeiYiy06VzwWRioO8=
-github.com/hashicorp/go-kms-wrapping/wrappers/gcpckms/v2 v2.0.11 h1:qXOa2uFzT8eORzgfLZSp1dvig2l/70LJIr6634f5HMM=
-github.com/hashicorp/go-kms-wrapping/wrappers/gcpckms/v2 v2.0.11/go.mod h1:HSaOaX/lv3ShCdilUYbOTPnSvmoZ9xtQhgw+8hYcZkg=
+github.com/hashicorp/go-kms-wrapping/wrappers/gcpckms/v2 v2.0.12 h1:PCqWzT/Hii0KL07JsBZ3lJbv/wx02IAHYlhWQq8rxRY=
+github.com/hashicorp/go-kms-wrapping/wrappers/gcpckms/v2 v2.0.12/go.mod h1:HSaOaX/lv3ShCdilUYbOTPnSvmoZ9xtQhgw+8hYcZkg=
 github.com/hashicorp/go-kms-wrapping/wrappers/ocikms/v2 v2.0.7 h1:KeG3QGrbxbr2qAqCJdf3NR4ijAYwdcWLTmwSbR0yusM=
 github.com/hashicorp/go-kms-wrapping/wrappers/ocikms/v2 v2.0.7/go.mod h1:rXxYzjjGw4HltEwxPp9zYSRIo6R+rBf1MSPk01bvodc=
 github.com/hashicorp/go-kms-wrapping/wrappers/transit/v2 v2.0.11 h1:hdzSrDJ0CgHgGFx+1toaf7Z5bmQ2EYaFQ/dtWNXxu1I=
@@ -2441,8 +2441,8 @@ github.com/hashicorp/raft-wal v0.4.0/go.mod h1:A6vP5o8hGOs1LHfC1Okh9xPwWDcmb6Vvu
 github.com/hashicorp/serf v0.8.2/go.mod h1:6hOLApaqBFA1NXqRQAsxw9QxuDEvNxSQRwA/JwenrHc=
 github.com/hashicorp/serf v0.10.1 h1:Z1H2J60yRKvfDYAOZLd2MU0ND4AH/WDz7xYHDWQsIPY=
 github.com/hashicorp/serf v0.10.1/go.mod h1:yL2t6BqATOLGc5HF7qbFkTfXoPIY0WZdWHfEvMqbG+4=
-github.com/hashicorp/vault v1.16.1 h1:Rm23mLL9g8/7CcI7AN4UVrzkHADpX8Kszk0NmNQaCyc=
-github.com/hashicorp/vault v1.16.1/go.mod h1:X3MNRxY6FwmxUvJFs/EElplyU1gH6c98QRerA6e4CmE=
+github.com/hashicorp/vault v1.16.2 h1:8usz1tMhWcl18PbdjQPKoL5UmenA2n4ZKB3oM04jTck=
+github.com/hashicorp/vault v1.16.2/go.mod h1:QqhZjf0dS0krRty6Wf8iSMx2EnIjAJSCpZ57jEmkQec=
 github.com/hashicorp/vault-client-go v0.4.3 h1:zG7STGVgn/VK6rnZc0k8PGbfv2x/sJExRKHSUg3ljWc=
 github.com/hashicorp/vault-client-go v0.4.3/go.mod h1:4tDw7Uhq5XOxS1fO+oMtotHL7j4sB9cp0T7U6m4FzDY=
 github.com/hashicorp/vault-plugin-auth-alicloud v0.17.0 h1:0SOkYxjMjph3Tbtv37+pANJQnYDvlAdjKpdEbK6zzZs=
@@ -2455,8 +2455,8 @@ github.com/hashicorp/vault-plugin-auth-cf v0.16.0 h1:t4+0LY6002NQvY6c0c43ikZjxqR
 github.com/hashicorp/vault-plugin-auth-cf v0.16.0/go.mod h1:q+Lt3FhtFlP+pulKSjrbnR8ecu4vY9TlgPvs+nnBey8=
 github.com/hashicorp/vault-plugin-auth-gcp v0.16.2 h1:HC1PpXxGNzfu7IUfN7Ok7dIMV29R8a/2EJ5uDnrpxz0=
 github.com/hashicorp/vault-plugin-auth-gcp v0.16.2/go.mod h1:8FWNvFElzQBWJGCZ3SBPqsSc/x9bge9Et+JuwVLlJPM=
-github.com/hashicorp/vault-plugin-auth-jwt v0.20.1 h1:98BDtyvh+43u7SkMWN1rIzSGHMhXqD4xt8XniB3R9EU=
-github.com/hashicorp/vault-plugin-auth-jwt v0.20.1/go.mod h1:yGd5YGkjbnW9xAarwjSHVR+t8lp7HDfTY+qn/UB/gpE=
+github.com/hashicorp/vault-plugin-auth-jwt v0.20.2 h1:UAfUPSL7OgL9wdS7rrzxFVtbVcPmNgip+g4nYq2iQO4=
+github.com/hashicorp/vault-plugin-auth-jwt v0.20.2/go.mod h1:mOngmkea6zPgfo3xX6sQnb12HbEJpl9cuyK+Y3ePB0c=
 github.com/hashicorp/vault-plugin-auth-kerberos v0.11.0 h1:XjdH8nqosqgKeAwBptMS7DoXsdi8IKL2fbBSyvL/HRM=
 github.com/hashicorp/vault-plugin-auth-kerberos v0.11.0/go.mod h1:xupzh9O6Us6bqKLZ6wfRsjqlf1Mb1TRylKpxZPJd5rA=
 github.com/hashicorp/vault-plugin-auth-kubernetes v0.18.0 h1:mGVVdcTI55t/NrMefkLjnenAVunJiQZg5o0opuU7ixw=
@@ -2481,8 +2481,8 @@ github.com/hashicorp/vault-plugin-secrets-ad v0.17.0 h1:yXyjHkFduORBwI6g9GxIorXX
 github.com/hashicorp/vault-plugin-secrets-ad v0.17.0/go.mod h1:HXT1QFK8wN+HYhWWPAIVYSXnNuBqUDM2TsRgiJT6qUc=
 github.com/hashicorp/vault-plugin-secrets-alicloud v0.16.0 h1:rkMe/n9/VylQEm7QeNXgdUaESvLz5UjkokMH1WkFiKU=
 github.com/hashicorp/vault-plugin-secrets-alicloud v0.16.0/go.mod h1:xkGzU7LrkgoRhdN2NwLsshqCpjPz2aqkMVzqS6JKJeg=
-github.com/hashicorp/vault-plugin-secrets-azure v0.17.0 h1:49VPjDnMENnX92VdQri+wTFZK2tbETZXID93P657VnU=
-github.com/hashicorp/vault-plugin-secrets-azure v0.17.0/go.mod h1:R4SSIIC5/NPpeV7GO1ZQ9z0cLUNufAAVi+oO7bpguUM=
+github.com/hashicorp/vault-plugin-secrets-azure v0.17.1 h1:A2EuyhwaCENCXsAZXWWQ3r/oNKwGlQydkZi2eD7RyhM=
+github.com/hashicorp/vault-plugin-secrets-azure v0.17.1/go.mod h1:R4SSIIC5/NPpeV7GO1ZQ9z0cLUNufAAVi+oO7bpguUM=
 github.com/hashicorp/vault-plugin-secrets-gcp v0.18.0 h1:RPKGn6Ai/t4QtdCWg9W7VYTe44cN3jDxgtobTsHHfqE=
 github.com/hashicorp/vault-plugin-secrets-gcp v0.18.0/go.mod h1:b5ZdWNoPDo64g5mp16U6UVPTqCU3gKNIZ7Knc//uypg=
 github.com/hashicorp/vault-plugin-secrets-gcpkms v0.16.0 h1:1wEYeplJl/9FLwBQSmfpqMdKKwmNz/b3e6K9ZOdJK/s=
@@ -3427,8 +3427,8 @@ go.opentelemetry.io/otel v1.7.0/go.mod h1:5BdUoMIz5WEs0vt0CUEMtSSaTSHBBVwrhnz7+n
 go.opentelemetry.io/otel v1.8.0/go.mod h1:2pkj+iMj0o03Y+cW6/m8Y4WkRdYN3AvCXCnzRMp9yvM=
 go.opentelemetry.io/otel v1.10.0/go.mod h1:NbvWjCthWHKBEUMpf0/v8ZRZlni86PpGFEMA9pnQSnQ=
 go.opentelemetry.io/otel v1.14.0/go.mod h1:o4buv+dJzx8rohcUeRmWUZhqupFvzWis188WlggnNeU=
-go.opentelemetry.io/otel v1.23.1 h1:Za4UzOqJYS+MUczKI320AtqZHZb7EqxO00jAHE0jmQY=
-go.opentelemetry.io/otel v1.23.1/go.mod h1:Td0134eafDLcTS4y+zQ26GE8u3dEuRBiBCTUIRHaikA=
+go.opentelemetry.io/otel v1.24.0 h1:0LAOdjNmQeSTzGBzduGe/rU4tZhMwL5rWgtp9Ku5Jfo=
+go.opentelemetry.io/otel v1.24.0/go.mod h1:W7b9Ozg4nkF5tWI5zsXkaKKDjdVjpD4oAt9Qi/MArHo=
 go.opentelemetry.io/otel/exporters/otlp v0.20.0 h1:PTNgq9MRmQqqJY0REVbZFvwkYOA85vbdQU/nVfxDyqg=
 go.opentelemetry.io/otel/exporters/otlp v0.20.0/go.mod h1:YIieizyaN77rtLJra0buKiNBOm9XQfkPEKBeuhoMwAM=
 go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.3.0/go.mod h1:VpP4/RMn8bv8gNo9uK7/IMY4mtWLELsS+JIP0inH0h4=
@@ -3455,8 +3455,8 @@ go.opentelemetry.io/otel/metric v0.20.0/go.mod h1:598I5tYlH1vzBjn+BTuhzTCSb/9deb
 go.opentelemetry.io/otel/metric v0.30.0/go.mod h1:/ShZ7+TS4dHzDFmfi1kSXMhMVubNoP0oIaBp70J6UXU=
 go.opentelemetry.io/otel/metric v0.31.0/go.mod h1:ohmwj9KTSIeBnDBm/ZwH2PSZxZzoOaG2xZeekTRzL5A=
 go.opentelemetry.io/otel/metric v0.37.0/go.mod h1:DmdaHfGt54iV6UKxsV9slj2bBRJcKC1B1uvDLIioc1s=
-go.opentelemetry.io/otel/metric v1.23.1 h1:PQJmqJ9u2QaJLBOELl1cxIdPcpbwzbkjfEyelTl2rlo=
-go.opentelemetry.io/otel/metric v1.23.1/go.mod h1:mpG2QPlAfnK8yNhNJAxDZruU9Y1/HubbC+KyH8FaCWI=
+go.opentelemetry.io/otel/metric v1.24.0 h1:6EhoGWWK28x1fbpA4tYTOWBkPefTDQnb8WSGXlc88kI=
+go.opentelemetry.io/otel/metric v1.24.0/go.mod h1:VYhLe1rFfxuTXLgj4CBiyz+9WYBA8pNGJgDcSFRKBco=
 go.opentelemetry.io/otel/oteltest v0.20.0/go.mod h1:L7bgKf9ZB7qCwT9Up7i9/pn0PWIa9FqQ2IQ8LoxiGnw=
 go.opentelemetry.io/otel/sdk v0.20.0/go.mod h1:g/IcepuwNsoiX5Byy2nNV0ySUF1em498m7hBWC279Yc=
 go.opentelemetry.io/otel/sdk v1.0.1/go.mod h1:HrdXne+BiwsOHYYkBE5ysIcv2bvdZstxzmCQhxTcZkI=
@@ -3475,8 +3475,8 @@ go.opentelemetry.io/otel/trace v1.7.0/go.mod h1:fzLSB9nqR2eXzxPXb2JW9IKE+ScyXA48
 go.opentelemetry.io/otel/trace v1.8.0/go.mod h1:0Bt3PXY8w+3pheS3hQUt+wow8b1ojPaTBoTCh2zIFI4=
 go.opentelemetry.io/otel/trace v1.10.0/go.mod h1:Sij3YYczqAdz+EhmGhE6TpTxUO5/F/AzrK+kxfGqySM=
 go.opentelemetry.io/otel/trace v1.14.0/go.mod h1:8avnQLK+CG77yNLUae4ea2JDQ6iT+gozhnZjy/rw9G8=
-go.opentelemetry.io/otel/trace v1.23.1 h1:4LrmmEd8AU2rFvU1zegmvqW7+kWarxtNOPyeL6HmYY8=
-go.opentelemetry.io/otel/trace v1.23.1/go.mod h1:4IpnpJFwr1mo/6HL8XIPJaE9y0+u1KcVmuW7dwFSVrI=
+go.opentelemetry.io/otel/trace v1.24.0 h1:CsKnnL4dUAr/0llH9FKuc698G04IrpWV0MQA/Y1YELI=
+go.opentelemetry.io/otel/trace v1.24.0/go.mod h1:HPc3Xr/cOApsBI154IU0OI0HJexz+aw5uPdbs3UCjNU=
 go.opentelemetry.io/proto/otlp v0.7.0/go.mod h1:PqfVotwruBrMGOCsRd/89rSnXhoiJIqeYNgFYFoEGnI=
 go.opentelemetry.io/proto/otlp v0.9.0/go.mod h1:1vKfU9rv61e9EVGthD1zNvUbiwPcimSsOPU9brfSHJg=
 go.opentelemetry.io/proto/otlp v0.11.0/go.mod h1:QpEjXPrNQzrFDZgoTo49dgHR9RYRSrg3NAKnUGl9YpQ=
@@ -4480,8 +4480,9 @@ google.golang.org/grpc v1.57.0/go.mod h1:Sd+9RMTACXwmub0zcNY2c4arhtrbBYD1AUHI/dt
 google.golang.org/grpc v1.58.2/go.mod h1:tgX3ZQDlNJGU96V6yHh1T/JeoBQ2TXdr43YbYSsCJk0=
 google.golang.org/grpc v1.58.3/go.mod h1:tgX3ZQDlNJGU96V6yHh1T/JeoBQ2TXdr43YbYSsCJk0=
 google.golang.org/grpc v1.59.0/go.mod h1:aUPDwccQo6OTjy7Hct4AfBPD1GptF4fyUjIkQ9YtF98=
-google.golang.org/grpc v1.61.0 h1:TOvOcuXn30kRao+gfcvsebNEa5iZIiLkisYEkf7R7o0=
 google.golang.org/grpc v1.61.0/go.mod h1:VUbo7IFqmF1QtCAstipjG0GIoq49KvMe9+h1jFLBNJs=
+google.golang.org/grpc v1.61.1 h1:kLAiWrZs7YeDM6MumDe7m3y4aM6wacLzM1Y/wiLP9XY=
+google.golang.org/grpc v1.61.1/go.mod h1:VUbo7IFqmF1QtCAstipjG0GIoq49KvMe9+h1jFLBNJs=
 google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0/go.mod h1:6Kw0yEErY5E/yWrBtf03jp27GLLJujG4z/JK95pnjjw=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
 google.golang.org/protobuf v0.0.0-20200221191635-4d8936d0db64/go.mod h1:kwYJMbMJ01Woi6D6+Kah6886xMZcty6N08ah7+eCXa0=
@@ -4518,6 +4519,8 @@ gopkg.in/cheggaaa/pb.v1 v1.0.25/go.mod h1:V/YB90LKu/1FcN3WVnfiiE5oMCibMjukxqG/qS
 gopkg.in/errgo.v2 v2.1.0/go.mod h1:hNsd1EY+bozCKY1Ytp96fpM3vjJbqLJn88ws8XvfDNI=
 gopkg.in/fsnotify.v1 v1.4.7/go.mod h1:Tz8NjZHkW78fSQdbUxIjBTcgA1z1m8ZHf0WmKUhAMys=
 gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2/go.mod h1:Xk6kEKp8OKb+X14hQBKWaSkCsqBpgog8nAV2xsGOxlo=
+gopkg.in/go-jose/go-jose.v2 v2.6.3 h1:nt80fvSDlhKWQgSWyHyy5CfmlQr+asih51R8PTWNKKs=
+gopkg.in/go-jose/go-jose.v2 v2.6.3/go.mod h1:zzZDPkNNw/c9IE7Z9jr11mBZQhKQTMzoEEIoEdZlFBI=
 gopkg.in/inconshreveable/log15.v2 v2.0.0-20180818164646-67afb5ed74ec/go.mod h1:aPpfJ7XW+gOuirDoZ8gHhLh3kZ1B08FtV2bbmy7Jv3s=
 gopkg.in/inf.v0 v0.9.1 h1:73M5CoZyi3ZLMOyDlQh031Cx6N9NDJ2Vvfl76EDAgDc=
 gopkg.in/inf.v0 v0.9.1/go.mod h1:cWUDdTG/fYaXco+Dcufb5Vnc6Gp2YChqWtbxRZE0mXw=
