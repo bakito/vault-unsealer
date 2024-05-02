@@ -28,7 +28,7 @@ jobs:
         with:
           push: true
           tags: ghcr.io/bakito/vault-unsealer:latest,ghcr.io/bakito/vault-unsealer:${{ github.event.release.tag_name }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           provenance: false
           build-args: VERSION=${{ github.event.release.tag_name }}
 
@@ -39,7 +39,7 @@ jobs:
         with:
           push: true
           tags: ghcr.io/bakito/vault-unsealer:main
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           provenance: false
           build-args: VERSION=main
       - name: Image digest
