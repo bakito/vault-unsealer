@@ -75,7 +75,6 @@ $(LOCALBIN):
 
 ## Tool Binaries
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
-DEEPCOPY_GEN ?= $(LOCALBIN)/deepcopy-gen
 GINKGO ?= $(LOCALBIN)/ginkgo
 GOLANGCI_LINT ?= $(LOCALBIN)/golangci-lint
 GORELEASER ?= $(LOCALBIN)/goreleaser
@@ -84,9 +83,8 @@ SEMVER ?= $(LOCALBIN)/semver
 
 ## Tool Versions
 CONTROLLER_GEN_VERSION ?= v0.15.0
-DEEPCOPY_GEN_VERSION ?= v0.30.0
-GINKGO_VERSION ?= v2.17.1
-GOLANGCI_LINT_VERSION ?= v1.57.2
+GINKGO_VERSION ?= v2.17.2
+GOLANGCI_LINT_VERSION ?= v1.58.0
 GORELEASER_VERSION ?= v1.25.1
 HELM_DOCS_VERSION ?= v1.13.1
 SEMVER_VERSION ?= v1.1.3
@@ -96,10 +94,6 @@ SEMVER_VERSION ?= v1.1.3
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
 $(CONTROLLER_GEN): $(LOCALBIN)
 	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_GEN_VERSION)
-.PHONY: deepcopy-gen
-deepcopy-gen: $(DEEPCOPY_GEN) ## Download deepcopy-gen locally if necessary.
-$(DEEPCOPY_GEN): $(LOCALBIN)
-	test -s $(LOCALBIN)/deepcopy-gen || GOBIN=$(LOCALBIN) go install k8s.io/code-generator/cmd/deepcopy-gen@$(DEEPCOPY_GEN_VERSION)
 .PHONY: ginkgo
 ginkgo: $(GINKGO) ## Download ginkgo locally if necessary.
 $(GINKGO): $(LOCALBIN)
@@ -126,7 +120,6 @@ $(SEMVER): $(LOCALBIN)
 update-toolbox-tools:
 	@rm -f \
 		$(LOCALBIN)/controller-gen \
-		$(LOCALBIN)/deepcopy-gen \
 		$(LOCALBIN)/ginkgo \
 		$(LOCALBIN)/golangci-lint \
 		$(LOCALBIN)/goreleaser \
@@ -134,7 +127,6 @@ update-toolbox-tools:
 		$(LOCALBIN)/semver
 	toolbox makefile -f $(LOCALDIR)/Makefile \
 		sigs.k8s.io/controller-tools/cmd/controller-gen@github.com/kubernetes-sigs/controller-tools \
-		k8s.io/code-generator/cmd/deepcopy-gen@github.com/kubernetes/code-generator \
 		github.com/onsi/ginkgo/v2/ginkgo \
 		github.com/golangci/golangci-lint/cmd/golangci-lint \
 		github.com/goreleaser/goreleaser \
