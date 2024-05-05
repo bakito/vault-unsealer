@@ -24,6 +24,9 @@ spec:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
     spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "vault-unsealer.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}

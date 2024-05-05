@@ -1,6 +1,6 @@
 # vault-unsealer
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2.1](https://img.shields.io/badge/AppVersion-v0.2.1-informational?style=flat-square)
+![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2.2](https://img.shields.io/badge/AppVersion-v0.2.2-informational?style=flat-square)
 
 A kubernetes controller that can auto unseal vault pods.
 
@@ -19,6 +19,7 @@ helm install vault-unsealer bakito/vault-unsealer
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/bakito/vault-unsealer"` | Repository to use |
 | image.tag | string | `nil` | Tag to use |
+| imagePullSecrets | list | `[]` | Optional array of imagePullSecrets containing private registry credentials # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | leaderElection.enabled | bool | `true` | Specifies whether leader election should be enabled |
 | nodeSelector | object | `{}` | [Node selector] |
 | podAnnotations | object | `{}` | Pod Annotations |
