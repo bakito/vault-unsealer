@@ -7,7 +7,7 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
-	github.com/hashicorp/vault v1.16.2
+	github.com/hashicorp/vault v1.16.3
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/onsi/ginkgo/v2 v2.19.0
 	github.com/onsi/gomega v1.33.1
@@ -117,8 +117,8 @@ require (
 	github.com/dgryski/go-metro v0.0.0-20180109044635-280f6062b5bc // indirect
 	github.com/digitalocean/godo v1.7.5 // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
-	github.com/distribution/reference v0.5.0 // indirect
-	github.com/docker/docker v25.0.2+incompatible // indirect
+	github.com/distribution/reference v0.6.0 // indirect
+	github.com/docker/docker v25.0.5+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/duosecurity/duo_api_golang v0.0.0-20190308151101-6c680f768e74 // indirect
@@ -250,7 +250,7 @@ require (
 	github.com/hashicorp/vault-plugin-auth-centrify v0.15.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-cf v0.16.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-gcp v0.16.2 // indirect
-	github.com/hashicorp/vault-plugin-auth-jwt v0.20.2 // indirect
+	github.com/hashicorp/vault-plugin-auth-jwt v0.20.3 // indirect
 	github.com/hashicorp/vault-plugin-auth-kerberos v0.11.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-kubernetes v0.18.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-oci v0.15.1 // indirect
@@ -262,7 +262,7 @@ require (
 	github.com/hashicorp/vault-plugin-database-snowflake v0.10.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-ad v0.17.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-alicloud v0.16.0 // indirect
-	github.com/hashicorp/vault-plugin-secrets-azure v0.17.1 // indirect
+	github.com/hashicorp/vault-plugin-secrets-azure v0.17.2 // indirect
 	github.com/hashicorp/vault-plugin-secrets-gcp v0.18.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-gcpkms v0.16.0 // indirect
 	github.com/hashicorp/vault-plugin-secrets-kubernetes v0.7.0 // indirect
@@ -282,8 +282,8 @@ require (
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgtype v1.14.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
+	github.com/jackc/pgtype v1.14.3 // indirect
 	github.com/jackc/pgx/v4 v4.18.3 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
 	github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
@@ -427,7 +427,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
 	google.golang.org/grpc v1.61.1 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
-	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
@@ -437,7 +436,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.30.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
-	layeh.com/radius v0.0.0-20190322222518-890bc1058917 // indirect
+	layeh.com/radius v0.0.0-20231213012653-1006025d24f8 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
