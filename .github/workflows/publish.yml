@@ -3,7 +3,6 @@ name: Build images
 on:
   push:
     branches:
-      - main
       - dockerfile
   release:
     types:
@@ -34,16 +33,16 @@ jobs:
           provenance: false
           build-args: VERSION=${{ github.event.release.tag_name }}
 
-      - name: Build and push main
-        id: docker_build_main
+      - name: Build and push dockerfile
+        id: docker_build_dockerfile
         uses: docker/build-push-action@v6
         if: ${{ github.event.release.tag_name == '' }}
         with:
           push: true
-          tags: ghcr.io/bakito/vault-unsealer:main
+          tags: ghcr.io/bakito/vault-unsealer:dockerfile
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           provenance: false
-          build-args: VERSION=main
+          build-args: VERSION=dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
