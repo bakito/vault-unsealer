@@ -3,13 +3,13 @@ name: Build images
 on:
   push:
     branches:
-      - dockerfile
+      - main
   release:
     types:
       - published
 
 jobs:
-  main:
+  build-and-publish-images:
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -33,16 +33,16 @@ jobs:
           provenance: false
           build-args: VERSION=${{ github.event.release.tag_name }}
 
-      - name: Build and push dockerfile
-        id: docker_build_dockerfile
+      - name: Build and push main
+        id: docker_build_main
         uses: docker/build-push-action@v6
         if: ${{ github.event.release.tag_name == '' }}
         with:
           push: true
-          tags: ghcr.io/bakito/vault-unsealer:dockerfile
+          tags: ghcr.io/bakito/vault-unsealer:main
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           provenance: false
-          build-args: VERSION=dockerfile
+          build-args: VERSION=main
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
