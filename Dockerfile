@@ -1,15 +1,17 @@
 FROM golang:1.22-bullseye AS builder
 WORKDIR /build
 
+RUN apt-get update && apt-get install -y upx
 COPY . .
 
 ARG VERSION=main
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
+    GOOS=linux
 
-RUN go build -a -installsuffix cgo -ldflags="-w -s -X github.com/bakito/vault-unsealer/version.Version=${VERSION}" -o vault-unsealer main.go
+RUN go build -a -installsuffix cgo -ldflags="-w -s -X github.com/bakito/vault-unsealer/version.Version=${VERSION}" -o vault-unsealer main.go && \
+    upx -q vault-unsealer
+
 # application image
 
 FROM scratch
