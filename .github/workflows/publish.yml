@@ -2,7 +2,9 @@ name: Build images
 
 on:
   push:
-    branches: main
+    branches:
+      - main
+      - dockerfile
   release:
     types:
       - published
