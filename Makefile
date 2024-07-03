@@ -83,9 +83,9 @@ SEMVER ?= $(LOCALBIN)/semver
 
 ## Tool Versions
 CONTROLLER_GEN_VERSION ?= v0.15.0
-GINKGO_VERSION ?= v2.17.2
-GOLANGCI_LINT_VERSION ?= v1.58.0
-GORELEASER_VERSION ?= v1.25.1
+GINKGO_VERSION ?= v2.19.0
+GOLANGCI_LINT_VERSION ?= v1.59.1
+GORELEASER_VERSION ?= v2.0.1
 HELM_DOCS_VERSION ?= v1.13.1
 SEMVER_VERSION ?= v1.1.3
 
@@ -105,7 +105,7 @@ $(GOLANGCI_LINT): $(LOCALBIN)
 .PHONY: goreleaser
 goreleaser: $(GORELEASER) ## Download goreleaser locally if necessary.
 $(GORELEASER): $(LOCALBIN)
-	test -s $(LOCALBIN)/goreleaser || GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser@$(GORELEASER_VERSION)
+	test -s $(LOCALBIN)/goreleaser || GOBIN=$(LOCALBIN) go install github.com/goreleaser/goreleaser/v2@$(GORELEASER_VERSION)
 .PHONY: helm-docs
 helm-docs: $(HELM_DOCS) ## Download helm-docs locally if necessary.
 $(HELM_DOCS): $(LOCALBIN)
@@ -129,7 +129,7 @@ update-toolbox-tools:
 		sigs.k8s.io/controller-tools/cmd/controller-gen@github.com/kubernetes-sigs/controller-tools \
 		github.com/onsi/ginkgo/v2/ginkgo \
 		github.com/golangci/golangci-lint/cmd/golangci-lint \
-		github.com/goreleaser/goreleaser \
+		github.com/goreleaser/goreleaser/v2 \
 		github.com/norwoodj/helm-docs/cmd/helm-docs \
 		github.com/bakito/semver
 ## toolbox - end
