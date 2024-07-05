@@ -17,7 +17,7 @@ Example:
 
 ### External
 
-Use the label `vault-unsealer.bakito.net/external` to flag a secret for usage to handle non-kubernetes vaults. The value is not relevant
+Use the label `vault-unsealer.bakito.net/external` flag a secret for usage to handle non-kubernetes vaults. The value specifies the seal check interval duration
 
 Use the annotation `vault-unsealer.bakito.net/external-source` to define a vault where the unseal keys are stored
 
@@ -25,7 +25,7 @@ Use the annotation `vault-unsealer.bakito.net/external-targets` to define the va
 
 ```yaml
   labels:
-    vault-unsealer.bakito.net/external: ''
+    vault-unsealer.bakito.net/external: '5m'
   annotations:
     vault-unsealer.bakito.net/external-source: https://vault.bakito.org:8200
     vault-unsealer.bakito.net/external-targets: https://vault-1.bakito.org:8200;https://vault-2.bakito.org:8200
