@@ -2,10 +2,38 @@
 
 A kubernetes controller that can auto unseal vault pods.
 
+## Labels / Annotations
+
+### StatefulSet
+
+Use the label `vault-unsealer.bakito.net/stateful-set` to unseal a vault statfulset on kubernetes in the same namespace
+
+Example: 
+
+```yaml
+  labels:
+    vault-unsealer.bakito.net/stateful-set: vault
+```
+
+### External
+
+Use the label `vault-unsealer.bakito.net/external` to flag a secret for usage to handle non-kubernetes vaults. The value is not relevant
+
+Use the annotation `vault-unsealer.bakito.net/external-source` to define a vault where the unseal keys are stored
+
+Use the annotation `vault-unsealer.bakito.net/external-targets` to define the vaults to be unsealed. The value is semicolon separated
+
+```yaml
+  labels:
+    vault-unsealer.bakito.net/external: ''
+  annotations:
+    vault-unsealer.bakito.net/external-source: https://vault.bakito.org:8200
+    vault-unsealer.bakito.net/external-targets: https://vault-1.bakito.org:8200;https://vault-2.bakito.org:8200
+```
+
 ## Secrets
 
-Secrets must be labelled with the following label `vault-unsealer.bakito.net/stateful-set` where the value is the name
-of the vault's StatefulSet.
+Secrets must use one of the labels or annotations described above.
 
 ### With Keys in Secret
 
