@@ -110,7 +110,7 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 		os.Exit(1)
 	}
 
-	if err := (&controllers.EndpintsReconciler{
+	if err := (&controllers.EndpointsReconciler{
 		Client:           mgr.GetClient(),
 		Scheme:           mgr.GetScheme(),
 		Cache:            cache,
