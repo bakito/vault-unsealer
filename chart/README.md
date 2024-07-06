@@ -6,9 +6,17 @@ A kubernetes controller that can auto unseal vault pods.
 
 ## Installation
 
+### oci
+
+```console
+helm install my-vault-unsealer oci://ghcr.io/bakito/helm-charts/vault-unsealer --version 0.2.4
+```
+
+### helm repository
+
 ```console
 helm repo add bakito https://charts.bakito.net
-helm install vault-unsealer bakito/vault-unsealer
+helm install my-vault-unsealer bakito/vault-unsealer --version 0.2.4
 ```
 
 ## Values
