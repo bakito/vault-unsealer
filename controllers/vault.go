@@ -26,6 +26,29 @@ func newClient(address string, insecureSkipVerify bool) (*vault.Client, error) {
 	)
 }
 
+func login(ctx context.Context, cl *vault.Client, vi *types.VaultInfo) error {
+	var token string
+	var err error
+
+	if len(vi.Username) != 0 && len(vi.Password) != 0 {
+		token, err = userPassLogin(ctx, cl, vi.Username, vi.Password)
+	} else if len(strings.TrimSpace(vi.Role)) != 0 {
+		token, err = kubernetesLogin(ctx, cl, vi.Role)
+	}
+	if err != nil {
+		return err
+	}
+	if token == "" {
+		return errors.New("no supported auth method is used")
+	}
+	err = cl.SetToken(token)
+	if err != nil {
+		return err
+
+	}
+	return nil
+}
+
 // userPassLogin performs authentication with Vault using username/password.
 func userPassLogin(ctx context.Context, cl *vault.Client, username string, password string) (string, error) {
 	secret, err := cl.Auth.UserpassLogin(ctx, username, schema.UserpassLoginRequest{Password: password})

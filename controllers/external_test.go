@@ -50,9 +50,8 @@ var _ = Describe("PodReconciler", func() {
 	})
 
 	It("should return target clients", func() {
-		c, err := sut.getTargetClients(*secret, nil)
+		c, err := sut.getTargetClients(*secret)
 		Expect(err).To(BeNil())
 		Expect(len(c)).To(Equal(2))
 	})
-
 })

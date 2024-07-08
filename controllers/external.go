@@ -3,13 +3,13 @@ package controllers
 import (
 	"context"
 	"errors"
-	"github.com/bakito/vault-unsealer/pkg/cache"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/hashicorp/vault-client-go"
 	"golang.org/x/sync/errgroup"
 	corev1 "k8s.io/api/core/v1"
@@ -53,7 +53,6 @@ func (r *ExternalHandler) Start(ctx context.Context) error {
 			}
 			return context.Canceled
 		})
-
 	}
 
 	_ = grp.Wait()
@@ -85,7 +84,7 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 		return err
 	}
 
-	trgtsCl, err := r.getTargetClients(secret, srcCl)
+	trgtsCl, err := r.getTargetClients(secret)
 	if err != nil {
 		return err
 	}
@@ -110,40 +109,28 @@ func (r *ExternalHandler) executeCheck(ctx context.Context, name string, srcCl *
 	if vi == nil || len(vi.UnsealKeys) == 0 {
 		l.Info("no unseal info found")
 
-		var token, method string
-		var err error
-
-		if len(vi.Username) != 0 && len(vi.Password) != 0 {
-			method = "userpass"
-			token, err = userPassLogin(ctx, srcCl, vi.Username, vi.Password)
-		} else if len(strings.TrimSpace(vi.Role)) != 0 {
-			method = "kubernetes"
-			token, err = kubernetesLogin(ctx, srcCl, vi.Role)
-		}
+		err := login(ctx, srcCl, vi)
 		if err != nil {
-			l.Error(err, "error logging into source vault")
+			l.Error(err, "login error")
 			return
 		}
-		if token == "" {
-			l.Error(err, "no supported auth method is used")
-			return
-		}
-		err = srcCl.SetToken(token)
-		if err != nil {
-			l.Error(err, "error setting auth token")
-			return
 
-		}
 		if err = readUnsealKeys(ctx, srcCl, vi); err != nil {
 			l.Error(err, "error reading unseal keys")
 			return
 		}
 
 		r.Cache.SetVaultInfoFor(name, vi)
-		l.WithValues("keys", len(vi.UnsealKeys), "method", method).Info("successfully read unseal keys from vault")
+		l.WithValues("keys", len(vi.UnsealKeys)).Info("successfully read unseal keys from vault")
 	}
 
 	for _, cl := range trgtCl {
+		err := login(ctx, cl, vi)
+		if err != nil {
+			l.Error(err, "login error")
+			return
+		}
+
 		st, err := cl.System.SealStatus(ctx)
 		if err != nil {
 			l.Error(err, "error checking seal status")
@@ -163,7 +150,6 @@ func (r *ExternalHandler) executeCheck(ctx context.Context, name string, srcCl *
 			}
 		}
 	}
-
 }
 
 func (r *ExternalHandler) getInterval(secret corev1.Secret) time.Duration {
@@ -184,8 +170,7 @@ func (r *ExternalHandler) getSourceClient(secret corev1.Secret) (*vault.Client, 
 	return newClient(src, false)
 }
 
-func (r *ExternalHandler) getTargetClients(secret corev1.Secret, srcCl *vault.Client) ([]*vault.Client, error) {
-
+func (r *ExternalHandler) getTargetClients(secret corev1.Secret) ([]*vault.Client, error) {
 	trgt, ok := secret.Annotations[constants.AnnotationExternalTargets]
 	if !ok {
 		return nil, errors.New("no targets found")
@@ -194,16 +179,12 @@ func (r *ExternalHandler) getTargetClients(secret corev1.Secret, srcCl *vault.Cl
 	trgts := strings.Split(trgt, ";")
 	var trgtsCl []*vault.Client
 
-	if len(trgts) == 1 && trgts[0] == srcCl.Configuration().Address {
-		trgtsCl = append(trgtsCl, srcCl)
-	} else {
-		for _, t := range trgts {
-			tcl, err := newClient(t, false)
-			if err != nil {
-				return nil, err
-			}
-			trgtsCl = append(trgtsCl, tcl)
+	for _, t := range trgts {
+		tcl, err := newClient(t, false)
+		if err != nil {
+			return nil, err
 		}
+		trgtsCl = append(trgtsCl, tcl)
 	}
 
 	return trgtsCl, nil

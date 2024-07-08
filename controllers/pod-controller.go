@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"errors"
 	"strings"
 	"time"
 
@@ -94,32 +93,18 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 
 		// If the Vault server is unsealed and there are no unseal keys, authenticate.
 	} else if len(vi.UnsealKeys) == 0 {
-		var token string
-		var method string
-		if len(vi.Username) != 0 && len(vi.Password) != 0 {
-			method = "userpass"
-			token, err = userPassLogin(ctx, cl, vi.Username, vi.Password)
-		} else if len(strings.TrimSpace(vi.Role)) != 0 {
-			method = "kubernetes"
-			token, err = kubernetesLogin(ctx, cl, vi.Role)
-		}
-		if err != nil {
+
+		if err = login(ctx, cl, vi); err != nil {
+			l.Error(err, "login error")
 			return reconcile.Result{}, err
 		}
-		if token == "" {
-			return reconcile.Result{Requeue: false}, errors.New("no supported auth method is used")
-		}
-		err = cl.SetToken(token)
-		if err != nil {
-			return reconcile.Result{}, err
-		}
-		if err := readUnsealKeys(ctx, cl, vi); err != nil {
+
+		if err = readUnsealKeys(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 
 		r.Cache.SetVaultInfoFor(vi.StatefulSet, vi)
-		vaultLog.WithValues("keys", len(vi.UnsealKeys), "method", method).
-			Info("successfully read unseal keys from vault")
+		vaultLog.WithValues("keys", len(vi.UnsealKeys)).Info("successfully read unseal keys from vault")
 	}
 
 	return ctrl.Result{}, nil
