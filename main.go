@@ -92,17 +92,29 @@ func main() {
 }
 
 func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache) {
-	secrets := &corev1.SecretList{}
+	secretsStatefulSet := &corev1.SecretList{}
 	if err := mgr.GetAPIReader().List(
 		ctx,
-		secrets,
+		secretsStatefulSet,
 		client.HasLabels{constants.LabelStatefulSetName},
 		client.InNamespace(podNamespace),
 	); err != nil {
-		setupLog.Error(err, "unable to find secrets")
+		setupLog.Error(err, "unable to find secrets statefulset")
 		os.Exit(1)
 	}
-	setupLog.WithValues("secrets", len(secrets.Items)).Info("found unseal secrets")
+	setupLog.WithValues("secrets", len(secretsStatefulSet.Items)).Info("found unseal secrets statefulset")
+
+	secretsExternal := &corev1.SecretList{}
+	if err := mgr.GetAPIReader().List(
+		ctx,
+		secretsExternal,
+		client.HasLabels{constants.LabelExternal},
+		client.InNamespace(podNamespace),
+	); err != nil {
+		setupLog.Error(err, "unable to find secrets external")
+		os.Exit(1)
+	}
+	setupLog.WithValues("secrets", len(secretsExternal.Items)).Info("found unseal secrets external")
 
 	sel, err := hierarchy.GetDeploymentSelector(ctx, mgr.GetAPIReader())
 	if err != nil {
@@ -123,11 +135,19 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 		Cache:  cache,
-	}).SetupWithManager(mgr, secrets.Items); err != nil {
+	}).SetupWithManager(mgr, secretsStatefulSet.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
+
+	if err := (&controllers.ExternalHandler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr, secretsExternal.Items); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "External")
+		os.Exit(1)
+	}
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")

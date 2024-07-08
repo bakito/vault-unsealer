@@ -18,11 +18,11 @@ import (
 const defaultK8sTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 not a secret
 
 // newClient creates a new Vault client with the specified address.
-func (r *PodReconciler) newClient(address string) (*vault.Client, error) {
+func newClient(address string, insecureSkipVerify bool) (*vault.Client, error) {
 	return vault.New(
 		vault.WithAddress(address),
 		vault.WithRequestTimeout(30*time.Second),
-		vault.WithTLS(vault.TLSConfiguration{InsecureSkipVerify: true}),
+		vault.WithTLS(vault.TLSConfiguration{InsecureSkipVerify: insecureSkipVerify}),
 	)
 }
 

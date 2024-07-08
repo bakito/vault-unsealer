@@ -52,7 +52,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
 	// Get the address of the Vault server.
 	addr := getVaultAddress(ctx, pod)
-	cl, err := r.newClient(addr)
+	cl, err := newClient(addr, true)
 	if err != nil {
 		return reconcile.Result{}, err
 	}
