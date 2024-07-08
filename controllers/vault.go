@@ -129,7 +129,7 @@ func extractUnsealKeys(data map[string]interface{}, v *types.VaultInfo) {
 }
 
 // unseal unseals the Vault using the provided unseal keys.
-func (r *PodReconciler) unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
+func unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
 	for _, key := range vault.UnsealKeys {
 		resp, err := cl.System.Unseal(ctx, schema.UnsealRequest{Key: key})
 		if err != nil {

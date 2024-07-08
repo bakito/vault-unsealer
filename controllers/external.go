@@ -3,12 +3,13 @@ package controllers
 import (
 	"context"
 	"errors"
+	"github.com/bakito/vault-unsealer/pkg/cache"
+	"github.com/bakito/vault-unsealer/pkg/types"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/bakito/vault-unsealer/pkg/constants"
-	"github.com/go-logr/logr"
 	"github.com/hashicorp/vault-client-go"
 	"golang.org/x/sync/errgroup"
 	corev1 "k8s.io/api/core/v1"
@@ -25,6 +26,7 @@ type ExternalHandler struct {
 	startedMux sync.Mutex
 	started    bool
 	secrets    []corev1.Secret
+	Cache      cache.Cache
 }
 
 // SetupWithManager sets up the controller with the Manager.
@@ -59,12 +61,24 @@ func (r *ExternalHandler) Start(ctx context.Context) error {
 }
 
 func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1.Secret) error {
-	logger := log.FromContext(ctx).WithValues("secret", secret.Name)
+	if r.Cache.VaultInfoFor(secret.Name) == nil {
+		v := &types.VaultInfo{
+			Username:   string(secret.Data[constants.KeyUsername]),
+			Password:   string(secret.Data[constants.KeyPassword]),
+			Role:       string(secret.Data[constants.KeyRole]),
+			SecretPath: string(secret.Data[constants.KeySecretPath]),
+		}
 
-	duration, err := r.getInterval(secret, logger)
-	if err != nil {
-		return err
+		for key, val := range secret.Data {
+			if strings.HasPrefix(key, constants.KeyPrefixUnsealKey) {
+				v.UnsealKeys = append(v.UnsealKeys, string(val))
+			}
+		}
+
+		r.Cache.SetVaultInfoFor(secret.Name, v)
 	}
+
+	duration := r.getInterval(secret)
 
 	srcCl, err := r.getSourceClient(secret)
 	if err != nil {
@@ -78,7 +92,7 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 
 	t := time.NewTicker(duration).C
 	for {
-		r.executeCheck(logger, srcCl, trgtsCl)
+		r.executeCheck(ctx, secret.Name, srcCl, trgtsCl)
 		select {
 		case <-t:
 			continue
@@ -88,24 +102,81 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 	}
 }
 
-func (r *ExternalHandler) executeCheck(logger logr.Logger, srcCl *vault.Client, trgtCl []*vault.Client) {
-	logger.Info("starting seal check")
+func (r *ExternalHandler) executeCheck(ctx context.Context, name string, srcCl *vault.Client, trgtCl []*vault.Client) {
+	l := log.FromContext(ctx).WithValues("secret", name)
+	l.Info("starting seal check")
 
-	logger.Info("seal check completed")
+	vi := r.Cache.VaultInfoFor(name)
+	if vi == nil || len(vi.UnsealKeys) == 0 {
+		l.Info("no unseal info found")
+
+		var token, method string
+		var err error
+
+		if len(vi.Username) != 0 && len(vi.Password) != 0 {
+			method = "userpass"
+			token, err = userPassLogin(ctx, srcCl, vi.Username, vi.Password)
+		} else if len(strings.TrimSpace(vi.Role)) != 0 {
+			method = "kubernetes"
+			token, err = kubernetesLogin(ctx, srcCl, vi.Role)
+		}
+		if err != nil {
+			l.Error(err, "error logging into source vault")
+			return
+		}
+		if token == "" {
+			l.Error(err, "no supported auth method is used")
+			return
+		}
+		err = srcCl.SetToken(token)
+		if err != nil {
+			l.Error(err, "error setting auth token")
+			return
+
+		}
+		if err = readUnsealKeys(ctx, srcCl, vi); err != nil {
+			l.Error(err, "error reading unseal keys")
+			return
+		}
+
+		r.Cache.SetVaultInfoFor(name, vi)
+		l.WithValues("keys", len(vi.UnsealKeys), "method", method).Info("successfully read unseal keys from vault")
+	}
+
+	for _, cl := range trgtCl {
+		st, err := cl.System.SealStatus(ctx)
+		if err != nil {
+			l.Error(err, "error checking seal status")
+			continue
+		}
+
+		if !st.Data.Initialized {
+			l.Info("vault is not initialized")
+			continue
+		}
+
+		if st.Data.Sealed {
+			if err := unseal(ctx, cl, vi); err != nil {
+				l.Error(err, "error unsealing vault")
+			} else {
+				l.Info("successfully unsealed vault")
+			}
+		}
+	}
+
 }
 
-func (r *ExternalHandler) getInterval(secret corev1.Secret, logger logr.Logger) (time.Duration, error) {
+func (r *ExternalHandler) getInterval(secret corev1.Secret) time.Duration {
 	str := secret.Labels[constants.LabelExternal]
 	duration, err := time.ParseDuration(str)
 	if err != nil {
-		logger.Error(err, "interval parsing failed, using default", "invalid", str, "actual", constants.DefaultExternalInterval)
 		duration = constants.DefaultExternalInterval
 	}
-	return duration, err
+	return duration
 }
 
 func (r *ExternalHandler) getSourceClient(secret corev1.Secret) (*vault.Client, error) {
-	src, ok := secret.Labels[constants.LabelExternalSource]
+	src, ok := secret.Annotations[constants.AnnotationExternalSource]
 	if !ok {
 		return nil, errors.New("no source found")
 	}
@@ -115,13 +186,13 @@ func (r *ExternalHandler) getSourceClient(secret corev1.Secret) (*vault.Client, 
 
 func (r *ExternalHandler) getTargetClients(secret corev1.Secret, srcCl *vault.Client) ([]*vault.Client, error) {
 
-	trgt, ok := secret.Labels[constants.LabelExternalTargets]
+	trgt, ok := secret.Annotations[constants.AnnotationExternalTargets]
 	if !ok {
 		return nil, errors.New("no targets found")
 	}
 
 	trgts := strings.Split(trgt, ";")
-	trgtsCl := make([]*vault.Client, len(trgts))
+	var trgtsCl []*vault.Client
 
 	if len(trgts) == 1 && trgts[0] == srcCl.Configuration().Address {
 		trgtsCl = append(trgtsCl, srcCl)

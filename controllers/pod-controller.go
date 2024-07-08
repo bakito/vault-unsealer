@@ -87,7 +87,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		if len(vi.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 		}
-		if err := r.unseal(ctx, cl, vi); err != nil {
+		if err := unseal(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 		vaultLog.Info("successfully unsealed vault")

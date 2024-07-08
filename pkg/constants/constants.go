@@ -12,8 +12,9 @@ const OperatorID = "vault-unsealer.bakito.net"
 // LabelStatefulSetName is the label used to identify stateful sets managed by the operator.
 const LabelStatefulSetName = OperatorID + "/stateful-set"
 const LabelExternal = OperatorID + "/external"
-const LabelExternalSource = LabelExternal + "-source"
-const LabelExternalTargets = LabelExternal + "-targets"
+
+const AnnotationExternalSource = LabelExternal + "-source"
+const AnnotationExternalTargets = LabelExternal + "-targets"
 
 // ContainerNameVault is the default vault container name
 const ContainerNameVault = "vault"
