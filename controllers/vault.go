@@ -44,7 +44,6 @@ func login(ctx context.Context, cl *vault.Client, vi *types.VaultInfo) error {
 	err = cl.SetToken(token)
 	if err != nil {
 		return err
-
 	}
 	return nil
 }
