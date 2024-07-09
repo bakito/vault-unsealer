@@ -2,12 +2,10 @@ package controllers
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -116,20 +114,7 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 	for _, s := range secrets {
 		statefulSet := s.GetLabels()[constants.LabelStatefulSetName]
 		if r.Cache.VaultInfoFor(statefulSet) == nil {
-			v := &types.VaultInfo{
-				Username:    string(s.Data[constants.KeyUsername]),
-				Password:    string(s.Data[constants.KeyPassword]),
-				Role:        string(s.Data[constants.KeyRole]),
-				SecretPath:  string(s.Data[constants.KeySecretPath]),
-				StatefulSet: statefulSet,
-			}
-
-			for key, val := range s.Data {
-				if strings.HasPrefix(key, constants.KeyPrefixUnsealKey) {
-					v.UnsealKeys = append(v.UnsealKeys, string(val))
-				}
-			}
-
+			v := extractVaultInfo(s)
 			r.Cache.SetVaultInfoFor(statefulSet, v)
 		}
 	}

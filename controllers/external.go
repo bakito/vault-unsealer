@@ -9,7 +9,6 @@ import (
 
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/hashicorp/vault-client-go"
 	"golang.org/x/sync/errgroup"
 	corev1 "k8s.io/api/core/v1"
@@ -61,23 +60,11 @@ func (r *ExternalHandler) Start(ctx context.Context) error {
 
 func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1.Secret) error {
 	if r.Cache.VaultInfoFor(secret.Name) == nil {
-		v := &types.VaultInfo{
-			Username:   string(secret.Data[constants.KeyUsername]),
-			Password:   string(secret.Data[constants.KeyPassword]),
-			Role:       string(secret.Data[constants.KeyRole]),
-			SecretPath: string(secret.Data[constants.KeySecretPath]),
-		}
-
-		for key, val := range secret.Data {
-			if strings.HasPrefix(key, constants.KeyPrefixUnsealKey) {
-				v.UnsealKeys = append(v.UnsealKeys, string(val))
-			}
-		}
-
+		v := extractVaultInfo(secret)
 		r.Cache.SetVaultInfoFor(secret.Name, v)
 	}
 
-	duration := r.getInterval(secret)
+	duration := r.getInterval(ctx, secret)
 
 	srcCl, err := r.getSourceClient(secret)
 	if err != nil {
@@ -91,10 +78,9 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 
 	t := time.NewTicker(duration).C
 	for {
-		r.executeCheck(ctx, secret.Name, srcCl, trgtsCl)
 		select {
 		case <-t:
-			continue
+			r.executeCheck(ctx, secret.Name, srcCl, trgtsCl)
 		case <-ctx.Done():
 			return nil
 		}
@@ -152,10 +138,12 @@ func (r *ExternalHandler) executeCheck(ctx context.Context, name string, srcCl *
 	}
 }
 
-func (r *ExternalHandler) getInterval(secret corev1.Secret) time.Duration {
+func (r *ExternalHandler) getInterval(ctx context.Context, secret corev1.Secret) time.Duration {
 	str := secret.Labels[constants.LabelExternal]
 	duration, err := time.ParseDuration(str)
 	if err != nil {
+		log.FromContext(ctx).WithValues("secret", secret.Name).
+			Error(err, "error parsing duration, fallback to default", "duration", str, "default", constants.DefaultExternalInterval)
 		duration = constants.DefaultExternalInterval
 	}
 	return duration
