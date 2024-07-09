@@ -85,7 +85,7 @@ spec:
           {{- end }}
           {{- if .Values.volumes }}
           volumeMounts:
-          {{ template "vault-unsealer.mounts" . }}
+          {{- template "vault-unsealer.mounts" . }}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -101,6 +101,6 @@ spec:
       {{- end }}
       {{- if .Values.volumes }}
       volumes:
-      {{ template "vault-unsealer.volumes" . }}
+      {{- template "vault-unsealer.volumes" . }}
       {{- end }}
 
