@@ -51,6 +51,9 @@ nodeSelector: {}
 # -- [Tolerations] for use with node taints
 tolerations: []
 
+# -- add [volumes] to the pod
+volumes: []
+
 # -- Assign custom [affinity] rules to the deployment
 affinity: {}
 
