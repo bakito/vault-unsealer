@@ -77,17 +77,12 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 	}
 
 	t := time.NewTicker(duration).C
-	for {
-		select {
-		case <-t:
-			r.executeCheck(ctx, secret.Name, srcCl, trgtsCl)
-		case <-ctx.Done():
-			return nil
-		}
+	for ; ; <-t {
+		r.handleExternal(ctx, secret.Name, srcCl, trgtsCl)
 	}
 }
 
-func (r *ExternalHandler) executeCheck(ctx context.Context, name string, srcCl *vault.Client, trgtCl []*vault.Client) {
+func (r *ExternalHandler) handleExternal(ctx context.Context, name string, srcCl *vault.Client, trgtCl []*vault.Client) {
 	l := log.FromContext(ctx).WithValues("secret", name)
 	l.Info("starting seal check")
 
