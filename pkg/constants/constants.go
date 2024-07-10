@@ -44,6 +44,7 @@ const (
 	KeySecretPath      = "secretPath"
 	KeyUsername        = "username"
 	KeyRole            = "role"
+	KeyMountPath       = "mountPath"
 )
 
 // DevFlag returns the value of the given environment variable if development mode is enabled.

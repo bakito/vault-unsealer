@@ -33,7 +33,7 @@ func login(ctx context.Context, cl *vault.Client, vi *types.VaultInfo) error {
 	if len(vi.Username) != 0 && len(vi.Password) != 0 {
 		token, err = userPassLogin(ctx, cl, vi.Username, vi.Password)
 	} else if len(strings.TrimSpace(vi.Role)) != 0 {
-		token, err = kubernetesLogin(ctx, cl, vi.Role)
+		token, err = kubernetesLogin(ctx, cl, vi.Role, vi.MountPath)
 	}
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func userPassLogin(ctx context.Context, cl *vault.Client, username string, passw
 }
 
 // kubernetesLogin performs authentication with Vault using Kubernetes JWT.
-func kubernetesLogin(ctx context.Context, cl *vault.Client, role string) (string, error) {
+func kubernetesLogin(ctx context.Context, cl *vault.Client, role, mountPath string) (string, error) {
 	// Get the path to the Kubernetes service account token file.
 	tokenFile := defaultK8sTokenFile
 
@@ -75,7 +75,7 @@ func kubernetesLogin(ctx context.Context, cl *vault.Client, role string) (string
 	}
 
 	// Authenticate with Vault using Kubernetes JWT.
-	secret, err := cl.Auth.KubernetesLogin(ctx, schema.KubernetesLoginRequest{Jwt: strings.TrimSpace(string(saToken)), Role: role})
+	secret, err := cl.Auth.KubernetesLogin(ctx, schema.KubernetesLoginRequest{Jwt: strings.TrimSpace(string(saToken)), Role: role}, vault.WithMountPath(mountPath))
 	if err != nil {
 		return "", err
 	}
