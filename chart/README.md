@@ -1,6 +1,6 @@
 # vault-unsealer
 
-![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.1](https://img.shields.io/badge/AppVersion-v0.3.1-informational?style=flat-square)
+![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.2](https://img.shields.io/badge/AppVersion-v0.3.2-informational?style=flat-square)
 
 A kubernetes controller that can auto unseal vault pods.
 
@@ -9,14 +9,14 @@ A kubernetes controller that can auto unseal vault pods.
 ### oci
 
 ```console
-helm install my-vault-unsealer oci://ghcr.io/bakito/helm-charts/vault-unsealer --version 0.3.1
+helm install my-vault-unsealer oci://ghcr.io/bakito/helm-charts/vault-unsealer --version 0.3.2
 ```
 
 ### helm repository
 
 ```console
 helm repo add bakito https://charts.bakito.net
-helm install my-vault-unsealer bakito/vault-unsealer --version 0.3.1
+helm install my-vault-unsealer bakito/vault-unsealer --version 0.3.2
 ```
 
 ## Values
@@ -36,6 +36,7 @@ helm install my-vault-unsealer bakito/vault-unsealer --version 0.3.1
 | rbac.roleName | string | `nil` | If not set and create is true, a name is generated using the fullname template |
 | replicas | int | `1` | The deployment Replicas |
 | resources | object | `{"limits":{"cpu":"200m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource limits and requests for the controller pods. |
+| revisionHistoryLimit | string | `nil` | The deployment revision history limit |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Security Context of the deployment |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `nil` | If not set and create is true, a name is generated using the fullname template |
