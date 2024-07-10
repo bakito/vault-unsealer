@@ -18,12 +18,34 @@ import (
 const defaultK8sTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 not a secret
 
 // newClient creates a new Vault client with the specified address.
-func (r *PodReconciler) newClient(address string) (*vault.Client, error) {
+func newClient(address string, insecureSkipVerify bool) (*vault.Client, error) {
 	return vault.New(
 		vault.WithAddress(address),
 		vault.WithRequestTimeout(30*time.Second),
-		vault.WithTLS(vault.TLSConfiguration{InsecureSkipVerify: true}),
+		vault.WithTLS(vault.TLSConfiguration{InsecureSkipVerify: insecureSkipVerify}),
 	)
+}
+
+func login(ctx context.Context, cl *vault.Client, vi *types.VaultInfo) error {
+	var token string
+	var err error
+
+	if len(vi.Username) != 0 && len(vi.Password) != 0 {
+		token, err = userPassLogin(ctx, cl, vi.Username, vi.Password)
+	} else if len(strings.TrimSpace(vi.Role)) != 0 {
+		token, err = kubernetesLogin(ctx, cl, vi.Role)
+	}
+	if err != nil {
+		return err
+	}
+	if token == "" {
+		return errors.New("no supported auth method is used")
+	}
+	err = cl.SetToken(token)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // userPassLogin performs authentication with Vault using username/password.
@@ -129,7 +151,7 @@ func extractUnsealKeys(data map[string]interface{}, v *types.VaultInfo) {
 }
 
 // unseal unseals the Vault using the provided unseal keys.
-func (r *PodReconciler) unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
+func unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
 	for _, key := range vault.UnsealKeys {
 		resp, err := cl.System.Unseal(ctx, schema.UnsealRequest{Key: key})
 		if err != nil {

@@ -17,8 +17,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-// EndpintsReconciler reconciles an Endpoints object
-type EndpintsReconciler struct {
+// EndpointsReconciler reconciles an Endpoints object
+type EndpointsReconciler struct {
 	client.Client
 	Scheme           *runtime.Scheme
 	Cache            cache.Cache
@@ -29,7 +29,7 @@ type EndpintsReconciler struct {
 //+kubebuilder:rbac:groups=apps,resources=deployments;replicasets,verbs=get;list;watch
 
 // Reconcile reconciles the Endpoints object.
-func (r *EndpintsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	l := log.FromContext(ctx)
 
 	ep := &corev1.Endpoints{}
@@ -52,7 +52,7 @@ func (r *EndpintsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *EndpintsReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *EndpointsReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Endpoints{}).
 		WithEventFilter(predicate.Funcs{

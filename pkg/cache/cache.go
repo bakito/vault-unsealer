@@ -12,10 +12,10 @@ import (
 type Cache interface {
 	// Vaults returns the list of stateful sets for which Vault information is cached.
 	Vaults() []string
-	// VaultInfoFor retrieves the Vault information for the specified stateful set.
-	VaultInfoFor(statefulSet string) *types.VaultInfo
-	// SetVaultInfoFor sets the Vault information for the specified stateful set.
-	SetVaultInfoFor(statefulSet string, info *types.VaultInfo)
+	// VaultInfoFor retrieves the Vault information for the specified instance.
+	VaultInfoFor(name string) *types.VaultInfo
+	// SetVaultInfoFor sets the Vault information for the specified instance.
+	SetVaultInfoFor(name string, info *types.VaultInfo)
 	// Sync synchronizes the cache with the external source, if applicable.
 	Sync()
 	// SetMember sets the member status for the cache, if applicable.
@@ -50,7 +50,7 @@ func (s *simpleCache) Sync() {
 	// No-op for simple cache
 }
 
-// Vaults returns the list of stateful sets for which Vault information is cached.
+// Vaults returns the list of instances for which Vault information is cached.
 func (s *simpleCache) Vaults() []string {
 	var out []string
 	for k := range s.vaults {
@@ -59,14 +59,14 @@ func (s *simpleCache) Vaults() []string {
 	return out
 }
 
-// VaultInfoFor retrieves the Vault information for the specified stateful set.
-func (s *simpleCache) VaultInfoFor(statefulSet string) *types.VaultInfo {
-	return s.vaults[statefulSet]
+// VaultInfoFor retrieves the Vault information for the specified instance.
+func (s *simpleCache) VaultInfoFor(name string) *types.VaultInfo {
+	return s.vaults[name]
 }
 
-// SetVaultInfoFor sets the Vault information for the specified stateful set.
-func (s *simpleCache) SetVaultInfoFor(statefulSet string, info *types.VaultInfo) {
-	s.vaults[statefulSet] = info
+// SetVaultInfoFor sets the Vault information for the specified instance.
+func (s *simpleCache) SetVaultInfoFor(name string, info *types.VaultInfo) {
+	s.vaults[name] = info
 }
 
 // StartCache starts the cache, but it's a no-op for simple cache.

@@ -2,13 +2,10 @@ package controllers
 
 import (
 	"context"
-	"errors"
-	"strings"
 	"time"
 
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -52,7 +49,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
 	// Get the address of the Vault server.
 	addr := getVaultAddress(ctx, pod)
-	cl, err := r.newClient(addr)
+	cl, err := newClient(addr, true)
 	if err != nil {
 		return reconcile.Result{}, err
 	}
@@ -87,39 +84,25 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 		if len(vi.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 		}
-		if err := r.unseal(ctx, cl, vi); err != nil {
+		if err := unseal(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 		vaultLog.Info("successfully unsealed vault")
 
 		// If the Vault server is unsealed and there are no unseal keys, authenticate.
 	} else if len(vi.UnsealKeys) == 0 {
-		var token string
-		var method string
-		if len(vi.Username) != 0 && len(vi.Password) != 0 {
-			method = "userpass"
-			token, err = userPassLogin(ctx, cl, vi.Username, vi.Password)
-		} else if len(strings.TrimSpace(vi.Role)) != 0 {
-			method = "kubernetes"
-			token, err = kubernetesLogin(ctx, cl, vi.Role)
-		}
-		if err != nil {
+
+		if err = login(ctx, cl, vi); err != nil {
+			l.Error(err, "login error")
 			return reconcile.Result{}, err
 		}
-		if token == "" {
-			return reconcile.Result{Requeue: false}, errors.New("no supported auth method is used")
-		}
-		err = cl.SetToken(token)
-		if err != nil {
-			return reconcile.Result{}, err
-		}
-		if err := readUnsealKeys(ctx, cl, vi); err != nil {
+
+		if err = readUnsealKeys(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 
 		r.Cache.SetVaultInfoFor(vi.StatefulSet, vi)
-		vaultLog.WithValues("keys", len(vi.UnsealKeys), "method", method).
-			Info("successfully read unseal keys from vault")
+		vaultLog.WithValues("keys", len(vi.UnsealKeys)).Info("successfully read unseal keys from vault")
 	}
 
 	return ctrl.Result{}, nil
@@ -131,20 +114,7 @@ func (r *PodReconciler) SetupWithManager(mgr ctrl.Manager, secrets []corev1.Secr
 	for _, s := range secrets {
 		statefulSet := s.GetLabels()[constants.LabelStatefulSetName]
 		if r.Cache.VaultInfoFor(statefulSet) == nil {
-			v := &types.VaultInfo{
-				Username:    string(s.Data[constants.KeyUsername]),
-				Password:    string(s.Data[constants.KeyPassword]),
-				Role:        string(s.Data[constants.KeyRole]),
-				SecretPath:  string(s.Data[constants.KeySecretPath]),
-				StatefulSet: statefulSet,
-			}
-
-			for key, val := range s.Data {
-				if strings.HasPrefix(key, constants.KeyPrefixUnsealKey) {
-					v.UnsealKeys = append(v.UnsealKeys, string(val))
-				}
-			}
-
+			v := extractVaultInfo(s)
 			r.Cache.SetVaultInfoFor(statefulSet, v)
 		}
 	}
