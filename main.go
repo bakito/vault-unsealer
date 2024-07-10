@@ -144,6 +144,7 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 	if err := (&controllers.ExternalHandler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Cache:  cache,
 	}).SetupWithManager(mgr, secretsExternal.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "External")
 		os.Exit(1)
