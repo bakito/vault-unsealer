@@ -14,6 +14,7 @@ type VaultInfo struct {
 	UnsealKeys  []string `json:"unsealKeys,omitempty"`
 	SecretPath  string   `json:"secretPath,omitempty"`
 	Role        string   `json:"role,omitempty"`
+	MountPath   string   `json:"mountPath,omitempty"`
 }
 
 // ShouldShare returns true if the Vault instance should share its unseal keys.

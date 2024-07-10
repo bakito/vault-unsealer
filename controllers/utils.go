@@ -13,6 +13,7 @@ func extractVaultInfo(secret corev1.Secret) *types.VaultInfo {
 		Username:   string(secret.Data[constants.KeyUsername]),
 		Password:   string(secret.Data[constants.KeyPassword]),
 		Role:       string(secret.Data[constants.KeyRole]),
+		MountPath:  string(secret.Data[constants.KeyMountPath]),
 		SecretPath: string(secret.Data[constants.KeySecretPath]),
 	}
 

@@ -65,6 +65,7 @@ access can be configured.
 |------------|------------------------------------------------------------------------------------------------------------------|
 | username   | The username for vault userpass access.                                                                          |
 | password   | The password for vault userpass access.                                                                          |
+| mountPath  | The vault mount path. Optional.                                                                                  |
 | secretPath | The secret path within vault . <br/>Do NOT add the /data path element as it is required by the vault cli or API. |
 
 ```yaml
@@ -78,6 +79,7 @@ type: Opaque
 data:
   username: <...>
   password: <...>
+  mountPath:  <...>
   secretPath: <...>
 ```
 
@@ -101,6 +103,7 @@ unsealer must be granted access to vault.
 | Key        | Description                                                                                                      |
 |------------|------------------------------------------------------------------------------------------------------------------|
 | role       | The role the kubernetes service account is assigned to.                                                          |
+| mountPath  | The vault mount path. Optional.                                                                                  |
 | secretPath | The secret path within vault . <br/>Do NOT add the /data path element as it is required by the vault cli or API. |
 
 ```yaml
@@ -113,6 +116,7 @@ metadata:
 type: Opaque
 data:
   role: <...>
+  mountPath:  <...>
   secretPath: <...>
 ```
 
