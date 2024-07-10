@@ -50,6 +50,7 @@ release: semver goreleaser
 test-release: goreleaser
 	$(GORELEASER) --skip=publish --snapshot --clean
 
+.PHONY: docs
 docs: helm-docs update-docs
 	@$(LOCALBIN)/helm-docs
 
