@@ -54,6 +54,9 @@ tolerations: []
 # -- add [volumes] to the pod
 volumes: []
 
+# -- add [volumeMounts] to the pod
+volumeMounts: []
+
 # -- Assign custom [affinity] rules to the deployment
 affinity: {}
 

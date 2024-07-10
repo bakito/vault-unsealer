@@ -83,9 +83,9 @@ spec:
           securityContext:
           {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.volumes }}
+          {{- if .Values.volumeMounts }}
           volumeMounts:
-          {{- template "vault-unsealer.mounts" . }}
+          {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -99,8 +99,8 @@ spec:
       tolerations:
       {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.volumes }}
+      {{- with .Values.volumes }}
       volumes:
-      {{- template "vault-unsealer.volumes" . }}
+      {{- toYaml . | nindent 8 }}
       {{- end }}
 

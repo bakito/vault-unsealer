@@ -69,24 +69,3 @@ Create the name of the role to use
     {{ default "default" .Values.rbac.roleName }}
 {{- end -}}
 {{- end -}}
-
-{{- define "vault-unsealer.mounts" -}}
-  {{- range .Values.volumes }}
-            - name: {{ .name }}
-              readOnly: true
-              mountPath: {{ .path }}/{{ .name }}
-  {{- end }}
-{{- end -}}
-
-{{- define "vault-unsealer.volumes" -}}
-  {{- range .Values.volumes }}
-        - name: {{ .name }}
-          {{ .type }}:
-          {{- if (eq .type "configMap") }}
-            name: {{ .name }}
-          {{- else if (eq .type "secret") }}
-            secretName: {{ .name }}
-          {{- end }}
-            defaultMode: {{ .defaultMode | default 420 }}
-  {{- end }}
-{{- end -}}
