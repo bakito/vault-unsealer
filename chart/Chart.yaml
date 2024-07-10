@@ -2,8 +2,8 @@ apiVersion: v2
 name: vault-unsealer
 description: A kubernetes controller that can auto unseal vault pods.
 type: application
-version: 0.2.4
-appVersion: v0.2.4
+version: 0.3.1
+appVersion: v0.3.1
 icon: https://emojigraph.org/media/google/unlocked_1f513.png
 sources:
   - https://github.com/bakito/vault-unsealer
@@ -14,6 +14,4 @@ annotations:
   artifacthub.io/signKey: |
     fingerprint: 2B8F22F57260EFA67BE1C5824B11F800CD9D2252
     url: https://argoproj.github.io/argo-helm/pgp_keys.asc
-  artifacthub.io/changes: |
-    - kind: added
-      description: Support for additional volumes and volumeMounts
+  artifacthub.io/changes: ""
