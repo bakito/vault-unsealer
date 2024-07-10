@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"context"
+
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/types"
@@ -39,7 +41,7 @@ var _ = Describe("PodReconciler", func() {
 	})
 
 	It("should return correct interval", func() {
-		d := sut.getInterval(*secret)
+		d := sut.getInterval(context.TODO(), *secret)
 		Expect(d.String()).To(Equal(secret.Labels[constants.LabelExternal]))
 	})
 

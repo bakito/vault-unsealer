@@ -76,10 +76,10 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 		return err
 	}
 
-	//initial handle cycle
+	// initial handle cycle
 	r.handleExternal(ctx, secret.Name, srcCl, trgtsCl)
 
-	//start the loop
+	// start the loop
 	t := time.NewTicker(duration).C
 	for {
 		select {
