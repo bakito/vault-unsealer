@@ -81,6 +81,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 
 	// If the Vault server is sealed, unseal it.
 	if st.Data.Sealed {
+		l.Info("vault is sealed, starting unseal")
 		if len(vi.UnsealKeys) == 0 {
 			return reconcile.Result{RequeueAfter: time.Second * 10}, nil
 		}
@@ -91,7 +92,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 
 		// If the Vault server is unsealed and there are no unseal keys, authenticate.
 	} else if len(vi.UnsealKeys) == 0 {
-
+		l.Info("no unseal info found, starting lookup")
 		if err = login(ctx, cl, vi); err != nil {
 			l.Error(err, "login error")
 			return reconcile.Result{}, err
