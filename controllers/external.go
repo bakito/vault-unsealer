@@ -93,11 +93,10 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 
 func (r *ExternalHandler) handleExternal(ctx context.Context, name string, srcCl *vault.Client, trgtCl []*vault.Client) {
 	l := log.FromContext(ctx).WithValues("secret", name)
-	l.Info("starting seal check")
 
 	vi := r.Cache.VaultInfoFor(name)
 	if vi == nil || len(vi.UnsealKeys) == 0 {
-		l.Info("no unseal info found")
+		l.Info("no unseal info found, starting lookup")
 
 		err := login(ctx, srcCl, vi)
 		if err != nil {
@@ -115,11 +114,7 @@ func (r *ExternalHandler) handleExternal(ctx context.Context, name string, srcCl
 	}
 
 	for _, cl := range trgtCl {
-		err := login(ctx, cl, vi)
-		if err != nil {
-			l.Error(err, "login error")
-			return
-		}
+		l.Info("checking seal status")
 
 		st, err := cl.System.SealStatus(ctx)
 		if err != nil {
@@ -133,6 +128,7 @@ func (r *ExternalHandler) handleExternal(ctx context.Context, name string, srcCl
 		}
 
 		if st.Data.Sealed {
+			l.Info("vault is sealed, starting unseal")
 			if err := unseal(ctx, cl, vi); err != nil {
 				l.Error(err, "error unsealing vault")
 			} else {
