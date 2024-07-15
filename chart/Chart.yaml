@@ -2,8 +2,8 @@ apiVersion: v2
 name: vault-unsealer
 description: A kubernetes controller that can auto unseal vault pods.
 type: application
-version: 0.3.2
-appVersion: v0.3.2
+version: 0.3.3
+appVersion: v0.3.3
 icon: https://emojigraph.org/media/google/unlocked_1f513.png
 sources:
   - https://github.com/bakito/vault-unsealer
@@ -11,6 +11,4 @@ maintainers:
   - name: bakito
     url: https://github.com/bakito
 annotations:
-  artifacthub.io/changes: |
-    - kind: added
-      description: Support for defining revisionHistoryLimit
+  artifacthub.io/changes: ""
