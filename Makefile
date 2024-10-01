@@ -2,34 +2,24 @@
 include ./.toolbox.mk
 
 .PHONY: manifests
-manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
-	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+manifests: tb.controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+	$(TB_CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: generate
-generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
-	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
+generate: tb.controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
+	$(TB_CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
 .PHONY: test
 test: lint test-ci ## Run tests.
 
 .PHONY: test-ci
-test-ci: manifests generate ginkgo ## Run tests.
-	$(GINKGO) --cover --coverprofile cover.out ./...
+test-ci: manifests generate tb.ginkgo ## Run tests.
+	$(TB_GINKGO) --cover --coverprofile cover.out ./...
 	go tool cover -func=cover.out
 
 # Run go lint against code
-lint: golangci-lint
-	$(GOLANGCI_LINT) run --fix
-
-## Tool Binaries
-CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
-SEMVER ?= $(LOCALBIN)/semver
-HELM_DOCS ?= $(LOCALBIN)/helm-docs
-
-## Tool Versions
-CONTROLLER_TOOLS_VERSION ?= v0.9.2
-SEMVER_VERSION ?= latest
-HELM_DOCS_VERSION ?= v1.11.0
+lint: tb.golangci-lint
+	$(TB_GOLANGCI_LINT) run --fix
 
 port-forward:
 	kubectl port-forward pod/vault-0 8200:8200 &
@@ -45,21 +35,21 @@ docker-build:
 docker-push: docker-build
 	docker push ghcr.io/bakito/vault-unsealer
 
-release: semver goreleaser
-	@version=$$($(LOCALBIN)/semver); \
+release: tb.semver tb.goreleaser
+	@version=$$($(TB_SEMVER)); \
 	git tag -s $$version -m"Release $$version"
-	$(GORELEASER) --clean
+	$(TB_GORELEASER) --clean
 
-test-release: goreleaser
-	$(GORELEASER) --skip=publish --snapshot --clean
+test-release: tb.goreleaser
+	$(TB_GORELEASER) --skip=publish --snapshot --clean
 
 .PHONY: docs
-docs: helm-docs update-docs
-	@$(LOCALBIN)/helm-docs
+docs: tb.helm-docs update-docs
+	@$(TB_HELM_DOCS)
 
-update-docs: semver
-	@version=$$($(LOCALBIN)/semver -next); \
-	versionNum=$$($(LOCALBIN)/semver -next -numeric); \
+update-docs: tb.semver
+	@version=$$($(TB_SEMVER) -next); \
+	versionNum=$$($(TB_SEMVER) -next -numeric); \
 	sed -i "s/^version:.*$$/version: $${versionNum}/"    ./chart/Chart.yaml; \
 	sed -i "s/^appVersion:.*$$/appVersion: $${version}/" ./chart/Chart.yaml
 
@@ -68,4 +58,3 @@ helm-lint:
 
 helm-template:
 	helm template ./chart
-
