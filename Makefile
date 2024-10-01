@@ -44,7 +44,7 @@ test-release: tb.goreleaser
 	$(TB_GORELEASER) --skip=publish --snapshot --clean
 
 .PHONY: docs
-docs: helm-docs update-docs
+docs: tb.helm-docs update-docs
 	@$(TB_HELM_DOCS)
 
 update-docs: tb.semver
