@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/go-hclog"
 	vc "github.com/hashicorp/vault-client-go"
 	"github.com/hashicorp/vault-client-go/schema"
-	"github.com/hashicorp/vault/helper/benchhelpers"
 	"github.com/hashicorp/vault/helper/builtinplugins"
 	"github.com/hashicorp/vault/http"
 	"github.com/hashicorp/vault/vault"
@@ -39,12 +38,12 @@ func createTestVault(version string, path string, data map[string]interface{}) (
 		KVVersion:   version,
 	}
 
-	cluster := vault.NewTestCluster(benchhelpers.TBtoT(testingT), coreConfig, opts)
+	cluster := vault.NewTestCluster(testingT, coreConfig, opts)
 	cluster.Start()
 
 	// Make it easy to get access to the active
 	core := cluster.Cores[0].Core
-	vault.TestWaitActive(benchhelpers.TBtoT(testingT), core)
+	vault.TestWaitActive(testingT, core)
 
 	cl, err := vc.New(
 		vc.WithAddress(cluster.Cores[0].Client.Address()),
