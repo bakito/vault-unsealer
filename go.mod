@@ -1,6 +1,7 @@
 module github.com/bakito/vault-unsealer
 
-go 1.22.2
+go 1.23.2
+
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-logr/logr v1.4.2
