@@ -12,7 +12,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.21.0
 	github.com/onsi/gomega v1.35.1
 	go.uber.org/zap v1.27.0
-	golang.org/x/sync v0.8.0
+	golang.org/x/sync v0.9.0
 	gopkg.in/resty.v1 v1.12.0
 	k8s.io/api v0.31.2
 	k8s.io/apimachinery v0.31.2
