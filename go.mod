@@ -7,7 +7,7 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
-	github.com/hashicorp/vault v1.18.1
+	github.com/hashicorp/vault v1.18.2
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/onsi/ginkgo/v2 v2.22.0
 	github.com/onsi/gomega v1.36.0
@@ -251,7 +251,7 @@ require (
 	github.com/hashicorp/raft-wal v0.4.0 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-alicloud v0.19.0 // indirect
-	github.com/hashicorp/vault-plugin-auth-azure v0.19.1 // indirect
+	github.com/hashicorp/vault-plugin-auth-azure v0.19.2 // indirect
 	github.com/hashicorp/vault-plugin-auth-cf v0.19.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-gcp v0.19.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-jwt v0.22.0 // indirect
