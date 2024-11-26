@@ -818,12 +818,12 @@ github.com/hashicorp/vault-plugin-secrets-terraform v0.10.0 h1:YzOJrpuDRNrw5SQ4i
 github.com/hashicorp/vault-plugin-secrets-terraform v0.10.0/go.mod h1:j2nbB//xAQMD+5JivVDalwDEyzJY3AWzKIkw6k65xJQ=
 github.com/hashicorp/vault-testing-stepwise v0.3.1 h1:SqItnMWOOknQfJJR49Fps34ZfBMWSqBFFTx6NoTHzNw=
 github.com/hashicorp/vault-testing-stepwise v0.3.1/go.mod h1:BK7TOCyZ7idR7txAlPGEu+9ETJzlQsYQNdabSv3lyYY=
-github.com/hashicorp/vault/api v1.15.0 h1:O24FYQCWwhwKnF7CuSqP30S51rTV7vz1iACXE/pj5DA=
-github.com/hashicorp/vault/api v1.15.0/go.mod h1:+5YTO09JGn0u+b6ySD/LLVf8WkJCPLAL2Vkmrn2+CM8=
+github.com/hashicorp/vault/api v1.15.1-0.20241120142610-c109ac524d63 h1:9c9wmoscEbRZlbvQ/4yEylxEwQ70AinxqmvIWeVwZ30=
+github.com/hashicorp/vault/api v1.15.1-0.20241120142610-c109ac524d63/go.mod h1:+5YTO09JGn0u+b6ySD/LLVf8WkJCPLAL2Vkmrn2+CM8=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0 h1:C6OdAYczMbzd1Pe1LLf2SHDulxOq/iybWV3kbgV/PS4=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0/go.mod h1:0orUbtkEwbEPmaQ+wvfrOddGBimLJnuN8A/J0PNfBks=
-github.com/hashicorp/vault/sdk v0.14.0 h1:8vagjlpLurkFTnKT9aFSGs4U1XnK2IFytnWSxgFrDo0=
-github.com/hashicorp/vault/sdk v0.14.0/go.mod h1:3hnGK5yjx3CW2hFyk+Dw1jDgKxdBvUvjyxMHhq0oUFc=
+github.com/hashicorp/vault/sdk v0.14.1-0.20241120142610-c109ac524d63 h1:SxHJcjCcOOs5gMu/sJKaD9gyxjRxyigKTCQ2Kd9/VrQ=
+github.com/hashicorp/vault/sdk v0.14.1-0.20241120142610-c109ac524d63/go.mod h1:3hnGK5yjx3CW2hFyk+Dw1jDgKxdBvUvjyxMHhq0oUFc=
 github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443 h1:O/pT5C1Q3mVXMyuqg7yuAWUg/jMZR1/0QTzTRdNR6Uw=
 github.com/hashicorp/vic v1.5.1-0.20190403131502-bbfe86ec9443/go.mod h1:bEpDU35nTu0ey1EXjwNwPjI9xErAsoOCmcMb9GKvyxo=
 github.com/hashicorp/yamux v0.1.1 h1:yrQxtgseBDrq9Y652vSRDvsKCJKOUD+GzTS4Y0Y8pvE=
