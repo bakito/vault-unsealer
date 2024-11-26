@@ -1,13 +1,19 @@
 module github.com/bakito/vault-unsealer
 
-go 1.23.2
+go 1.23.3
+
+replace (
+	// resolve with commit id of github.com/hashicorp/vault
+	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.15.1-0.20241120142610-c109ac524d63
+	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.14.1-0.20241120142610-c109ac524d63
+)
 
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-logr/logr v1.4.2
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
-	github.com/hashicorp/vault v1.18.1
+	github.com/hashicorp/vault v1.18.2
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/onsi/ginkgo/v2 v2.22.0
 	github.com/onsi/gomega v1.36.0
@@ -251,7 +257,7 @@ require (
 	github.com/hashicorp/raft-wal v0.4.0 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-alicloud v0.19.0 // indirect
-	github.com/hashicorp/vault-plugin-auth-azure v0.19.1 // indirect
+	github.com/hashicorp/vault-plugin-auth-azure v0.19.2 // indirect
 	github.com/hashicorp/vault-plugin-auth-cf v0.19.0 // indirect
 	github.com/hashicorp/vault-plugin-auth-gcp v0.19.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-jwt v0.22.0 // indirect
