@@ -75,7 +75,11 @@ func kubernetesLogin(ctx context.Context, cl *vault.Client, role, mountPath stri
 	}
 
 	// Authenticate with Vault using Kubernetes JWT.
-	secret, err := cl.Auth.KubernetesLogin(ctx, schema.KubernetesLoginRequest{Jwt: strings.TrimSpace(string(saToken)), Role: role}, vault.WithMountPath(mountPath))
+	secret, err := cl.Auth.KubernetesLogin(
+		ctx,
+		schema.KubernetesLoginRequest{Jwt: strings.TrimSpace(string(saToken)), Role: role},
+		vault.WithMountPath(mountPath),
+	)
 	if err != nil {
 		return "", err
 	}

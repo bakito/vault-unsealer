@@ -45,7 +45,8 @@ func (c *k8sCache) webPostSync(ctx *gin.Context) {
 // webGetInfo handles the GET request to retrieve cache information.
 func (c *k8sCache) webGetInfo(ctx *gin.Context) {
 	// Log info request.
-	log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method, "vaults", c.vaultString()).Info("info requested")
+	log.WithValues("from", ctx.ClientIP(), "method", ctx.Request.Method, "vaults", c.vaultString()).
+		Info("info requested")
 
 	// Authenticate the request.
 	token, ok := c.getAuthToken(ctx)
@@ -67,7 +68,9 @@ func (c *k8sCache) webGetInfo(ctx *gin.Context) {
 	// Send cache information to the requesting peer.
 	cl := resty.New().SetAuthToken(token)
 	cl.SetTimeout(time.Second)
-	resp, err := cl.R().SetBody(&info{Vaults: c.vaults, Token: c.token}).Put(fmt.Sprintf("http://%s:%d/info", ctx.ClientIP(), apiPort))
+	resp, err := cl.R().
+		SetBody(&info{Vaults: c.vaults, Token: c.token}).
+		Put(fmt.Sprintf("http://%s:%d/info", ctx.ClientIP(), apiPort))
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

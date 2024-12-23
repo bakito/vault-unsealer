@@ -91,7 +91,12 @@ func (r *ExternalHandler) setupVaultCheckLoop(ctx context.Context, secret corev1
 	}
 }
 
-func (r *ExternalHandler) handleExternal(ctx context.Context, name string, srcCl *vault.Client, trgtCl []*vault.Client) {
+func (r *ExternalHandler) handleExternal(
+	ctx context.Context,
+	name string,
+	srcCl *vault.Client,
+	trgtCl []*vault.Client,
+) {
 	l := log.FromContext(ctx).WithValues("secret", name)
 
 	vi := r.Cache.VaultInfoFor(name)

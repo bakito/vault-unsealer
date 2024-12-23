@@ -9,6 +9,9 @@ manifests: tb.controller-gen ## Generate WebhookConfiguration, ClusterRole and C
 generate: tb.controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 	$(TB_CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
+fmt: tb.golines tb.gofumpt
+	$(TB_GOLINES) --base-formatter="$(TB_GOFUMPT)" --max-len=120 --write-output .
+
 .PHONY: test
 test: lint test-ci ## Run tests.
 
