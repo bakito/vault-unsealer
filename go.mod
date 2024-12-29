@@ -4,8 +4,8 @@ go 1.23.3
 
 replace (
 	// resolve with commit id of github.com/hashicorp/vault
-	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.15.1-0.20241120142610-c109ac524d63
-	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.14.1-0.20241120142610-c109ac524d63
+	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.15.1-0.20241216220053-7ae4eca5403b
+	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.14.1-0.20241216220053-7ae4eca5403b
 )
 
 require (
