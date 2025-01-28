@@ -1,6 +1,6 @@
 # vault-unsealer
 
-![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.3](https://img.shields.io/badge/AppVersion-v0.3.3-informational?style=flat-square)
+![Version: 0.3.4](https://img.shields.io/badge/Version-0.3.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.4](https://img.shields.io/badge/AppVersion-v0.3.4-informational?style=flat-square)
 
 A kubernetes controller that can auto unseal vault pods.
 
@@ -9,14 +9,14 @@ A kubernetes controller that can auto unseal vault pods.
 ### oci
 
 ```console
-helm install my-vault-unsealer oci://ghcr.io/bakito/helm-charts/vault-unsealer --version 0.3.3
+helm install my-vault-unsealer oci://ghcr.io/bakito/helm-charts/vault-unsealer --version 0.3.4
 ```
 
 ### helm repository
 
 ```console
 helm repo add bakito https://charts.bakito.net
-helm install my-vault-unsealer bakito/vault-unsealer --version 0.3.3
+helm install my-vault-unsealer bakito/vault-unsealer --version 0.3.4
 ```
 
 ## Values
