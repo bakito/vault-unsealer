@@ -61,7 +61,7 @@ func GetDeploymentSelector(ctx context.Context, r client.Reader) (labels.Selecto
 	ns := os.Getenv(constants.EnvNamespace)
 
 	if deploymentName, ok := constants.DevFlag(constants.EnvDeploymentName); ok {
-		return getDeploymentSelector(ctx, r, ns, deploymentName)
+		return getDeploymentSelectorInternal(ctx, r, ns, deploymentName)
 	}
 
 	pod := &corev1.Pod{}
@@ -75,7 +75,7 @@ func GetDeploymentSelector(ctx context.Context, r client.Reader) (labels.Selecto
 		return nil, fmt.Errorf("failed to get deployment name: %w", err)
 	}
 
-	return getDeploymentSelector(ctx, r, ns, deploymentName)
+	return getDeploymentSelectorInternal(ctx, r, ns, deploymentName)
 }
 
 // GetDeploymentNameFromPod retrieves the name of the Deployment owning the given pod.
@@ -100,8 +100,8 @@ func GetDeploymentNameFromPod(ctx context.Context, r client.Reader, ns string, p
 	return "", errors.New("owning deployment of pod not found")
 }
 
-// getDeploymentSelector retrieves the selector for the given Deployment.
-func getDeploymentSelector(ctx context.Context, r client.Reader, ns string, name string) (labels.Selector, error) {
+// getDeploymentSelectorInternal retrieves the selector for the given Deployment.
+func getDeploymentSelectorInternal(ctx context.Context, r client.Reader, ns, name string) (labels.Selector, error) {
 	depl := &appsv1.Deployment{}
 	err := r.Get(ctx, client.ObjectKey{Name: name, Namespace: ns}, depl)
 	if err != nil {

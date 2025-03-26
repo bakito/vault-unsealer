@@ -17,7 +17,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-// EndpointsReconciler reconciles an Endpoints object
+// EndpointsReconciler reconciles an Endpoints object.
 type EndpointsReconciler struct {
 	client.Client
 	Scheme           *runtime.Scheme

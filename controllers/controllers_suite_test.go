@@ -23,7 +23,7 @@ func TestControllers(t *testing.T) {
 	RunSpecs(t, "Controllers Suite")
 }
 
-func createTestVault(version string, path string, data map[string]interface{}) (*vc.Client, *vault.TestCluster) {
+func createTestVault(version, path string, data map[string]any) (*vc.Client, *vault.TestCluster) {
 	testingT.Helper()
 
 	coreConfig := &vault.CoreConfig{

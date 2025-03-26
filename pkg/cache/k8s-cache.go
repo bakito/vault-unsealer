@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -61,7 +63,7 @@ func (c *k8sCache) SetupWithManager(mgr ctrl.Manager) error {
 		<-mgr.Elected()
 
 		// Ask peers if we do not have vaults yet.
-		if len(c.vaults) == 0 || len(c.token) == 0 {
+		if len(c.vaults) == 0 || c.token == "" {
 			if err := c.AskPeers(context.Background()); err != nil {
 				log.Error(err, "error asking peers")
 			}
@@ -127,7 +129,9 @@ func (c *k8sCache) SetVaultInfoFor(statefulSet string, info *types.VaultInfo) {
 			if constants.IsDevMode() {
 				ip = "localhost"
 			}
-			resp, err := c.client.R().SetBody(info).Post(fmt.Sprintf("http://%s:%d/sync/%s", ip, apiPort, statefulSet))
+			resp, err := c.client.R().
+				SetBody(info).
+				Post(fmt.Sprintf("http://%s/sync/%s", net.JoinHostPort(ip, strconv.Itoa(apiPort)), statefulSet))
 			if err != nil {
 				log.WithValues("pod", name, "stateful-set", statefulSet).Error(err, "could not send owner info")
 			} else if resp.StatusCode() != http.StatusOK {
@@ -194,5 +198,5 @@ func (c *k8sCache) vaultString() (keys []string) {
 		keys = append(keys, fmt.Sprintf("%s (keys: %d)", k, len(i.UnsealKeys)))
 	}
 	sort.Strings(keys)
-	return
+	return keys
 }

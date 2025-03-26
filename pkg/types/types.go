@@ -28,7 +28,7 @@ func (i *VaultInfo) JSON() ([]byte, error) {
 }
 
 // SecretMountAndPath returns the mount and path components of the secret path.
-func (i *VaultInfo) SecretMountAndPath() (string, string) {
+func (i *VaultInfo) SecretMountAndPath() (mount, path string) {
 	// Split the secret path into mount and path components
 	parts := strings.SplitN(i.SecretPath, "/", 2)
 
