@@ -19,12 +19,12 @@ TB_HELM_DOCS ?= $(TB_LOCALBIN)/helm-docs
 TB_SEMVER ?= $(TB_LOCALBIN)/semver
 
 ## Tool Versions
-TB_CONTROLLER_GEN_VERSION ?= v0.16.5
-TB_GINKGO_VERSION ?= v2.22.1
+TB_CONTROLLER_GEN_VERSION ?= v0.17.2
+TB_GINKGO_VERSION ?= v2.23.3
 TB_GOFUMPT_VERSION ?= v0.7.0
-TB_GOLANGCI_LINT_VERSION ?= v1.62.2
+TB_GOLANGCI_LINT_VERSION ?= v2.0.2
 TB_GOLINES_VERSION ?= v0.12.2
-TB_GORELEASER_VERSION ?= v2.5.0
+TB_GORELEASER_VERSION ?= v2.8.1
 TB_HELM_DOCS_VERSION ?= v1.14.2
 TB_SEMVER_VERSION ?= v1.1.3
 
@@ -44,7 +44,7 @@ $(TB_GOFUMPT): $(TB_LOCALBIN)
 .PHONY: tb.golangci-lint
 tb.golangci-lint: $(TB_GOLANGCI_LINT) ## Download golangci-lint locally if necessary.
 $(TB_GOLANGCI_LINT): $(TB_LOCALBIN)
-	test -s $(TB_LOCALBIN)/golangci-lint || GOBIN=$(TB_LOCALBIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(TB_GOLANGCI_LINT_VERSION)
+	test -s $(TB_LOCALBIN)/golangci-lint || GOBIN=$(TB_LOCALBIN) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(TB_GOLANGCI_LINT_VERSION)
 .PHONY: tb.golines
 tb.golines: $(TB_GOLINES) ## Download golines locally if necessary.
 $(TB_GOLINES): $(TB_LOCALBIN)
@@ -82,7 +82,7 @@ tb.update: tb.reset
 		sigs.k8s.io/controller-tools/cmd/controller-gen@github.com/kubernetes-sigs/controller-tools \
 		github.com/onsi/ginkgo/v2/ginkgo \
 		mvdan.cc/gofumpt@github.com/mvdan/gofumpt \
-		github.com/golangci/golangci-lint/cmd/golangci-lint \
+		github.com/golangci/golangci-lint/v2/cmd/golangci-lint \
 		github.com/segmentio/golines \
 		github.com/goreleaser/goreleaser/v2 \
 		github.com/norwoodj/helm-docs/cmd/helm-docs \

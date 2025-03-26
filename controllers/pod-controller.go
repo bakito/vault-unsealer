@@ -16,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-// PodReconciler reconciles a Pod object
+// PodReconciler reconciles a Pod object.
 type PodReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -98,7 +98,7 @@ func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, po
 			return reconcile.Result{}, err
 		}
 
-		if err = readUnsealKeys(ctx, cl, vi); err != nil {
+		if err := readUnsealKeys(ctx, cl, vi); err != nil {
 			return reconcile.Result{}, err
 		}
 

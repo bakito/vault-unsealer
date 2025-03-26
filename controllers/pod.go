@@ -27,11 +27,11 @@ func getVaultAddress(ctx context.Context, pod *corev1.Pod) string {
 		// For development mode, return the local Vault addresses based on Pod names.
 		switch pod.Name {
 		case "vault-0":
-			return fmt.Sprintf("%s://localhost:8200", schema)
+			return schema + "://localhost:8200"
 		case "vault-1":
-			return fmt.Sprintf("%s://localhost:8201", schema)
+			return schema + "://localhost:8201"
 		case "vault-2":
-			return fmt.Sprintf("%s://localhost:8202", schema)
+			return schema + "://localhost:8202"
 		}
 	}
 

@@ -20,12 +20,12 @@ const (
 	AnnotationExternalTargets = LabelExternal + "-targets"
 )
 
-// ContainerNameVault is the default vault container name
+// ContainerNameVault is the default vault container name.
 const ContainerNameVault = "vault"
 
 const DefaultExternalInterval = 20 * time.Minute
 
-// Environment variable names
+// Environment variable names.
 const (
 	envDevelopmentMode             = "UNSEALER_DEVELOPMENT_MODE"
 	EnvDevelopmentModeSchema       = "UNSEALER_DEVELOPMENT_MODE_SCHEMA"
@@ -37,7 +37,7 @@ const (
 	EnvPodIP                       = "UNSEALER_POD_IP"
 )
 
-// Secret key names
+// Secret key names.
 const (
 	KeyPassword        = "password"
 	KeyPrefixUnsealKey = "unsealKey"

@@ -19,7 +19,7 @@ type Cache interface {
 	// Sync synchronizes the cache with the external source, if applicable.
 	Sync()
 	// SetMember sets the member status for the cache, if applicable.
-	SetMember(map[string]string) bool
+	SetMember(members map[string]string) bool
 }
 
 // RunnableCache extends the Cache interface with additional methods for running as a controller-runtime Runnable.

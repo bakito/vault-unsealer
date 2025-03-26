@@ -18,7 +18,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// ExternalHandler handles external vaults
+// ExternalHandler handles external vaults.
 type ExternalHandler struct {
 	client.Client
 	Scheme     *runtime.Scheme

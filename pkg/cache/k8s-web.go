@@ -3,7 +3,9 @@ package cache
 import (
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/bakito/vault-unsealer/pkg/hierarchy"
@@ -70,12 +72,11 @@ func (c *k8sCache) webGetInfo(ctx *gin.Context) {
 	cl.SetTimeout(time.Second)
 	resp, err := cl.R().
 		SetBody(&info{Vaults: c.vaults, Token: c.token}).
-		Put(fmt.Sprintf("http://%s:%d/info", ctx.ClientIP(), apiPort))
+		Put(fmt.Sprintf("http://%s/info", net.JoinHostPort(ctx.ClientIP(), strconv.Itoa(apiPort))))
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		log.WithValues("ip", ctx.ClientIP()).Error(err, "could not send info")
-
 	} else if resp.StatusCode() != http.StatusOK {
 		err = errors.New("could not send info")
 		log.WithValues("ip", ctx.ClientIP(), "status", resp.StatusCode()).Error(err, err.Error())

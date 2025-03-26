@@ -30,9 +30,9 @@ func login(ctx context.Context, cl *vault.Client, vi *types.VaultInfo) error {
 	var token string
 	var err error
 
-	if len(vi.Username) != 0 && len(vi.Password) != 0 {
+	if vi.Username != "" && vi.Password != "" {
 		token, err = userPassLogin(ctx, cl, vi.Username, vi.Password)
-	} else if len(strings.TrimSpace(vi.Role)) != 0 {
+	} else if strings.TrimSpace(vi.Role) != "" {
 		token, err = kubernetesLogin(ctx, cl, vi.Role, vi.MountPath)
 	}
 	if err != nil {
@@ -49,7 +49,7 @@ func login(ctx context.Context, cl *vault.Client, vi *types.VaultInfo) error {
 }
 
 // userPassLogin performs authentication with Vault using username/password.
-func userPassLogin(ctx context.Context, cl *vault.Client, username string, password string) (string, error) {
+func userPassLogin(ctx context.Context, cl *vault.Client, username, password string) (string, error) {
 	secret, err := cl.Auth.UserpassLogin(ctx, username, schema.UserpassLoginRequest{Password: password})
 	if err != nil {
 		return "", err
@@ -95,7 +95,7 @@ func readUnsealKeys(ctx context.Context, cl *vault.Client, v *types.VaultInfo) e
 	}
 	mount, path := v.SecretMountAndPath()
 
-	var data map[string]interface{}
+	var data map[string]any
 	var warnings []string
 
 	version := childOf[string](mounts.Data, mount+"/", "options", "version")
@@ -130,10 +130,10 @@ func readUnsealKeys(ctx context.Context, cl *vault.Client, v *types.VaultInfo) e
 	return nil
 }
 
-// childOf retrieves a nested value from a map[string]interface{}.
-func childOf[T interface{}](m interface{}, key ...string) T {
+// childOf retrieves a nested value from a map[string]any.
+func childOf[T any](m any, key ...string) T {
 	var empty T
-	if mm, ok := m.(map[string]interface{}); ok {
+	if mm, ok := m.(map[string]any); ok {
 		if len(key) == 1 {
 			if t, ok := mm[key[0]].(T); ok {
 				return t
@@ -146,7 +146,7 @@ func childOf[T interface{}](m interface{}, key ...string) T {
 }
 
 // extractUnsealKeys extracts unseal keys from the secret data.
-func extractUnsealKeys(data map[string]interface{}, v *types.VaultInfo) {
+func extractUnsealKeys(data map[string]any, v *types.VaultInfo) {
 	for k, val := range data {
 		if strings.HasPrefix(k, constants.KeyPrefixUnsealKey) {
 			v.UnsealKeys = append(v.UnsealKeys, fmt.Sprintf("%v", val))

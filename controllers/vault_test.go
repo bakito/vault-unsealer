@@ -27,7 +27,7 @@ var _ = Describe("Vault", func() {
 
 	Context("worker", func() {
 		It("read unseal keys from secret v1", func() {
-			client, cluster = createTestVault("1", "foo", map[string]interface{}{
+			client, cluster = createTestVault("1", "foo", map[string]any{
 				"unsealKey1": "foo",
 				"unsealKey2": "bar",
 			})
@@ -36,7 +36,7 @@ var _ = Describe("Vault", func() {
 			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 		It("read unseal keys from secret v2", func() {
-			client, cluster = createTestVault("2", "foo", map[string]interface{}{
+			client, cluster = createTestVault("2", "foo", map[string]any{
 				"unsealKey1": "foo",
 				"unsealKey2": "bar",
 			})
