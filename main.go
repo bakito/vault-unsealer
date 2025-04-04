@@ -60,11 +60,12 @@ func main() {
 		Metrics: server.Options{
 			BindAddress: ":8080",
 		},
-		WebhookServer:           webhook.NewServer(webhook.Options{Port: 9443}),
-		HealthProbeBindAddress:  ":8081",
-		LeaderElection:          enableLeaderElection,
-		LeaderElectionID:        constants.OperatorID,
-		LeaderElectionNamespace: podNamespace,
+		WebhookServer:                 webhook.NewServer(webhook.Options{Port: 9443}),
+		HealthProbeBindAddress:        ":8081",
+		LeaderElection:                enableLeaderElection,
+		LeaderElectionID:              constants.OperatorID,
+		LeaderElectionNamespace:       podNamespace,
+		LeaderElectionReleaseOnCancel: true,
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
