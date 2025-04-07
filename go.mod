@@ -1,6 +1,7 @@
 module github.com/bakito/vault-unsealer
 
 go 1.24.1
+
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-logr/logr v1.4.2
@@ -11,7 +12,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.23.3
 	github.com/onsi/gomega v1.36.3
 	go.uber.org/zap v1.27.0
-	golang.org/x/sync v0.12.0
+	golang.org/x/sync v0.13.0
 	gopkg.in/resty.v1 v1.12.0
 	k8s.io/api v0.32.3
 	k8s.io/apimachinery v0.32.3
