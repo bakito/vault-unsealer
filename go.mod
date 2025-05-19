@@ -7,7 +7,7 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
-	github.com/hashicorp/vault v1.19.3
+	github.com/hashicorp/vault v1.19.4
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/onsi/ginkgo/v2 v2.23.4
 	github.com/onsi/gomega v1.37.0
@@ -36,9 +36,9 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.17.0 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.2 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/internal v1.10.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.18.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.9.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/internal v1.11.1 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/keyvault/azkeys v0.10.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/keyvault/internal v0.7.1 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/authorization/armauthorization/v2 v2.2.0 // indirect
@@ -57,7 +57,7 @@ require (
 	github.com/Azure/go-autorest/logger v0.2.1 // indirect
 	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
-	github.com/AzureAD/microsoft-authentication-library-for-go v1.3.3 // indirect
+	github.com/AzureAD/microsoft-authentication-library-for-go v1.4.2 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/Jeffail/gabs/v2 v2.1.0 // indirect
@@ -102,13 +102,12 @@ require (
 	github.com/chrismalek/oktasdk-go v0.0.0-20181212195951-3430665dfaa0 // indirect
 	github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible // indirect
 	github.com/circonus-labs/circonusllhist v0.1.3 // indirect
-	github.com/cjlapao/common-go v0.0.39 // indirect
 	github.com/cloudflare/circl v1.6.0 // indirect
 	github.com/cloudfoundry-community/go-cfclient v0.0.0-20220930021109-9c4e6c59ccf1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/coreos/etcd v3.3.27+incompatible // indirect
-	github.com/coreos/go-oidc/v3 v3.11.0 // indirect
+	github.com/coreos/go-oidc/v3 v3.14.1 // indirect
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
 	github.com/coreos/pkg v0.0.0-20220810130054-c7d1c02cb6cf // indirect
 	github.com/couchbase/gocb/v2 v2.9.3 // indirect
@@ -259,8 +258,8 @@ require (
 	github.com/hashicorp/raft-wal v0.4.0 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-alicloud v0.20.0 // indirect
-	github.com/hashicorp/vault-plugin-auth-azure v0.20.3 // indirect
-	github.com/hashicorp/vault-plugin-auth-cf v0.20.0 // indirect
+	github.com/hashicorp/vault-plugin-auth-azure v0.20.4 // indirect
+	github.com/hashicorp/vault-plugin-auth-cf v0.20.1 // indirect
 	github.com/hashicorp/vault-plugin-auth-gcp v0.20.2 // indirect
 	github.com/hashicorp/vault-plugin-auth-jwt v0.23.2 // indirect
 	github.com/hashicorp/vault-plugin-auth-kerberos v0.14.0 // indirect
@@ -328,15 +327,15 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mediocregopher/radix/v4 v4.1.4 // indirect
 	github.com/michaelklishin/rabbit-hole/v2 v2.12.0 // indirect
-	github.com/microsoft/kiota-abstractions-go v1.8.1 // indirect
-	github.com/microsoft/kiota-authentication-azure-go v1.1.0 // indirect
-	github.com/microsoft/kiota-http-go v1.4.4 // indirect
-	github.com/microsoft/kiota-serialization-form-go v1.0.0 // indirect
-	github.com/microsoft/kiota-serialization-json-go v1.0.9 // indirect
-	github.com/microsoft/kiota-serialization-multipart-go v1.0.0 // indirect
-	github.com/microsoft/kiota-serialization-text-go v1.0.0 // indirect
-	github.com/microsoftgraph/msgraph-sdk-go v1.61.0 // indirect
-	github.com/microsoftgraph/msgraph-sdk-go-core v1.2.1 // indirect
+	github.com/microsoft/kiota-abstractions-go v1.9.2 // indirect
+	github.com/microsoft/kiota-authentication-azure-go v1.3.0 // indirect
+	github.com/microsoft/kiota-http-go v1.5.2 // indirect
+	github.com/microsoft/kiota-serialization-form-go v1.1.2 // indirect
+	github.com/microsoft/kiota-serialization-json-go v1.1.2 // indirect
+	github.com/microsoft/kiota-serialization-multipart-go v1.1.2 // indirect
+	github.com/microsoft/kiota-serialization-text-go v1.1.2 // indirect
+	github.com/microsoftgraph/msgraph-sdk-go v1.69.0 // indirect
+	github.com/microsoftgraph/msgraph-sdk-go-core v1.3.2 // indirect
 	github.com/miekg/dns v1.1.50 // indirect
 	github.com/mikesmitty/edkey v0.0.0-20170222072505-3356ea4e686a // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
@@ -394,7 +393,7 @@ require (
 	github.com/sony/gobreaker v0.5.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/std-uritemplate/std-uritemplate/go/v2 v2.0.1 // indirect
+	github.com/std-uritemplate/std-uritemplate/go/v2 v2.0.3 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v1.0.162 // indirect
@@ -427,14 +426,14 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/crypto v0.37.0 // indirect
+	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.24.0 // indirect
-	golang.org/x/net v0.39.0 // indirect
-	golang.org/x/oauth2 v0.29.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/term v0.31.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/oauth2 v0.30.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/term v0.32.0 // indirect
+	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	golang.org/x/tools v0.31.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
