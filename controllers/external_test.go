@@ -20,7 +20,7 @@ var _ = Describe("PodReconciler", func() {
 
 	BeforeEach(func() {
 		sut = &ExternalHandler{
-			Cache: cache.NewSimple(),
+			Cache: cache.NewSimple(false),
 		}
 
 		secret = &corev1.Secret{

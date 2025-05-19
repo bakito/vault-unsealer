@@ -9,13 +9,14 @@ import (
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	discoveryv1 "k8s.io/api/discovery/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // GetPeers returns a map of peer IPs and their associated names.
-func GetPeers(ctx context.Context, r client.Reader) (map[string]string, error) {
+func GetPeers(ctx context.Context, r client.Reader, past132 bool) (map[string]string, error) {
 	deploymentSel, err := GetDeploymentSelector(ctx, r)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get deployment selector: %w", err)
@@ -23,36 +24,69 @@ func GetPeers(ctx context.Context, r client.Reader) (map[string]string, error) {
 
 	ns := os.Getenv(constants.EnvNamespace)
 
-	endpointsList := &corev1.EndpointsList{}
-	err = r.List(ctx, endpointsList, client.InNamespace(ns), client.MatchingLabelsSelector{Selector: deploymentSel})
+	var epl client.ObjectList
+	if past132 {
+		epl = &discoveryv1.EndpointSliceList{}
+	} else {
+		epl = &corev1.EndpointsList{}
+	}
+
+	err = r.List(ctx, epl, client.InNamespace(ns), client.MatchingLabelsSelector{Selector: deploymentSel})
 	if err != nil {
 		return nil, fmt.Errorf("failed to list endpoints: %w", err)
 	}
 
-	if len(endpointsList.Items) == 0 {
-		return nil, errors.New("could not find any service endpoints")
+	if past132 {
+		if epsList, ok := epl.(*discoveryv1.EndpointSliceList); ok {
+			if len(epsList.Items) == 0 {
+				return nil, errors.New("could not find any service endpoints")
+			}
+			return GetPeersFrom(&epsList.Items[0]), nil
+		}
+	} else {
+		if epList, ok := epl.(*corev1.EndpointsList); ok {
+			if len(epList.Items) == 0 {
+				return nil, errors.New("could not find any service endpoints")
+			}
+			return GetPeersFrom(&epList.Items[0]), nil
+		}
 	}
 
-	peers := GetPeersFrom(&endpointsList.Items[0])
-
-	return peers, nil
+	return nil, errors.New("invalid endpoint list type")
 }
 
 // GetPeersFrom extracts peer IPs and their names from the given Endpoints object.
-func GetPeersFrom(ep *corev1.Endpoints) map[string]string {
+func GetPeersFrom(obj client.Object) map[string]string {
 	myIP := os.Getenv(constants.EnvPodIP)
 	peers := make(map[string]string)
-	for _, subset := range ep.Subsets {
-		for _, address := range subset.Addresses {
-			if address.IP != myIP {
-				name := "N/A"
-				if address.TargetRef != nil {
-					name = address.TargetRef.Name
+
+	switch ep := obj.(type) {
+	case *corev1.Endpoints: //nolint:staticcheck // deprecation is handled
+		for _, subset := range ep.Subsets {
+			for _, address := range subset.Addresses {
+				if address.IP != myIP {
+					name := "N/A"
+					if address.TargetRef != nil {
+						name = address.TargetRef.Name
+					}
+					peers[address.IP] = name
 				}
-				peers[address.IP] = name
+			}
+		}
+	case *discoveryv1.EndpointSlice:
+		for _, endpoint := range ep.Endpoints {
+			for _, address := range endpoint.Addresses {
+				if address != myIP {
+					name := "N/A"
+					if endpoint.Hostname != nil {
+						name = *endpoint.Hostname
+					}
+					peers[address] = name
+				}
 			}
 		}
 	}
+
 	return peers
 }
 

@@ -23,7 +23,7 @@ type info struct {
 // AskPeers requests cache information from peer nodes and updates the cache with the received information.
 func (c *k8sCache) AskPeers(ctx context.Context) error {
 	// Get the list of peers from the hierarchy package.
-	peers, err := hierarchy.GetPeers(ctx, c.reader)
+	peers, err := hierarchy.GetPeers(ctx, c.reader, c.past132)
 	if err != nil {
 		return err
 	}

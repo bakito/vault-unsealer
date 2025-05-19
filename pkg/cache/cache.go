@@ -20,6 +20,8 @@ type Cache interface {
 	Sync()
 	// SetMember sets the member status for the cache, if applicable.
 	SetMember(members map[string]string) bool
+	// IsK8sPast123 return whether kubernetes version is past 1.32 or not
+	IsK8sPast123() bool
 }
 
 // RunnableCache extends the Cache interface with additional methods for running as a controller-runtime Runnable.
@@ -31,12 +33,17 @@ type RunnableCache interface {
 }
 
 // NewSimple creates a new simple cache instance.
-func NewSimple() Cache {
-	return &simpleCache{vaults: make(map[string]*types.VaultInfo)}
+func NewSimple(past132 bool) Cache {
+	return &simpleCache{vaults: make(map[string]*types.VaultInfo), past132: past132}
 }
 
 type simpleCache struct {
-	vaults map[string]*types.VaultInfo
+	vaults  map[string]*types.VaultInfo
+	past132 bool
+}
+
+func (s *simpleCache) IsK8sPast123() bool {
+	return s.past132
 }
 
 // SetMember is a no-op for simple cache.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"os"
+	"strconv"
 
 	"github.com/bakito/vault-unsealer/controllers"
 	"github.com/bakito/vault-unsealer/pkg/cache"
@@ -13,6 +14,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/client-go/discovery"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -50,7 +52,25 @@ func main() {
 	flag.Parse()
 	logging.SetupLogger(true)
 	podNamespace := os.Getenv(constants.EnvNamespace)
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+
+	cfg := ctrl.GetConfigOrDie()
+
+	discoveryClient := discovery.NewDiscoveryClientForConfigOrDie(cfg)
+	versionInfo, err := discoveryClient.ServerVersion()
+	if err != nil {
+		setupLog.Error(err, "unable to get kubernetes version")
+		os.Exit(1)
+	}
+
+	minor, err := strconv.Atoi(versionInfo.Minor)
+	if err != nil {
+		setupLog.Error(err, "unable to parse kubernetes version")
+		os.Exit(1)
+	}
+
+	past132 := minor >= 33
+
+	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: scheme,
 		Cache: crtlcache.Options{
 			DefaultNamespaces: map[string]crtlcache.Config{
@@ -75,7 +95,7 @@ func main() {
 	ctx := context.TODO()
 	var c cache.Cache
 	if enableSharedCache {
-		k8sCache, err := cache.NewK8s(mgr.GetAPIReader())
+		k8sCache, err := cache.NewK8s(mgr.GetAPIReader(), past132)
 		if err != nil {
 			setupLog.Error(err, "unable to create cache")
 			os.Exit(1)
@@ -87,7 +107,7 @@ func main() {
 		}
 		c = k8sCache
 	} else {
-		c = cache.NewSimple()
+		c = cache.NewSimple(past132)
 	}
 	run(ctx, mgr, podNamespace, c)
 }
