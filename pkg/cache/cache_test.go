@@ -11,7 +11,7 @@ var _ = Describe("SimpleCache", func() {
 	var simpleCache cache.Cache
 
 	BeforeEach(func() {
-		simpleCache = cache.NewSimple()
+		simpleCache = cache.NewSimple(false)
 	})
 
 	Describe("Vaults", func() {

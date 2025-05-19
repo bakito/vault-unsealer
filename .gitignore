@@ -27,3 +27,6 @@ config
 dist
 helm-setup.md
 .run
+
+vault-init.json
+secret-unseal-keys.yaml

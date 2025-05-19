@@ -1,12 +1,12 @@
 # vault-unsealer
 
-A kubernetes controller that can auto unseal vault pods.
+A kubernetes controller that can auto-unseal vault pods.
 
 ## Labels / Annotations
 
 ### StatefulSet
 
-Use the label `vault-unsealer.bakito.net/stateful-set` to unseal a kubernetes vault statefulset in the same namespace
+Use the label `vault-unsealer.bakito.net/stateful-set` to unseal a kubernetes vault StatefulSet in the same namespace
 
 Example: 
 

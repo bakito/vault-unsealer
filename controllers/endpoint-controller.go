@@ -6,6 +6,7 @@ import (
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	corev1 "k8s.io/api/core/v1"
+	discoveryv1 "k8s.io/api/discovery/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -32,7 +33,13 @@ type EndpointsReconciler struct {
 func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	l := log.FromContext(ctx)
 
-	ep := &corev1.Endpoints{}
+	var ep client.Object
+	if r.Cache.IsK8sPast123() {
+		ep = &discoveryv1.EndpointSlice{}
+	} else {
+		ep = &corev1.Endpoints{} //nolint:staticcheck // deprecation is handled
+	}
+
 	err := r.Get(ctx, req.NamespacedName, ep)
 	if err != nil {
 		if kerrors.IsNotFound(err) {
@@ -53,8 +60,15 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *EndpointsReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	var ep client.Object
+	if r.Cache.IsK8sPast123() {
+		ep = &discoveryv1.EndpointSlice{}
+	} else {
+		ep = &corev1.Endpoints{} //nolint:staticcheck // deprecation is handled
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&corev1.Endpoints{}).
+		For(ep).
 		WithEventFilter(predicate.Funcs{
 			CreateFunc: func(e event.CreateEvent) bool {
 				return r.UnsealerSelector.Matches(labels.Set(e.Object.GetLabels()))

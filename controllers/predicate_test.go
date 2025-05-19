@@ -19,7 +19,7 @@ var _ = Describe("PodReconciler", func() {
 
 	BeforeEach(func() {
 		reconciler = &controllers.PodReconciler{
-			Cache: cache.NewSimple(),
+			Cache: cache.NewSimple(false),
 		}
 
 		reconciler.Cache.SetVaultInfoFor("test-statefulset", &types.VaultInfo{})

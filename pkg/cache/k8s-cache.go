@@ -43,14 +43,20 @@ type k8sCache struct {
 	token          string        // Token for authentication.
 	peerToken      string        // Token for peer communication.
 	client         *resty.Client // HTTP client for communication with peers.
+	past132        bool
+}
+
+func (c *k8sCache) IsK8sPast123() bool {
+	return c.past132
 }
 
 // NewK8s creates a new Kubernetes cache instance.
-func NewK8s(reader client.Reader) (RunnableCache, error) {
+func NewK8s(reader client.Reader, past132 bool) (RunnableCache, error) {
 	c := &k8sCache{
 		simpleCache:    simpleCache{vaults: make(map[string]*types.VaultInfo)},
 		reader:         reader,
 		clusterMembers: map[string]string{},
+		past132:        past132,
 	}
 
 	return c, nil

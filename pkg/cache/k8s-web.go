@@ -57,7 +57,7 @@ func (c *k8sCache) webGetInfo(ctx *gin.Context) {
 	}
 
 	// Verify the client and check if it's a peer.
-	peer, err := hierarchy.GetPeers(ctx, c.reader)
+	peer, err := hierarchy.GetPeers(ctx, c.reader, c.past132)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		log.WithValues("ip", ctx.ClientIP()).Error(err, "could not verify client")
