@@ -75,13 +75,15 @@ func GetPeersFrom(obj client.Object) map[string]string {
 		}
 	case *discoveryv1.EndpointSlice:
 		for _, endpoint := range ep.Endpoints {
-			for _, address := range endpoint.Addresses {
-				if address != myIP {
-					name := "N/A"
-					if endpoint.Hostname != nil {
-						name = *endpoint.Hostname
+			if endpoint.Conditions.Ready != nil && *endpoint.Conditions.Ready {
+				for _, address := range endpoint.Addresses {
+					if address != myIP {
+						name := "N/A"
+						if endpoint.TargetRef != nil {
+							name = endpoint.TargetRef.Name
+						}
+						peers[address] = name
 					}
-					peers[address] = name
 				}
 			}
 		}
