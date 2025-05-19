@@ -1,0 +1,38 @@
+name: e2e tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # https://hub.docker.com/r/kindest/node/tags
+        k8s_version: [ "v1.31.9", "v1.32.5", "v1.33.1" ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+
+      - name: Install kind with registry
+        uses: bakito/kind-with-registry-action@main
+        with:
+          node_image: kindest/node:${{ matrix.k8s_version }}
+          kubectl_version: ${{ matrix.k8s_version }}
+
+      - name: Install vault
+        run: |
+          ./testdata/setup-vault.sh
