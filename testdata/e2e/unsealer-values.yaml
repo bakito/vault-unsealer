@@ -1,0 +1,5 @@
+image:
+  # -- Repository to use
+  repository: localhost:5001/vault-unsealer
+  # -- Tag to use
+  tag: e2e
