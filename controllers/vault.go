@@ -155,8 +155,8 @@ func extractUnsealKeys(data map[string]any, v *types.VaultInfo) {
 }
 
 // unseal unseals the Vault using the provided unseal keys.
-func unseal(ctx context.Context, cl *vault.Client, vault *types.VaultInfo) error {
-	for _, key := range vault.UnsealKeys {
+func unseal(ctx context.Context, cl *vault.Client, vi *types.VaultInfo) error {
+	for _, key := range vi.UnsealKeys {
 		resp, err := cl.System.Unseal(ctx, schema.UnsealRequest{Key: key})
 		if err != nil {
 			return err
