@@ -112,7 +112,7 @@ func main() {
 	run(ctx, mgr, podNamespace, c)
 }
 
-func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache cache.Cache) {
+func run(ctx context.Context, mgr manager.Manager, podNamespace string, c cache.Cache) {
 	secretsStatefulSet := &corev1.SecretList{}
 	if err := mgr.GetAPIReader().List(
 		ctx,
@@ -146,7 +146,7 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 	if err := (&controllers.EndpointsReconciler{
 		Client:           mgr.GetClient(),
 		Scheme:           mgr.GetScheme(),
-		Cache:            cache,
+		Cache:            c,
 		UnsealerSelector: sel,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Endpoint")
@@ -155,7 +155,7 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 	if err := (&controllers.PodReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
-		Cache:  cache,
+		Cache:  c,
 	}).SetupWithManager(mgr, secretsStatefulSet.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)
@@ -165,7 +165,7 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, cache ca
 	if err := (&controllers.ExternalHandler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
-		Cache:  cache,
+		Cache:  c,
 	}).SetupWithManager(mgr, secretsExternal.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "External")
 		os.Exit(1)
