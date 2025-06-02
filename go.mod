@@ -1,6 +1,12 @@
 module github.com/bakito/vault-unsealer
 
-go 1.24.1
+go 1.24.3
+
+replace (
+	// resolve with commit id of github.com/hashicorp/vault
+	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.16.1-0.20250529131706-7010adf2c676
+	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.15.3-0.20250529131706-7010adf2c676
+)
 
 require (
 	github.com/gin-gonic/gin v1.10.1
