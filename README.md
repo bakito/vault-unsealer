@@ -1,6 +1,6 @@
 # vault-unsealer
 
-A kubernetes controller that can auto-unseal vault pods.
+A kubernetes controller that can auto-unseal vault/openbao pods.
 
 ## Labels / Annotations
 

@@ -43,7 +43,11 @@ func getVaultAddress(ctx context.Context, pod *corev1.Pod) string {
 		if c.Name == constants.ContainerNameVault || c.Name == constants.ContainerNameOpenbao {
 			// Iterate through environment variables in the container to find the Vault address.
 			for _, e := range c.Env {
-				if e.Name == constants.EnvVaultAddr || e.Name == constants.EnvBaoAddr {
+				envName := constants.EnvVaultAddr
+				if c.Name == constants.ContainerNameOpenbao {
+					envName = constants.EnvBaoAddr
+				}
+				if e.Name == envName {
 					// Parse the Vault URL from the environment variable value.
 					u, err := url.Parse(e.Value)
 					if err == nil {
