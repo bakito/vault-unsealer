@@ -24,13 +24,23 @@ test-ci: manifests generate tb.ginkgo ## Run tests.
 lint: tb.golangci-lint
 	$(TB_GOLANGCI_LINT) run --fix
 
-port-forward:
-	kubectl port-forward pod/vault-0 8200:8200 &
-	kubectl port-forward pod/vault-1 8201:8200 &
-	kubectl port-forward pod/vault-2 8202:8200 &
+
+# Configuration variables
+PORTS = 8200 8201 8202
+BASE_PORT = 8200
+REPLICAS = 0 1 2
+
+# Port forward target for any vault-like service
+port-forward-%:
+	$(foreach idx,$(REPLICAS),\
+		kubectl port-forward -n $* pod/$*-$(idx) $(word $(shell expr $(idx) + 1),$(PORTS)):$(BASE_PORT) & \
+	)
+
+# Alias targets for specific services
+.PHONY: port-forward-openbao port-forward-vault
 
 stop-port-forward:
-	@pkill -f "port-forward pod/vault" || true
+	@pkill -f "port-forward -n" || true
 
 docker-build:
 	docker build -t ghcr.io/bakito/vault-unsealer .
