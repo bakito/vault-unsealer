@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -30,6 +31,9 @@ import (
 var (
 	scheme   = runtime.NewScheme()
 	setupLog = ctrl.Log.WithName("setup")
+
+	addrEnvVarName     string
+	vaultContainerName string
 )
 
 func init() {
@@ -45,6 +49,26 @@ func main() {
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.BoolVar(&enableSharedCache, "shared-cache", false, "Enable shared cache between the operator instances.")
+	flag.StringVar(
+		&vaultContainerName,
+		"container-name",
+		"",
+		fmt.Sprintf(
+			"Override the vault container name. Defaults to (%s | %s).",
+			constants.ContainerNameVault,
+			constants.ContainerNameOpenbao,
+		),
+	)
+	flag.StringVar(
+		&addrEnvVarName,
+		"address-env-var-name",
+		"",
+		fmt.Sprintf(
+			"Override the vault|openbao address env variable. Defaults to (%s for vault | %s for openbao).",
+			constants.EnvVaultAddr,
+			constants.EnvBaoAddr,
+		),
+	)
 	opts := zap.Options{
 		Development: true,
 	}
@@ -153,9 +177,11 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, c cache.
 		os.Exit(1)
 	}
 	if err := (&controllers.PodReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-		Cache:  c,
+		Client:             mgr.GetClient(),
+		Scheme:             mgr.GetScheme(),
+		Cache:              c,
+		VaultContainerName: vaultContainerName,
+		AddrEnvVarName:     addrEnvVarName,
 	}).SetupWithManager(mgr, secretsStatefulSet.Items); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)

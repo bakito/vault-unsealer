@@ -21,7 +21,7 @@ func getStatefulSetFor(pod *corev1.Pod) string {
 }
 
 // getVaultAddress returns the address of the Vault service running in the given Pod.
-func getVaultAddress(ctx context.Context, pod *corev1.Pod) string {
+func getVaultAddress(ctx context.Context, pod *corev1.Pod, containerName, addrEnvName string) string {
 	// Check if development mode is enabled.
 	if schema, ok := constants.DevFlag(constants.EnvDevelopmentModeSchema); ok {
 		// For development mode, return the local Vault addresses based on Pod names.
@@ -40,13 +40,10 @@ func getVaultAddress(ctx context.Context, pod *corev1.Pod) string {
 
 	// Iterate through containers in the Pod to find the Vault container.
 	for _, c := range pod.Spec.Containers {
-		if c.Name == constants.ContainerNameVault || c.Name == constants.ContainerNameOpenbao {
+		if c.Name == containerName || c.Name == constants.ContainerNameVault || c.Name == constants.ContainerNameOpenbao {
 			// Iterate through environment variables in the container to find the Vault address.
 			for _, e := range c.Env {
-				envName := constants.EnvVaultAddr
-				if c.Name == constants.ContainerNameOpenbao {
-					envName = constants.EnvBaoAddr
-				}
+				envName := determineEnvName(c.Name, addrEnvName)
 				if e.Name == envName {
 					// Parse the Vault URL from the environment variable value.
 					u, err := url.Parse(e.Value)
@@ -61,6 +58,18 @@ func getVaultAddress(ctx context.Context, pod *corev1.Pod) string {
 		}
 	}
 
-	// Return an empty string if Vault address cannot be determined.
+	// Return an empty string if the Vault address cannot be determined.
 	return ""
+}
+
+func determineEnvName(containerName, defaultEnvName string) string {
+	if defaultEnvName != "" {
+		return defaultEnvName
+	}
+
+	if containerName == constants.ContainerNameOpenbao {
+		return constants.EnvBaoAddr
+	}
+
+	return constants.EnvVaultAddr
 }

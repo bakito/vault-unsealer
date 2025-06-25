@@ -19,8 +19,10 @@ import (
 // PodReconciler reconciles a Pod object.
 type PodReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
-	Cache  cache.Cache
+	Scheme             *runtime.Scheme
+	Cache              cache.Cache
+	VaultContainerName string
+	AddrEnvVarName     string
 }
 
 //+kubebuilder:rbac:groups=,resources=pods;secrets,verbs=get;list;watch
@@ -48,7 +50,7 @@ func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 // reconcileVaultPod reconciles a Vault Pod.
 func (r *PodReconciler) reconcileVaultPod(ctx context.Context, l logr.Logger, pod *corev1.Pod) (ctrl.Result, error) {
 	// Get the address of the Vault server.
-	addr := getVaultAddress(ctx, pod)
+	addr := getVaultAddress(ctx, pod, r.VaultContainerName, r.AddrEnvVarName)
 	cl, err := newClient(addr, true)
 	if err != nil {
 		return reconcile.Result{}, err
