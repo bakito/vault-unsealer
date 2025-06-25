@@ -19,6 +19,7 @@ jobs:
       matrix:
         # https://hub.docker.com/r/kindest/node/tags
         k8s_version: [ "v1.31.9", "v1.32.5", "v1.33.1" ]
+        vault_implementation: ["vault", "openbao"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,47 +30,47 @@ jobs:
           node_image: kindest/node:${{ matrix.k8s_version }}
           kubectl_version: ${{ matrix.k8s_version }}
 
-      - name: ⚙️ Install openbao
-        run: ./testdata/e2e/openbao-01-install.sh
+      - name: ⚙️ Install ${{ matrix.vault_implementation }}
+        run: ./testdata/e2e/${{ matrix.vault_implementation }}-01-install.sh
 
-        # build image until openbao is running
+        # build image until ${{ matrix.vault_implementation }} is running
       - name: 🖼 Build image
         run: ./testdata/e2e/buildImage.sh
 
-      - name: ⚙️ Setup openbao
-        run: ./testdata/e2e/openbao-02-setup.sh
+      - name: ⚙️ Setup ${{ matrix.vault_implementation }}
+        run: ./testdata/e2e/${{ matrix.vault_implementation }}-02-setup.sh
 
       - name: ⚙️ Install vault unsealer
-        run: ./testdata/e2e/install-vault-unsealer.sh openbao
+        run: ./testdata/e2e/install-vault-unsealer.sh ${{ matrix.vault_implementation }}
 
-      - name: ✔️ Check openbao
-        run: ./testdata/e2e/openbao-03-check.sh
-        id: run_check_openbao
+      - name: ✔️ Check ${{ matrix.vault_implementation }}
+        run: ./testdata/e2e/${{ matrix.vault_implementation }}-03-check.sh
+        id: run_check_result
         # continue on error to show logs
         continue-on-error: true
 
       - name: 🪵 Print Pod logs
         run: |
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '🔒 openbao 0 Pod logs' >> $GITHUB_STEP_SUMMARY
+          echo '🔒 ${{ matrix.vault_implementation }} 0 Pod logs' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          kubectl logs -n openbao openbao-0 >> $GITHUB_STEP_SUMMARY
+          kubectl logs -n ${{ matrix.vault_implementation }} ${{ matrix.vault_implementation }}-0 >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '🔒 openbao 1 Pod logs' >> $GITHUB_STEP_SUMMARY
+          echo '🔒 ${{ matrix.vault_implementation }} 1 Pod logs' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          kubectl logs -n openbao openbao-1 >> $GITHUB_STEP_SUMMARY
+          kubectl logs -n ${{ matrix.vault_implementation }} ${{ matrix.vault_implementation }}-1 >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '🔒 openbao 2 Pod logs' >> $GITHUB_STEP_SUMMARY
+          echo '🔒 ${{ matrix.vault_implementation }} 2 Pod logs' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          kubectl logs -n openbao openbao-2 >> $GITHUB_STEP_SUMMARY
+          kubectl logs -n ${{ matrix.vault_implementation }} ${{ matrix.vault_implementation }}-2 >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo '🪵 Unsealer Pod logs' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          POD_NAME=$(kubectl get pod -n openbao -l app.kubernetes.io/instance=vault-unsealer -o name)
-          kubectl logs -n openbao ${POD_NAME} >> $GITHUB_STEP_SUMMARY
+          POD_NAME=$(kubectl get pod -n ${{ matrix.vault_implementation }} -l app.kubernetes.io/instance=vault-unsealer -o name)
+          kubectl logs -n ${{ matrix.vault_implementation }} ${POD_NAME} >> $GITHUB_STEP_SUMMARY
 
-      - name: 🔍 Fail if 'Check openbao' failed
-        if: steps.run_check_openbao.outcome=='failure'
+      - name: 🔍 Fail if 'Check ${{ matrix.vault_implementation }}' failed
+        if: steps.run_check_result.outcome=='failure'
         run: |
-          echo "Step 'Check openbao' failed: Check 'Print logs Unsealer' for errors"
+          echo "Step 'Check ${{ matrix.vault_implementation }}' failed: Check 'Print logs Unsealer' for errors"
           exit 1

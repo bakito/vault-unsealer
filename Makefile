@@ -24,13 +24,18 @@ test-ci: manifests generate tb.ginkgo ## Run tests.
 lint: tb.golangci-lint
 	$(TB_GOLANGCI_LINT) run --fix
 
-port-forward:
-	kubectl port-forward pod/vault-0 8200:8200 &
-	kubectl port-forward pod/vault-1 8201:8200 &
-	kubectl port-forward pod/vault-2 8202:8200 &
+port-forward-openbao:
+	kubectl port-forward -n openbao pod/openbao-0 8200:8200 &
+	kubectl port-forward -n openbao pod/openbao-1 8201:8200 &
+	kubectl port-forward -n openbao pod/openbao-2 8202:8200 &
+
+port-forward-vault:
+	kubectl port-forward -n vault pod/vault-0 8200:8200 &
+	kubectl port-forward -n vault pod/vault-1 8201:8200 &
+	kubectl port-forward -n vault pod/vault-2 8202:8200 &
 
 stop-port-forward:
-	@pkill -f "port-forward pod/vault" || true
+	@pkill -f "port-forward -n" || true
 
 docker-build:
 	docker build -t ghcr.io/bakito/vault-unsealer .

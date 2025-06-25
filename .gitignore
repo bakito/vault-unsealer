@@ -28,5 +28,5 @@ dist
 helm-setup.md
 .run
 
-vault-init.json
+*-init.json
 secret-unseal-keys.yaml
