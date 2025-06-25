@@ -40,10 +40,10 @@ func getVaultAddress(ctx context.Context, pod *corev1.Pod) string {
 
 	// Iterate through containers in the Pod to find the Vault container.
 	for _, c := range pod.Spec.Containers {
-		if c.Name == constants.ContainerNameVault {
+		if c.Name == constants.ContainerNameVault || c.Name == constants.ContainerNameOpenbao {
 			// Iterate through environment variables in the container to find the Vault address.
 			for _, e := range c.Env {
-				if e.Name == constants.EnvVaultAddr {
+				if e.Name == constants.EnvVaultAddr || e.Name == constants.EnvBaoAddr {
 					// Parse the Vault URL from the environment variable value.
 					u, err := url.Parse(e.Value)
 					if err == nil {
