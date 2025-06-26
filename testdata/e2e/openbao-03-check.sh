@@ -17,5 +17,5 @@ done
 ROOT_TOKEN=$(cat openbao-init.json | jq -r '.root_token')
 
 # Login and verify
-kubectl exec -n $NAMESPACE "${PODS[0]}" -- vault login "$ROOT_TOKEN"
-kubectl exec -n $NAMESPACE "${PODS[0]}" -- vault operator raft list-peers
+kubectl exec -n $NAMESPACE "${PODS[0]}" -- bao login "$ROOT_TOKEN"
+kubectl exec -n $NAMESPACE "${PODS[0]}" -- bao operator raft list-peers
