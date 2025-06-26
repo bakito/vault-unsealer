@@ -24,9 +24,9 @@ ROOT_TOKEN=$(echo "$INIT_OUTPUT" | jq -r '.root_token')
 
 # Unseal leader pod
 echo "Unsealing leader openbao pod..."
-
-kubectl exec -n $NAMESPACE "$LEADER_POD" -- bao operator unseal "${UNSEAL_KEYS[0]}"
-kubectl exec -n $NAMESPACE "$LEADER_POD" -- bao operator unseal "${UNSEAL_KEYS[1]}"
+for ((i=0; i<RAFT_KEY_THRESHOLD; i++)); do
+    kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao operator unseal "${UNSEAL_KEYS[$i]}"
+done
 
 echo "Initializing and unsealing other openbao pods..."
 for ((i=1; i<${#PODS[@]}; i++)); do
