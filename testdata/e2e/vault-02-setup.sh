@@ -24,9 +24,10 @@ ROOT_TOKEN=$(echo "$INIT_OUTPUT" | jq -r '.root_token')
 
 # Unseal leader pod
 echo "Unsealing leader Vault pod..."
+for ((i=0; i<RAFT_KEY_THRESHOLD; i++)); do
+    kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- vault operator unseal "${UNSEAL_KEYS[$i]}"
+done
 
-kubectl exec -n $NAMESPACE "$LEADER_POD" -- vault operator unseal "${UNSEAL_KEYS[0]}"
-kubectl exec -n $NAMESPACE "$LEADER_POD" -- vault operator unseal "${UNSEAL_KEYS[1]}"
 
 echo "Initializing and unsealing other Vault pods..."
 for ((i=1; i<${#PODS[@]}; i++)); do
