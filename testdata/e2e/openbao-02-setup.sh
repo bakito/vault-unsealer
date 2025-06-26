@@ -15,7 +15,7 @@ LEADER_POD="${PODS[0]}"
 
 # Initialize openbao on first pod
 echo "Initializing openbao on ${PODS[0]}..."
-INIT_OUTPUT=$(kubectl exec -n $NAMESPACE "${PODS[0]}" -- vault operator init -format=json -key-shares=$RAFT_JOIN_THRESHOLD -key-threshold=$RAFT_KEY_THRESHOLD)
+INIT_OUTPUT=$(kubectl exec -n $NAMESPACE "${PODS[0]}" -- bao operator init -format=json -key-shares=$RAFT_JOIN_THRESHOLD -key-threshold=$RAFT_KEY_THRESHOLD)
 echo "$INIT_OUTPUT" > openbao-init.json
 
 # Extract keys
@@ -25,16 +25,16 @@ ROOT_TOKEN=$(echo "$INIT_OUTPUT" | jq -r '.root_token')
 # Unseal leader pod
 echo "Unsealing leader openbao pod..."
 
-kubectl exec -n $NAMESPACE "$LEADER_POD" -- vault operator unseal "${UNSEAL_KEYS[0]}"
-kubectl exec -n $NAMESPACE "$LEADER_POD" -- vault operator unseal "${UNSEAL_KEYS[1]}"
+kubectl exec -n $NAMESPACE "$LEADER_POD" -- bao operator unseal "${UNSEAL_KEYS[0]}"
+kubectl exec -n $NAMESPACE "$LEADER_POD" -- bao operator unseal "${UNSEAL_KEYS[1]}"
 
 echo "Initializing and unsealing other openbao pods..."
 for ((i=1; i<${#PODS[@]}; i++)); do
   FOLLOWER="${PODS[$i]}"
-  kubectl exec -n $NAMESPACE "$FOLLOWER" -- vault operator raft join "http://${LEADER_POD}.openbao-internal:8200"
+  kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator raft join "http://${LEADER_POD}.openbao-internal:8200"
   #echo "Unsealing $POD..."
-  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- vault operator unseal "${UNSEAL_KEYS[0]}"
-  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- vault operator unseal "${UNSEAL_KEYS[1]}"
+  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[0]}"
+  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[1]}"
 done
 
 echo "Write openbao unsealer secret"
