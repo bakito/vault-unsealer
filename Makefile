@@ -57,7 +57,7 @@ test-release: tb.goreleaser
 	$(TB_GORELEASER) --skip=publish --snapshot --clean
 
 .PHONY: docs
-docs: tb.helm-docs update-docs
+helm-docs: tb.helm-docs update-docs
 	@$(TB_HELM_DOCS)
 
 # Detect OS
