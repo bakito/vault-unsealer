@@ -15,8 +15,8 @@ require (
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/vault v1.19.5
 	github.com/hashicorp/vault-client-go v0.4.3
-	github.com/onsi/ginkgo/v2 v2.25.1
-	github.com/onsi/gomega v1.38.1
+	github.com/onsi/ginkgo/v2 v2.25.2
+	github.com/onsi/gomega v1.38.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/sync v0.16.0
 	gopkg.in/resty.v1 v1.12.0
