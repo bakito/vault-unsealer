@@ -162,7 +162,9 @@ linters:
           disabled: true
         - name: unused-parameter
           disabled: true
-        - name: unused-receiver
+        - name: var-naming
+          disabled: true
+        - name: enforce-switch-style
           disabled: true
     staticcheck:
       checks:

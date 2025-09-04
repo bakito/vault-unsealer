@@ -17,7 +17,7 @@ func (r *PodReconciler) Update(e event.UpdateEvent) bool {
 }
 
 // Delete is invoked when a Pod is deleted.
-func (r *PodReconciler) Delete(_ event.DeleteEvent) bool {
+func (*PodReconciler) Delete(_ event.DeleteEvent) bool {
 	return false
 }
 
