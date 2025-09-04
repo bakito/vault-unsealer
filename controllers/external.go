@@ -143,7 +143,7 @@ func (r *ExternalHandler) handleExternal(
 	}
 }
 
-func (r *ExternalHandler) getInterval(ctx context.Context, secret corev1.Secret) time.Duration {
+func (*ExternalHandler) getInterval(ctx context.Context, secret corev1.Secret) time.Duration {
 	str := secret.Labels[constants.LabelExternal]
 	duration, err := time.ParseDuration(str)
 	if err != nil {
@@ -154,7 +154,7 @@ func (r *ExternalHandler) getInterval(ctx context.Context, secret corev1.Secret)
 	return duration
 }
 
-func (r *ExternalHandler) getSourceClient(secret corev1.Secret) (*vault.Client, error) {
+func (*ExternalHandler) getSourceClient(secret corev1.Secret) (*vault.Client, error) {
 	src, ok := secret.Annotations[constants.AnnotationExternalSource]
 	if !ok {
 		return nil, errors.New("no source found")
@@ -163,7 +163,7 @@ func (r *ExternalHandler) getSourceClient(secret corev1.Secret) (*vault.Client, 
 	return newClient(src, false)
 }
 
-func (r *ExternalHandler) getTargetClients(secret corev1.Secret) ([]*vault.Client, error) {
+func (*ExternalHandler) getTargetClients(secret corev1.Secret) ([]*vault.Client, error) {
 	trgt, ok := secret.Annotations[constants.AnnotationExternalTargets]
 	if !ok {
 		return nil, errors.New("no targets found")

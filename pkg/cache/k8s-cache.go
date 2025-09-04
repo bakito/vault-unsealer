@@ -79,7 +79,7 @@ func (c *k8sCache) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 // NeedLeaderElection indicates whether leader election is needed for the cache.
-func (c *k8sCache) NeedLeaderElection() bool {
+func (*k8sCache) NeedLeaderElection() bool {
 	return false
 }
 
@@ -166,7 +166,7 @@ func (c *k8sCache) handleAuth(ctx *gin.Context) bool {
 }
 
 // getAuthToken extracts the authentication token from the request headers.
-func (c *k8sCache) getAuthToken(ctx *gin.Context) (string, bool) {
+func (*k8sCache) getAuthToken(ctx *gin.Context) (string, bool) {
 	auth := ctx.GetHeader("Authorization")
 	if auth == "" {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": http.StatusUnauthorized})

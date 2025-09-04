@@ -47,13 +47,13 @@ func (s *simpleCache) IsK8sPast123() bool {
 }
 
 // SetMember is a no-op for simple cache.
-func (s *simpleCache) SetMember(_ map[string]string) bool {
+func (*simpleCache) SetMember(_ map[string]string) bool {
 	// No-op for simple cache
 	return false
 }
 
 // Sync is a no-op for simple cache.
-func (s *simpleCache) Sync() {
+func (*simpleCache) Sync() {
 	// No-op for simple cache
 }
 
@@ -77,7 +77,7 @@ func (s *simpleCache) SetVaultInfoFor(name string, info *types.VaultInfo) {
 }
 
 // StartCache starts the cache, but it's a no-op for simple cache.
-func (s *simpleCache) StartCache(_ context.Context) error {
+func (*simpleCache) StartCache(_ context.Context) error {
 	// No-op for simple cache
 	return nil
 }
