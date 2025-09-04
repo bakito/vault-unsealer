@@ -1,11 +1,11 @@
 module github.com/bakito/vault-unsealer
 
-go 1.24.4
+go 1.25.0
 
 replace (
 	// resolve with commit id of github.com/hashicorp/vault
-	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.16.1-0.20250529131706-7010adf2c676
-	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.15.3-0.20250529131706-7010adf2c676
+	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.20.1-0.20250827145327-7665ff29d77e
+	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.18.1-0.20250827145327-7665ff29d77e
 )
 
 require (
