@@ -18,7 +18,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.25.2
 	github.com/onsi/gomega v1.38.2
 	go.uber.org/zap v1.27.0
-	golang.org/x/sync v0.16.0
+	golang.org/x/sync v0.17.0
 	gopkg.in/resty.v1 v1.12.0
 	k8s.io/api v0.34.0
 	k8s.io/apimachinery v0.34.0
