@@ -18,6 +18,13 @@ jobs:
         with:
           go-version-file: "go.mod"
 
+      - 'name': 'Set up tools cache'
+        'uses': 'actions/cache@v4'
+        'with':
+          'path': "${{ github.workspace }}/bin"
+          'key': "${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}"
+          'restore-keys': '${{ runner.os }}-${{ github.job }}-tools-'
+
       - name: Lint
         run: make lint
 
@@ -32,6 +39,13 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version-file: "go.mod"
+
+      - 'name': 'Set up tools cache'
+        'uses': 'actions/cache@v4'
+        'with':
+          'path': "${{ github.workspace }}/bin"
+          'key': "${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}"
+          'restore-keys': '${{ runner.os }}-${{ github.job }}-tools-'
 
       - name: Test
         run: make test-ci
@@ -87,6 +101,13 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version-file: "go.mod"
+
+      - 'name': 'Set up tools cache'
+        'uses': 'actions/cache@v4'
+        'with':
+          'path': "${{ github.workspace }}/bin"
+          'key': "${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}"
+          'restore-keys': '${{ runner.os }}-${{ github.job }}-tools-'
 
       - name: Test Release
         run: make test-release
