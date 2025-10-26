@@ -43,7 +43,7 @@ func (c *k8sCache) AskPeers(ctx context.Context) error {
 	for ip, name := range peers {
 		l := log.WithValues("name", name, "ip", ip)
 		l.Info("requesting cache info from peer")
-		resp, err := cl.R().Get(fmt.Sprintf("http://%s/info", net.JoinHostPort(ip, strconv.Itoa(apiPort))))
+		resp, err := cl.R().Get(fmt.Sprintf("http://%s/info", net.JoinHostPort(ip, strconv.Itoa(apiPort)))) //nolint:revive
 
 		if err != nil {
 			l.Error(err, "could request info")

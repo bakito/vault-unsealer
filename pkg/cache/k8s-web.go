@@ -72,7 +72,7 @@ func (c *k8sCache) webGetInfo(ctx *gin.Context) {
 	cl.SetTimeout(time.Second)
 	resp, err := cl.R().
 		SetBody(&info{Vaults: c.vaults, Token: c.token}).
-		Put(fmt.Sprintf("http://%s/info", net.JoinHostPort(ctx.ClientIP(), strconv.Itoa(apiPort))))
+		Put(fmt.Sprintf("http://%s/info", net.JoinHostPort(ctx.ClientIP(), strconv.Itoa(apiPort)))) //nolint:revive
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
