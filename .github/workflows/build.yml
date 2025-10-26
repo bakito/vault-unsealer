@@ -24,7 +24,6 @@ jobs:
         with:
           path: |
             ~/.cache/go-build
-            ~/go/pkg/mod
           key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-go-mod-
@@ -59,7 +58,6 @@ jobs:
         with:
           path: |
             ~/.cache/go-build
-            ~/go/pkg/mod
           key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-go-mod-
@@ -134,7 +132,6 @@ jobs:
         with:
           path: |
             ~/.cache/go-build
-            ~/go/pkg/mod
           key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-go-mod-
