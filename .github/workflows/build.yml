@@ -18,23 +18,6 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      - name: Determine GOMODCACHE
-        id: goenv
-        run: |
-          echo "gomodcache=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
-          echo "gopath=$(go env GOPATH)" >> $GITHUB_OUTPUT
-
-      - name: "Debug: list module cache before restore"
-        run: |
-          echo "GOMODCACHE=${{ steps.goenv.outputs.gomodcache }}"
-          ls -la "${{ steps.goenv.outputs.gomodcache }}" || true
-
-      - name: Clean module cache (avoid tar conflicts)
-        run: |
-          echo "Cleaning module cache at $GOMODCACHE"
-          go clean -modcache
-          # or: rm -rf "${{ steps.goenv.outputs.gomodcache }}" || true
-
       # Cache Go build cache and module cache (speeds up module downloads & rebuilds)
       - name: Cache Go modules and build cache
         uses: actions/cache@v4
