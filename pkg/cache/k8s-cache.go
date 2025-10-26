@@ -137,7 +137,7 @@ func (c *k8sCache) SetVaultInfoFor(statefulSet string, info *types.VaultInfo) {
 			}
 			resp, err := c.client.R().
 				SetBody(info).
-				Post(fmt.Sprintf("http://%s/sync/%s", net.JoinHostPort(ip, strconv.Itoa(apiPort)), statefulSet))
+				Post(fmt.Sprintf("http://%s/sync/%s", net.JoinHostPort(ip, strconv.Itoa(apiPort)), statefulSet)) //nolint:revive
 			if err != nil {
 				log.WithValues("pod", name, "stateful-set", statefulSet).Error(err, "could not send owner info")
 			} else if resp.StatusCode() != http.StatusOK {

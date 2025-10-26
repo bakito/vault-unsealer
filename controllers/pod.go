@@ -26,14 +26,11 @@ func getVaultAddress(ctx context.Context, pod *corev1.Pod, containerName, addrEn
 	if schema, ok := constants.DevFlag(constants.EnvDevelopmentModeSchema); ok {
 		// For development mode, return the local Vault addresses based on Pod names.
 		switch pod.Name {
-		case "vault-0":
-		case "openbao-0":
+		case "vault-0", "openbao-0":
 			return schema + "://localhost:8200"
-		case "vault-1":
-		case "openbao-1":
+		case "vault-1", "openbao-1":
 			return schema + "://localhost:8201"
-		case "vault-2":
-		case "openbao-2":
+		case "vault-2", "openbao-2":
 			return schema + "://localhost:8202"
 		}
 	}

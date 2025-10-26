@@ -18,12 +18,42 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      - 'name': 'Set up tools cache'
-        'uses': 'actions/cache@v4'
-        'with':
-          'path': "${{ github.workspace }}/bin"
-          'key': "${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}"
-          'restore-keys': '${{ runner.os }}-${{ github.job }}-tools-'
+      - name: Determine GOMODCACHE
+        id: goenv
+        run: |
+          echo "gomodcache=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
+          echo "gopath=$(go env GOPATH)" >> $GITHUB_OUTPUT
+
+      - name: "Debug: list module cache before restore"
+        run: |
+          echo "GOMODCACHE=${{ steps.goenv.outputs.gomodcache }}"
+          ls -la "${{ steps.goenv.outputs.gomodcache }}" || true
+
+      - name: Clean module cache (avoid tar conflicts)
+        run: |
+          echo "Cleaning module cache at $GOMODCACHE"
+          go clean -modcache
+          # or: rm -rf "${{ steps.goenv.outputs.gomodcache }}" || true
+
+      # Cache Go build cache and module cache (speeds up module downloads & rebuilds)
+      - name: Cache Go modules and build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-go-mod-
+
+      # Cache toolbox binaries produced by .toolbox.mk
+      - name: Cache toolbox binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/bin
+          key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-tools-
 
       - name: Lint
         run: make lint
@@ -40,12 +70,25 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      - 'name': 'Set up tools cache'
-        'uses': 'actions/cache@v4'
-        'with':
-          'path': "${{ github.workspace }}/bin"
-          'key': "${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}"
-          'restore-keys': '${{ runner.os }}-${{ github.job }}-tools-'
+      # Cache Go build cache and module cache (speeds up module downloads & rebuilds)
+      - name: Cache Go modules and build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-go-mod-
+
+      # Cache toolbox binaries produced by .toolbox.mk
+      - name: Cache toolbox binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/bin
+          key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-tools-
 
       - name: Test
         run: make test-ci
@@ -102,12 +145,25 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      - 'name': 'Set up tools cache'
-        'uses': 'actions/cache@v4'
-        'with':
-          'path': "${{ github.workspace }}/bin"
-          'key': "${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}"
-          'restore-keys': '${{ runner.os }}-${{ github.job }}-tools-'
+      # Cache Go build cache and module cache (speeds up module downloads & rebuilds)
+      - name: Cache Go modules and build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-go-mod-
+
+      # Cache toolbox binaries produced by .toolbox.mk
+      - name: Cache toolbox binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/bin
+          key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-tools-
 
       - name: Test Release
         run: make test-release
