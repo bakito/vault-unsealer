@@ -18,24 +18,11 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      # Cache Go build cache and module cache (speeds up module downloads & rebuilds)
-      - name: Cache Go modules and build cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-          key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-go-mod-
-
-      # Cache toolbox binaries produced by .toolbox.mk
       - name: Cache toolbox binaries
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/bin
           key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-tools-
 
       - name: Lint
         run: make lint
@@ -52,24 +39,11 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      # Cache Go build cache and module cache (speeds up module downloads & rebuilds)
-      - name: Cache Go modules and build cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-          key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-go-mod-
-
-      # Cache toolbox binaries produced by .toolbox.mk
       - name: Cache toolbox binaries
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/bin
-          key: ${{ runner.os }}-${{ github.job }}-toools-${{ hashFiles('.toolbox.mk') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-toools-
+          key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
 
       - name: Test
         run: make test-ci
@@ -126,24 +100,11 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      # Cache Go build cache and module cache (speeds up module downloads & rebuilds)
-      - name: Cache Go modules and build cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-          key: ${{ runner.os }}-${{ github.job }}-go-mod-${{ hashFiles('go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-go-mod-
-
-      # Cache toolbox binaries produced by .toolbox.mk
       - name: Cache toolbox binaries
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/bin
           key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-tools-
 
       - name: Test Release
         run: make test-release
