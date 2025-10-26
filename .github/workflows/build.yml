@@ -67,9 +67,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/bin
-          key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
+          key: ${{ runner.os }}-${{ github.job }}-toools-${{ hashFiles('.toolbox.mk') }}
           restore-keys: |
-            ${{ runner.os }}-${{ github.job }}-tools-
+            ${{ runner.os }}-${{ github.job }}-toools-
 
       - name: Test
         run: make test-ci
