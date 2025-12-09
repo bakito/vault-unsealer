@@ -5,11 +5,12 @@ set -e
 # Variables
 NAMESPACE="openbao"
 
-kubectl get pods -A -o wide
+echo "Waiting for openbao statefulset to be ready..."
+kubectl wait --for=jsonpath='{.status.replicas}'=3 --timeout=180s -n $NAMESPACE statefulset/openbao
 
 PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=openbao -o jsonpath="{.items[*].metadata.name}"))
 
-echo "Waiting for openbao pods to be ready..."
+echo "Waiting for openbao follower pods to be ready..."
 for ((i=1; i<${#PODS[@]}; i++)); do
   FOLLOWER="${PODS[$i]}"
   kubectl wait --for=condition=ready pod $FOLLOWER -n $NAMESPACE --timeout=60s

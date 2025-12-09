@@ -6,6 +6,10 @@ set -e
 NAMESPACE="vault"
 
 
+echo "Waiting for vault statefulset to be ready..."
+kubectl wait --for=jsonpath='{.status.replicas}'=3 --timeout=180s -n $NAMESPACE statefulset/vault
+
+
 PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=vault -o jsonpath="{.items[*].metadata.name}"))
 
 echo "Waiting for Vault pods to be ready..."
