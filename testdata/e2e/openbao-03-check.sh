@@ -12,7 +12,7 @@ PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=openbao -o json
 echo "Waiting for openbao pods to be ready..."
 for ((i=1; i<${#PODS[@]}; i++)); do
   FOLLOWER="${PODS[$i]}"
-  kubectl wait --for=condition=ready pod $FOLLOWER -n $NAMESPACE --timeout=30s
+  kubectl wait --for=condition=ready pod $FOLLOWER -n $NAMESPACE --timeout=60s
 done
 
 ROOT_TOKEN=$(cat openbao-init.json | jq -r '.root_token')
