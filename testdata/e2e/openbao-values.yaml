@@ -1,3 +1,4 @@
+fullnameOverride: openbao
 server:
   ha:
     enabled: true
