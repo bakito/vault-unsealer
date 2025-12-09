@@ -5,7 +5,7 @@ set -e
 # Variables
 NAMESPACE="openbao"
 
-kubectl get pods -n $NAMESPACE -o wide
+kubectl get pods -A -o wide
 
 PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=openbao -o jsonpath="{.items[*].metadata.name}"))
 
