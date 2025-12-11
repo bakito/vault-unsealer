@@ -13,6 +13,9 @@ SECRET_FILE_UNSEAL_KEYS="secret-unseal-keys.yaml"
 PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=openbao -o jsonpath="{.items[*].metadata.name}"))
 LEADER_POD="${PODS[0]}"
 
+echo "Wait for pod ${LEADER_POD}..."
+kubectl wait -n "$NAMESPACE" --for=jsonpath='{.status.phase}'=Running "pod/$LEADER_POD" --timeout=180s
+
 # Initialize openbao on first pod
 echo "Initializing openbao on ${PODS[0]}..."
 INIT_OUTPUT=$(kubectl exec -n $NAMESPACE "${PODS[0]}" -- bao operator init -format=json -key-shares=$RAFT_JOIN_THRESHOLD -key-threshold=$RAFT_KEY_THRESHOLD)

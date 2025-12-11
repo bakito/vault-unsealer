@@ -5,7 +5,6 @@ set -e
 # Variables
 NAMESPACE="openbao"
 
-
 PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=openbao -o jsonpath="{.items[*].metadata.name}"))
 
 echo "Waiting for openbao pods to be ready..."
