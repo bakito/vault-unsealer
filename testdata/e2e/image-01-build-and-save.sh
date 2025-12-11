@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 docker build -f Dockerfile --build-arg VERSION=e2e-tests -t localhost:5001/vault-unsealer:e2e .
-docker save localhost:5001/vault-unsealer:e2e -o vault-unsealer-e2e.tar
+docker save localhost:5001/vault-unsealer:e2e -o /tmp/image.tar

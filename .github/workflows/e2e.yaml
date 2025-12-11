@@ -21,13 +21,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: 🖼 Build image
-        run: ./testdata/e2e/buildImage.sh
+        run: ./testdata/e2e/image-01-build-and-save.sh
 
       - name: 📦 Upload image tar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
-          name: vault-unsealer-e2e-tar
-          path: vault-unsealer-e2e.tar
+          name: image-tar
+          path: /tmp/image.tar
           retention-days: 1
 
   e2e:
@@ -36,8 +36,8 @@ jobs:
     strategy:
       matrix:
         # https://hub.docker.com/r/kindest/node/tags
-        k8s_version: [ "v1.32.8" ]#, "v1.33.4" , "v1.34.0" ]
-        vault_implementation: ["openbao"]
+        k8s_version: [ "v1.32.8", "v1.33.4" , "v1.34.0" ]
+        vault_implementation: ["vault", "openbao"]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,13 +52,13 @@ jobs:
         run: ./testdata/e2e/${{ matrix.vault_implementation }}-01-install.sh
 
       - name: 📥 Download image tar
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
-          name: vault-unsealer-e2e-tar
+          name: image-tar
           path: /tmp
 
       - name: 🖼 Load image
-        run: ./testdata/e2e/loadImage.sh
+        run: ./testdata/e2e/image-02-load-and-push.sh
 
       - name: ⚙️ Setup ${{ matrix.vault_implementation }}
         run: ./testdata/e2e/${{ matrix.vault_implementation }}-02-setup.sh

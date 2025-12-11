@@ -1,5 +1,6 @@
 fullnameOverride: openbao
 server:
+  podManagementPolicy: "Parallel" # for e2e test we want to start all pods in parallel
   ha:
     enabled: true
     raft:
