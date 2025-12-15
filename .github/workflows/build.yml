@@ -19,7 +19,7 @@ jobs:
           go-version-file: "go.mod"
 
       - name: Cache toolbox binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}/bin
           key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
@@ -40,7 +40,7 @@ jobs:
           go-version-file: "go.mod"
 
       - name: Cache toolbox binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}/bin
           key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
@@ -101,7 +101,7 @@ jobs:
           go-version-file: "go.mod"
 
       - name: Cache toolbox binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}/bin
           key: ${{ runner.os }}-${{ github.job }}-tools-${{ hashFiles('.toolbox.mk') }}
