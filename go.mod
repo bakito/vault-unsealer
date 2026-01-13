@@ -2,6 +2,12 @@ module github.com/bakito/vault-unsealer
 
 go 1.25.5
 
+replace (
+	// resolve with commit id of github.com/hashicorp/vault
+	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.21.1-0.20260106163305-781ba452d731
+	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.19.1-0.20260106163305-781ba452d731
+)
+
 require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-logr/logr v1.4.3
