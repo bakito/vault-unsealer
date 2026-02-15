@@ -1,6 +1,6 @@
 module github.com/bakito/vault-unsealer
 
-go 1.25.5
+go 1.26
 
 replace (
 	// resolve with commit id of github.com/hashicorp/vault
