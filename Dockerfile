@@ -1,19 +1,37 @@
-FROM golang:1.26-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS builder
+
 WORKDIR /build
 
-RUN apk update && apk add upx
+ARG TARGETOS=linux
+ARG TARGETARCH
+
+# Copy go module files first for better caching
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
+
+# Combine RUN commands to reduce layers
+RUN --mount=type=cache,target=/apk \
+    apk add --cache-dir /apk upx
+
+# Copy the rest
 COPY . .
 
 ARG VERSION=main
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=linux
+ENV CGO_ENABLED=0 \
+    GOOS=$TARGETOS \
+    GOARCH=$TARGETARCH
 
-RUN go build -a -installsuffix cgo -ldflags="-w -s -X github.com/bakito/vault-unsealer/version.Version=${VERSION}" -o vault-unsealer main.go && \
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go build \
+      -a \
+      -installsuffix cgo \
+      -ldflags="-w -s -X github.com/bakito/vault-unsealer/version.Version=${VERSION}" \
+      -o vault-unsealer \
+      main.go && \
     upx -q vault-unsealer
 
-# application image
-
+# Final image
 FROM scratch
 
 LABEL maintainer="bakito <github@bakito.ch>"
