@@ -4,8 +4,8 @@ go 1.26
 
 replace (
 	// resolve with commit id of github.com/hashicorp/vault
-	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.21.1-0.20260106163305-781ba452d731
-	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.19.1-0.20260106163305-781ba452d731
+	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.21.1-0.20260203225630-f4f0f4eb7f46
+	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.19.1-0.20260203225630-f4f0f4eb7f46
 )
 
 require (
@@ -13,7 +13,7 @@ require (
 	github.com/go-logr/logr v1.4.3
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
-	github.com/hashicorp/vault v1.21.2
+	github.com/hashicorp/vault v1.21.3
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
