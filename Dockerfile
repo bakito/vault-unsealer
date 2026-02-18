@@ -9,7 +9,10 @@ ARG TARGETARCH
 COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
-RUN apk update && apk add upx
+# Combine RUN commands to reduce layers
+RUN --mount=type=cache,target=/apk \
+    apk add --cache-dir /apk upx
+
 # Copy the rest
 COPY . .
 
@@ -17,13 +20,18 @@ ARG VERSION=main
 ENV CGO_ENABLED=0 \
     GOOS=$TARGETOS \
     GOARCH=$TARGETARCH
+
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    go build -a -installsuffix cgo -ldflags="-w -s -X github.com/bakito/vault-unsealer/version.Version=${VERSION}" -o vault-unsealer main.go && \
+    go build \
+      -a \
+      -installsuffix cgo \
+      -ldflags="-w -s -X github.com/bakito/vault-unsealer/version.Version=${VERSION}" \
+      -o vault-unsealer \
+      main.go && \
     upx -q vault-unsealer
 
-# application image
-
+# Final image
 FROM scratch
 
 LABEL maintainer="bakito <github@bakito.ch>"
