@@ -53,6 +53,9 @@ release: tb.semver tb.goreleaser
 test-release: tb.goreleaser
 	$(TB_GORELEASER) --skip=publish --snapshot --clean
 
+check-vulnerabilities:
+	go run golang.org/x/vuln/cmd/govulncheck@latest -show verbose,color ./...
+
 .PHONY: docs
 helm-docs: tb.helm-docs update-docs
 	@$(TB_HELM_DOCS)
