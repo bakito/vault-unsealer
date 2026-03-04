@@ -1,5 +1,6 @@
 image:
   # -- Repository to use
-  repository: localhost:5001/vault-unsealer
+  repository: vault-unsealer
   # -- Tag to use
   tag: e2e
+  pullPolicy: IfNotPresent
