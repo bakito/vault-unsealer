@@ -34,22 +34,14 @@ jobs:
     needs: build-image
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         # https://hub.docker.com/r/kindest/node/tags
-        k8s_version: [ "v1.32.8", "v1.33.4" , "v1.34.0" ]
+        k8s_version: [ "v1.33.7", "v1.34.3", "v1.35.1"]
         vault_implementation: ["vault", "openbao"]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: ⚙️ Install kind with registry
-        uses: bakito/kind-with-registry-action@main
-        with:
-          node_image: kindest/node:${{ matrix.k8s_version }}
-          kubectl_version: ${{ matrix.k8s_version }}
-
-      - name: ⚙️ Install ${{ matrix.vault_implementation }}
-        run: ./testdata/e2e/${{ matrix.vault_implementation }}-01-install.sh
 
       - name: 📥 Download image tar
         uses: actions/download-artifact@v8
@@ -57,8 +49,16 @@ jobs:
           name: image-tar
           path: /tmp
 
-      - name: 🖼 Load image
-        run: ./testdata/e2e/image-02-load-and-push.sh
+      - name: ⚙️ Install kind with registry
+        uses: bakito/kind-with-registry-action@main
+        with:
+          node_image: kindest/node:${{ matrix.k8s_version }}
+          kubectl_version: ${{ matrix.k8s_version }}
+          docker_image_name: vault-unsealer:e2e
+          docker_image_file: /tmp/image.tar
+
+      - name: ⚙️ Install ${{ matrix.vault_implementation }}
+        run: ./testdata/e2e/${{ matrix.vault_implementation }}-01-install.sh
 
       - name: ⚙️ Setup ${{ matrix.vault_implementation }}
         run: ./testdata/e2e/${{ matrix.vault_implementation }}-02-setup.sh
