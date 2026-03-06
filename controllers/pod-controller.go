@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/bakito/vault-unsealer/pkg/cache"
-	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -14,6 +12,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	"github.com/bakito/vault-unsealer/pkg/cache"
+	"github.com/bakito/vault-unsealer/pkg/constants"
 )
 
 // PodReconciler reconciles a Pod object.
@@ -25,8 +26,8 @@ type PodReconciler struct {
 	AddrEnvVarName     string
 }
 
-//+kubebuilder:rbac:groups=,resources=pods;secrets,verbs=get;list;watch
-//+kubebuilder:rbac:groups=,resources=pods/status,verbs=get
+// +kubebuilder:rbac:groups=,resources=pods;secrets,verbs=get;list;watch
+// +kubebuilder:rbac:groups=,resources=pods/status,verbs=get
 
 // Reconcile reconciles the Pod object.
 func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {

@@ -3,9 +3,11 @@ package controllers
 import (
 	"context"
 
-	"github.com/bakito/vault-unsealer/pkg/types"
 	vc "github.com/hashicorp/vault-client-go"
 	"github.com/hashicorp/vault/vault"
+
+	"github.com/bakito/vault-unsealer/pkg/types"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

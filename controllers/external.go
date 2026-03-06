@@ -7,8 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bakito/vault-unsealer/pkg/cache"
-	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/hashicorp/vault-client-go"
 	"golang.org/x/sync/errgroup"
 	corev1 "k8s.io/api/core/v1"
@@ -16,6 +14,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+
+	"github.com/bakito/vault-unsealer/pkg/cache"
+	"github.com/bakito/vault-unsealer/pkg/constants"
 )
 
 // ExternalHandler handles external vaults.

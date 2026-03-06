@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bakito/vault-unsealer/pkg/hierarchy"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/google/uuid"
 	"gopkg.in/resty.v1"
+
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
+	"github.com/bakito/vault-unsealer/pkg/types"
 )
 
 // info is a struct representing the cache information to be exchanged between peers.

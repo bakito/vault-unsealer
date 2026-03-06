@@ -3,8 +3,6 @@ package controllers
 import (
 	"context"
 
-	"github.com/bakito/vault-unsealer/pkg/cache"
-	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	corev1 "k8s.io/api/core/v1"
 	discoveryv1 "k8s.io/api/discovery/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -16,6 +14,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	"github.com/bakito/vault-unsealer/pkg/cache"
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 )
 
 // EndpointsReconciler reconciles an Endpoints object.
@@ -26,8 +27,8 @@ type EndpointsReconciler struct {
 	UnsealerSelector labels.Selector
 }
 
-//+kubebuilder:rbac:groups=,resources=endpoints,verbs=get;list;watch
-//+kubebuilder:rbac:groups=apps,resources=deployments;replicasets,verbs=get;list;watch
+// +kubebuilder:rbac:groups=,resources=endpoints,verbs=get;list;watch
+// +kubebuilder:rbac:groups=apps,resources=deployments;replicasets,verbs=get;list;watch
 
 // Reconcile reconciles the Endpoints object.
 func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {

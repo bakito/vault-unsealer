@@ -7,17 +7,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/bakito/vault-unsealer/controllers"
-	"github.com/bakito/vault-unsealer/pkg/cache"
-	"github.com/bakito/vault-unsealer/pkg/constants"
-	"github.com/bakito/vault-unsealer/pkg/hierarchy"
-	"github.com/bakito/vault-unsealer/pkg/logging"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/discovery"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	ctrl "sigs.k8s.io/controller-runtime"
 	crtlcache "sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -26,6 +20,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	"github.com/bakito/vault-unsealer/controllers"
+	"github.com/bakito/vault-unsealer/pkg/cache"
+	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
+	"github.com/bakito/vault-unsealer/pkg/logging"
+
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
 var (
@@ -39,7 +41,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	//+kubebuilder:scaffold:scheme
+	// +kubebuilder:scaffold:scheme
 }
 
 func main() {
@@ -186,7 +188,7 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, c cache.
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)
 	}
-	//+kubebuilder:scaffold:builder
+	// +kubebuilder:scaffold:builder
 
 	if err := (&controllers.ExternalHandler{
 		Client: mgr.GetClient(),

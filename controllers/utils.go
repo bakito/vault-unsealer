@@ -3,9 +3,10 @@ package controllers
 import (
 	"strings"
 
+	corev1 "k8s.io/api/core/v1"
+
 	"github.com/bakito/vault-unsealer/pkg/constants"
 	"github.com/bakito/vault-unsealer/pkg/types"
-	corev1 "k8s.io/api/core/v1"
 )
 
 func extractVaultInfo(secret corev1.Secret) *types.VaultInfo {
