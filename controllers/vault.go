@@ -8,10 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bakito/vault-unsealer/pkg/constants"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/hashicorp/vault-client-go"
 	"github.com/hashicorp/vault-client-go/schema"
+
+	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/types"
 )
 
 // defaultK8sTokenFile is the default path for the Kubernetes service account token file.

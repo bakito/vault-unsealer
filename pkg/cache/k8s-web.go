@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bakito/vault-unsealer/pkg/hierarchy"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/resty.v1"
+
+	"github.com/bakito/vault-unsealer/pkg/hierarchy"
+	"github.com/bakito/vault-unsealer/pkg/types"
 )
 
 // webPostSync handles the POST request to synchronize cache information for a specific stateful set.
@@ -72,7 +73,8 @@ func (c *k8sCache) webGetInfo(ctx *gin.Context) {
 	cl.SetTimeout(time.Second)
 	resp, err := cl.R().
 		SetBody(&info{Vaults: c.vaults, Token: c.token}).
-		Put(fmt.Sprintf("http://%s/info", net.JoinHostPort(ctx.ClientIP(), strconv.Itoa(apiPort)))) //nolint:revive
+		//nolint:revive // http is ok here
+		Put(fmt.Sprintf("http://%s/info", net.JoinHostPort(ctx.ClientIP(), strconv.Itoa(apiPort))))
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

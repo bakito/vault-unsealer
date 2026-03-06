@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bakito/vault-unsealer/pkg/constants"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	discoveryv1 "k8s.io/api/discovery/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/bakito/vault-unsealer/pkg/constants"
 )
 
 // GetPeers returns a map of peer IPs and their associated names.

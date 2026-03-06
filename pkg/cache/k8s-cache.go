@@ -7,20 +7,21 @@ import (
 	"maps"
 	"net"
 	"net/http"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/bakito/vault-unsealer/pkg/constants"
-	"github.com/bakito/vault-unsealer/pkg/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gopkg.in/resty.v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+
+	"github.com/bakito/vault-unsealer/pkg/constants"
+	"github.com/bakito/vault-unsealer/pkg/types"
 )
 
 // apiPort is the port for the cache API server.
@@ -203,6 +204,6 @@ func (c *k8sCache) vaultString() (keys []string) {
 	for k, i := range c.vaults {
 		keys = append(keys, fmt.Sprintf("%s (keys: %d)", k, len(i.UnsealKeys)))
 	}
-	sort.Strings(keys)
+	slices.Sort(keys)
 	return keys
 }

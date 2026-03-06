@@ -3,9 +3,10 @@ package cache
 import (
 	"context"
 
-	"github.com/bakito/vault-unsealer/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+
+	"github.com/bakito/vault-unsealer/pkg/types"
 )
 
 // Cache defines the interface for managing Vault information cache.
