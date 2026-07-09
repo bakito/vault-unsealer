@@ -1,6 +1,6 @@
 module github.com/bakito/vault-unsealer
 
-go 1.26.4
+go 1.26.5
 
 replace (
 	// resolve with commit id of github.com/hashicorp/vault
@@ -398,7 +398,7 @@ require (
 	github.com/prometheus/common v0.67.5 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.59.0 // indirect
+	github.com/quic-go/quic-go v0.59.1 // indirect
 	github.com/rboyer/safeio v0.2.3 // indirect
 	github.com/renier/xmlrpc v0.0.0-20170708154548-ce4a1a486c03 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
