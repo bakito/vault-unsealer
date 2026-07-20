@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
 	"github.com/google/uuid"
-	"gopkg.in/resty.v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty/v2"
 
 	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	"github.com/bakito/vault-unsealer/pkg/types"

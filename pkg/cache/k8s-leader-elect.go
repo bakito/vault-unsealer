@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/google/uuid"
-	"gopkg.in/resty.v1"
 
 	"github.com/bakito/vault-unsealer/pkg/hierarchy"
 	"github.com/bakito/vault-unsealer/pkg/types"
@@ -17,7 +17,7 @@ import (
 
 // info is a struct representing the cache information to be exchanged between peers.
 type info struct {
-	Vaults map[string]*types.VaultInfo `json:"vaults"` // Vaults contains the Vault information.
+	Vaults map[string]*types.VaultInfo `json:"vaults"` // Vaults contain the Vault information.
 	Token  string                      `json:"token"`  // Token is the authentication token for peers.
 }
 
