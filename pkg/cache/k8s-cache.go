@@ -54,7 +54,7 @@ func (c *k8sCache) IsK8sPast123() bool {
 // NewK8s creates a new Kubernetes cache instance.
 func NewK8s(reader client.Reader, past132 bool) (RunnableCache, error) {
 	c := &k8sCache{
-		simpleCache:    simpleCache{vaults: make(map[string]*types.VaultInfo)},
+		vaults:         make(map[string]*types.VaultInfo),
 		reader:         reader,
 		clusterMembers: map[string]string{},
 		past132:        past132,
