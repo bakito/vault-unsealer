@@ -27,12 +27,10 @@ var _ = Describe("PodReconciler", func() {
 		reconciler.Cache.SetVaultInfoFor("test-statefulset", &types.VaultInfo{})
 
 		pod = &corev1.Pod{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-pod",
-				Namespace: "default",
-				OwnerReferences: []metav1.OwnerReference{
-					{Kind: "StatefulSet", Name: "test-statefulset"},
-				},
+			Name:      "test-pod",
+			Namespace: "default",
+			OwnerReferences: []metav1.OwnerReference{
+				{Kind: "StatefulSet", Name: "test-statefulset"},
 			},
 			Status: corev1.PodStatus{
 				Phase: corev1.PodRunning,

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/bakito/vault-unsealer/pkg/cache"
 	"github.com/bakito/vault-unsealer/pkg/constants"
@@ -26,16 +25,14 @@ var _ = Describe("PodReconciler", func() {
 		}
 
 		secret = &corev1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-secret",
-				Namespace: "default",
-				Labels: map[string]string{
-					constants.LabelExternal: "3m0s",
-				},
-				Annotations: map[string]string{
-					constants.AnnotationExternalSource:  "https://vault.bakito.org:8200",
-					constants.AnnotationExternalTargets: "https://vault-1.bakito.org:8200;https://vault-2.bakito.org:8200",
-				},
+			Name:      "test-secret",
+			Namespace: "default",
+			Labels: map[string]string{
+				constants.LabelExternal: "3m0s",
+			},
+			Annotations: map[string]string{
+				constants.AnnotationExternalSource:  "https://vault.bakito.org:8200",
+				constants.AnnotationExternalTargets: "https://vault-1.bakito.org:8200;https://vault-2.bakito.org:8200",
 			},
 		}
 
