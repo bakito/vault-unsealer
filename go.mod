@@ -17,7 +17,7 @@ require (
 	github.com/hashicorp/vault v1.2.1-0.20260617163945-7193f9a48ff6 // use commit hash, as versioning was not updated to v2
 	github.com/hashicorp/vault-client-go v0.4.3
 	github.com/onsi/ginkgo/v2 v2.32.1
-	github.com/onsi/gomega v1.42.1
+	github.com/onsi/gomega v1.43.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/sync v0.22.0
 	k8s.io/api v0.36.4
