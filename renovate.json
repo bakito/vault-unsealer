@@ -2,8 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "matchDatasources": ["go"],
-      "matchPackageNames": ["github.com/hashicorp/vault/sdk", "github.com/hashicorp/vault/api"],
+      "matchDatasources": [
+        "go"
+      ],
+      "matchPackageNames": [
+        "github.com/hashicorp/vault/sdk",
+        "github.com/hashicorp/vault/api",
+        "github.com/godbus/dbus"
+      ],
       "enabled": false
     }
   ],
