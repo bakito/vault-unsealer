@@ -20,13 +20,19 @@ TB_HELM_DOCS ?= $(TB_LOCALBIN)/helm-docs
 TB_SEMVER ?= $(TB_LOCALBIN)/semver
 
 ## Tool Versions
-TB_CONTROLLER_GEN_VERSION ?= v0.21.0
-TB_GINKGO_VERSION ?= v2.32.1
+# renovate: packageName=github.com/kubernetes-sigs/controller-tools
+TB_CONTROLLER_GEN_VERSION ?= v0.22.0
+# renovate: packageName=github.com/onsi/ginkgo/v2
+TB_GINKGO_VERSION ?= v2.33.1
+# renovate: packageName=github.com/golangci/golangci-lint/v2
 TB_GOLANGCI_LINT_VERSION ?= v2.14.0
 TB_GOLANGCI_LINT_VERSION_NUM ?= $(call STRIP_V,$(TB_GOLANGCI_LINT_VERSION))
-TB_GORELEASER_VERSION ?= v2.18.0
+# renovate: packageName=github.com/goreleaser/goreleaser/v2
+TB_GORELEASER_VERSION ?= v2.18.3
 TB_GORELEASER_VERSION_NUM ?= $(call STRIP_V,$(TB_GORELEASER_VERSION))
+# renovate: packageName=github.com/norwoodj/helm-docs/cmd/helm-docs
 TB_HELM_DOCS_VERSION ?= v1.14.2
+# renovate: packageName=github.com/bakito/semver
 TB_SEMVER_VERSION ?= v1.1.10
 TB_SEMVER_VERSION_NUM ?= $(call STRIP_V,$(TB_SEMVER_VERSION))
 
@@ -70,7 +76,7 @@ tb.reset:
 ## Update Tools
 .PHONY: tb.update
 tb.update: tb.reset
-	toolbox makefile -f $(TB_LOCALDIR)/Makefile \
+	toolbox makefile --renovate -f $(TB_LOCALDIR)/Makefile \
 		sigs.k8s.io/controller-tools/cmd/controller-gen@github.com/kubernetes-sigs/controller-tools \
 		github.com/onsi/ginkgo/v2/ginkgo \
 		github.com/golangci/golangci-lint/v2/cmd/golangci-lint?--version \
