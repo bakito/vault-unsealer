@@ -3,7 +3,7 @@
   "packageRules": [
     {
       "matchDatasources": ["go"],
-      "matchPackageNames": ["github.com/hashicorp/vault/sdk"],
+      "matchPackageNames": ["github.com/hashicorp/vault/sdk", "github.com/hashicorp/vault/api"],
       "enabled": false
     }
   ],
