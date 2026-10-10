@@ -417,7 +417,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.22.6 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
-	github.com/snowflakedb/gosnowflake v1.19.0 // indirect
+	github.com/snowflakedb/gosnowflake/v2 v2.0.0 // indirect
 	github.com/softlayer/softlayer-go v0.0.0-20180806151055-260589d94c7d // indirect
 	github.com/sony/gobreaker v0.5.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
