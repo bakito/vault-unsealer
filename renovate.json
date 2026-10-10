@@ -1,5 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "matchDatasources": ["go"],
+      "matchPackageNames": ["github.com/hashicorp/vault/sdk"],
+      "enabled": false
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
