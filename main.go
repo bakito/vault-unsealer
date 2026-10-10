@@ -140,24 +140,26 @@ func main() {
 
 func run(ctx context.Context, mgr manager.Manager, podNamespace string, c cache.Cache) {
 	secretsStatefulSet := &corev1.SecretList{}
-	if err := mgr.GetAPIReader().List(
+	err := mgr.GetAPIReader().List(
 		ctx,
 		secretsStatefulSet,
 		client.HasLabels{constants.LabelStatefulSetName},
 		client.InNamespace(podNamespace),
-	); err != nil {
+	)
+	if err != nil {
 		setupLog.Error(err, "unable to find secrets statefulset")
 		os.Exit(1)
 	}
 	setupLog.WithValues("secrets", len(secretsStatefulSet.Items)).Info("found unseal secrets statefulset")
 
 	secretsExternal := &corev1.SecretList{}
-	if err := mgr.GetAPIReader().List(
+	err = mgr.GetAPIReader().List(
 		ctx,
 		secretsExternal,
 		client.HasLabels{constants.LabelExternal},
 		client.InNamespace(podNamespace),
-	); err != nil {
+	)
+	if err != nil {
 		setupLog.Error(err, "unable to find secrets external")
 		os.Exit(1)
 	}
@@ -169,32 +171,35 @@ func run(ctx context.Context, mgr manager.Manager, podNamespace string, c cache.
 		os.Exit(1)
 	}
 
-	if err := (&controllers.EndpointsReconciler{
+	err = (&controllers.EndpointsReconciler{
 		Client:           mgr.GetClient(),
 		Scheme:           mgr.GetScheme(),
 		Cache:            c,
 		UnsealerSelector: sel,
-	}).SetupWithManager(mgr); err != nil {
+	}).SetupWithManager(mgr)
+	if err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Endpoint")
 		os.Exit(1)
 	}
-	if err := (&controllers.PodReconciler{
+	err = (&controllers.PodReconciler{
 		Client:             mgr.GetClient(),
 		Scheme:             mgr.GetScheme(),
 		Cache:              c,
 		VaultContainerName: vaultContainerName,
 		AddrEnvVarName:     addrEnvVarName,
-	}).SetupWithManager(mgr, secretsStatefulSet.Items); err != nil {
+	}).SetupWithManager(mgr, secretsStatefulSet.Items)
+	if err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
 
-	if err := (&controllers.ExternalHandler{
+	err = (&controllers.ExternalHandler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 		Cache:  c,
-	}).SetupWithManager(mgr, secretsExternal.Items); err != nil {
+	}).SetupWithManager(mgr, secretsExternal.Items)
+	if err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "External")
 		os.Exit(1)
 	}
