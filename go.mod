@@ -3,7 +3,6 @@ module github.com/bakito/vault-unsealer
 go 1.27.2
 
 replace (
-	github.com/godbus/dbus => github.com/godbus/dbus/v5 v5.2.2
 	// resolve with commit id of github.com/hashicorp/vault
 	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.21.1-0.20261006191737-76fdd6587523
 	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.22.1-0.20261006191737-76fdd6587523
