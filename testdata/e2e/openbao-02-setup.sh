@@ -16,6 +16,23 @@ LEADER_POD="${PODS[0]}"
 echo "Wait for pod ${LEADER_POD}..."
 kubectl wait -n "$NAMESPACE" --for=jsonpath='{.status.phase}'=Running "pod/$LEADER_POD" --timeout=180s
 
+wait_for_openbao_api() {
+  local attempts=0
+  until kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao status -format=json 2>/dev/null | jq -e 'type == "object"' >/dev/null; do
+    attempts=$((attempts + 1))
+    if [ "$attempts" -ge 30 ]; then
+      echo "OpenBao API did not become ready in time"
+      kubectl describe pod -n "$NAMESPACE" "$LEADER_POD" || true
+      kubectl logs -n "$NAMESPACE" "$LEADER_POD" --tail=200 || true
+      exit 1
+    fi
+    echo "Waiting for OpenBao API on ${LEADER_POD}... (${attempts}/30)"
+    sleep 2
+  done
+}
+
+wait_for_openbao_api
+
 # Initialize openbao on first pod
 echo "Initializing openbao on ${PODS[0]}..."
 INIT_OUTPUT=$(kubectl exec -n $NAMESPACE "${PODS[0]}" -- bao operator init -format=json -key-shares=$RAFT_JOIN_THRESHOLD -key-threshold=$RAFT_KEY_THRESHOLD)
