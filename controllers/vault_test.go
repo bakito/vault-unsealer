@@ -4,7 +4,6 @@ import (
 	"context"
 
 	vc "github.com/hashicorp/vault-client-go"
-	"github.com/hashicorp/vault/vault"
 
 	"github.com/bakito/vault-unsealer/pkg/types"
 
@@ -14,22 +13,16 @@ import (
 
 var _ = Describe("Vault", func() {
 	var (
-		cluster *vault.TestCluster
-		client  *vc.Client
-		ctx     context.Context
+		client *vc.Client
+		ctx    context.Context
 	)
 	BeforeEach(func() {
 		ctx = context.TODO()
 	})
-	AfterEach(func() {
-		if cluster != nil {
-			cluster.Cleanup()
-		}
-	})
 
 	Context("worker", func() {
 		It("read unseal keys from secret v1", func() {
-			client, cluster = createTestVault("1", "foo", map[string]any{
+			client = createTestVault("1", "foo", map[string]any{
 				"unsealKey1": "foo",
 				"unsealKey2": "bar",
 			})
@@ -38,7 +31,7 @@ var _ = Describe("Vault", func() {
 			Ω(vi.UnsealKeys).Should(ContainElements("foo", "bar"))
 		})
 		It("read unseal keys from secret v2", func() {
-			client, cluster = createTestVault("2", "foo", map[string]any{
+			client = createTestVault("2", "foo", map[string]any{
 				"unsealKey1": "foo",
 				"unsealKey2": "bar",
 			})

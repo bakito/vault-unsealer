@@ -24,7 +24,7 @@ func TestControllers(t *testing.T) {
 	RunSpecs(t, "Controllers Suite")
 }
 
-func createTestVault(version, path string, data map[string]any) (*vc.Client, *vault.TestCluster) {
+func createTestVault(version, path string, data map[string]any) *vc.Client {
 	testingT.Helper()
 
 	coreConfig := &vault.CoreConfig{
@@ -76,5 +76,5 @@ func createTestVault(version, path string, data map[string]any) (*vc.Client, *va
 	}
 	Ω(err).ShouldNot(HaveOccurred())
 
-	return cl, cluster
+	return cl
 }
