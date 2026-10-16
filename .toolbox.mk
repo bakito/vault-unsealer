@@ -21,7 +21,7 @@ TB_SEMVER ?= $(TB_LOCALBIN)/semver
 
 ## Tool Versions
 # renovate: packageName=github.com/kubernetes-sigs/controller-tools
-TB_CONTROLLER_GEN_VERSION ?= v0.22.0
+TB_CONTROLLER_GEN_VERSION ?= v0.23.0
 # renovate: packageName=github.com/onsi/ginkgo/v2
 TB_GINKGO_VERSION ?= v2.33.1
 # renovate: packageName=github.com/golangci/golangci-lint/v2
