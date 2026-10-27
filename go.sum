@@ -736,8 +736,8 @@ github.com/hashicorp/serf v0.10.4 h1:TCQOrJXHZ1Xf80c4WBhMM9OwUFgDaIP0R+YvoQUKadI
 github.com/hashicorp/serf v0.10.4/go.mod h1:l+s5Q1OSPWU6b9l9m7ODJzTp7mLevSaVzAI03Nka2F0=
 github.com/hashicorp/vault v1.2.1-0.20261022202749-0e7c41b93621 h1:t3M+NhHvdGdf8gBX0Arq9fztnqRgYQ26N55LIN2DS10=
 github.com/hashicorp/vault v1.2.1-0.20261022202749-0e7c41b93621/go.mod h1:ZHqNrt2/43xA3jeHb2OnfyBo9LUgcKy2JpcsUA+GXdo=
-github.com/hashicorp/vault-client-go v0.4.4-0.20260414052120-a0f17ccb9250 h1:aGg0XizhyJDK5GRLtSaH70UgWmjRPeMX7f/u06VaiTE=
-github.com/hashicorp/vault-client-go v0.4.4-0.20260414052120-a0f17ccb9250/go.mod h1:6H93aOOe5SKzd+dlCGvfTHzQYmBJIKhVChd1oB3p2Hw=
+github.com/hashicorp/vault-client-go v0.4.3 h1:zG7STGVgn/VK6rnZc0k8PGbfv2x/sJExRKHSUg3ljWc=
+github.com/hashicorp/vault-client-go v0.4.3/go.mod h1:4tDw7Uhq5XOxS1fO+oMtotHL7j4sB9cp0T7U6m4FzDY=
 github.com/hashicorp/vault-plugin-auth-alicloud v0.24.0 h1:mEGvqnIPXLScENfem6sXdPNWnb+Rxecp9ZAFdRKZURw=
 github.com/hashicorp/vault-plugin-auth-alicloud v0.24.0/go.mod h1:UOi6OQ/NfNC5xX0K2Tvi4ZnWufHnQoBiNAj36ovtvNM=
 github.com/hashicorp/vault-plugin-auth-azure v0.25.1 h1:rfZtf6AfmB2c2sKwm0Lk5ECCfDZRqNYY2A0ItK9T2W8=
@@ -1028,8 +1028,8 @@ github.com/onsi/ginkgo v1.12.1/go.mod h1:zj2OWP4+oCPe1qIXoGWkgMRwljMUYCdkwsT2108
 github.com/onsi/ginkgo v1.16.4/go.mod h1:dX+/inL/fNMqNlz0e9LfyB9TswhZpCVdJM/Z6Vvnwo0=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
 github.com/onsi/ginkgo v1.16.5/go.mod h1:+E8gABHa3K6zRBolWtd+ROzc/U5bkGt0FwiG042wbpU=
-github.com/onsi/ginkgo/v2 v2.27.4 h1:fcEcQW/A++6aZAZQNUmNjvA9PSOzefMJBerHJ4t8v8Y=
-github.com/onsi/ginkgo/v2 v2.27.4/go.mod h1:ArE1D/XhNXBXCBkKOLkbsb2c81dQHCRcF5zwn/ykDRo=
+github.com/onsi/ginkgo/v2 v2.33.1 h1:62XfWJbEIjPSCSDYrsCPP/SHcmH7O0M8ne8zfqQ2iz4=
+github.com/onsi/ginkgo/v2 v2.33.1/go.mod h1:+aXOY+vzZ5mu2iI2HpTZUPmM//oQfsNFX6gU9kNcA44=
 github.com/onsi/gomega v1.7.1/go.mod h1:XdKZgCCFLUoM/7CFJVPcG8C1xQ1AJ0vpAezJrB7JYyY=
 github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1ybHNo=
 github.com/onsi/gomega v1.16.0/go.mod h1:HnhC7FXeEQY45zxNK3PPoIUhzk/80Xly9PcubAlGdZY=

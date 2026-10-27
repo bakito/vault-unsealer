@@ -36,11 +36,9 @@ func createTestVault(version, path string, data map[string]any) *vc.Client {
 	opts := &vault.TestClusterOptions{
 		HandlerFunc: http.Handler,
 		NumCores:    1,
-		KVVersion:   version,
 	}
 
 	cluster := vault.NewTestCluster(testingT, coreConfig, opts)
-	cluster.Start()
 
 	// Make it easy to get access to the active
 	core := cluster.Cores[0].Core
@@ -57,6 +55,20 @@ func createTestVault(version, path string, data map[string]any) *vc.Client {
 	Ω(err).ShouldNot(HaveOccurred())
 
 	ctx := context.TODO()
+
+	// Enable the KV secrets engine at the "secret" path
+	_, err = cl.System.MountsEnableSecretsEngine(
+		ctx,
+		"secret",
+		schema.MountsEnableSecretsEngineRequest{
+			Type: "kv",
+			Options: map[string]any{
+				"version": version,
+			},
+		},
+	)
+	Ω(err).ShouldNot(HaveOccurred())
+
 	if version == "2" {
 		_, err = cl.Secrets.KvV2Write(
 			ctx,

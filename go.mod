@@ -5,6 +5,8 @@ go 1.27.3
 replace (
 	// resolve with commit id of github.com/hashicorp/vault
 	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.23.1-0.20261022202749-0e7c41b93621
+	github.com/hashicorp/vault/command/base => github.com/hashicorp/vault/command/base v0.26.1-0.20261022202749-0e7c41b93621
+	github.com/hashicorp/vault/command/client => github.com/hashicorp/vault/command/client v0.26.1-0.20261022202749-0e7c41b93621
 	github.com/hashicorp/vault/internalshared => github.com/hashicorp/vault/internalshared v0.0.0-20261022202749-0e7c41b93621
 	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.26.1-0.20261022202749-0e7c41b93621
 	github.com/hashicorp/vault/version => github.com/hashicorp/vault/version v0.0.0-20261022202749-0e7c41b93621
@@ -17,8 +19,8 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/vault v1.2.1-0.20261022202749-0e7c41b93621 // use commit hash, as versioning was not updated to v2
-	github.com/hashicorp/vault-client-go v0.4.4-0.20260414052120-a0f17ccb9250
-	github.com/onsi/ginkgo/v2 v2.27.4
+	github.com/hashicorp/vault-client-go v0.4.3
+	github.com/onsi/ginkgo/v2 v2.33.1
 	github.com/onsi/gomega v1.44.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/sync v0.24.0
