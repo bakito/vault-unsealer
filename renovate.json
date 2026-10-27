@@ -1,5 +1,21 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "go"
+      ],
+      "matchPackageNames": [
+        "github.com/hashicorp/vault/sdk",
+        "github.com/hashicorp/vault/api",
+        "github.com/godbus/dbus",
+        "github.com/go-jose/go-jose/v3",
+        "github.com/snowflakedb/gosnowflake"
+
+      ],
+      "enabled": false
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
@@ -10,19 +26,6 @@
       ],
       "matchStrings": [
         "# renovate: packageName=(?<packageName>.+?)\\s+.+?_VERSION \\?= (?<currentValue>.+?)\\s"
-      ]
-    }
-  ],
-  "packageRules": [
-    {
-      "enabled": false,
-      "matchDatasources": [
-        "go"
-      ],
-      "matchPackageNames": [
-        "github.com/hashicorp/vault/sdk",
-        "github.com/hashicorp/vault/api",
-        "github.com/godbus/dbus"
       ]
     }
   ]
