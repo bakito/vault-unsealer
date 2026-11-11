@@ -7,7 +7,7 @@ NAMESPACE="openbao"
 RELEASE_NAME="openbao"
 RAFT_JOIN_THRESHOLD=3
 RAFT_KEY_THRESHOLD=2
-SECRET_FILE_UNSEAL_KEYS="secret-unseal-keys.yaml"
+SECRET_FILE_UNSEAL_KEYS="secret-unseal-keys-unsealkey.yaml"
 
 # Get openbao pods
 PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=openbao -o jsonpath="{.items[*].metadata.name}"))
@@ -52,12 +52,10 @@ echo "Initializing and unsealing other openbao pods..."
 for ((i=1; i<${#PODS[@]}; i++)); do
   FOLLOWER="${PODS[$i]}"
   kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator raft join "http://${LEADER_POD}.openbao-internal:8200"
-  #echo "Unsealing $POD..."
-  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[0]}"
-  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[1]}"
 done
 
-echo "Write openbao unsealer secret"
+# Write unseal keys directly into the Kubernetes Secret (unsealkey source)
+echo "Writing unseal keys directly to Kubernetes Secret..."
 cat <<EOF > $SECRET_FILE_UNSEAL_KEYS
 apiVersion: v1
 stringData:

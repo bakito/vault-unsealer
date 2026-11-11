@@ -39,6 +39,7 @@ jobs:
         # https://hub.docker.com/r/kindest/node/tags
         k8s_version: [ "v1.35.8", "v1.36.4", "v1.37.0"]
         vault_implementation: ["vault", "openbao"]
+        secret_source: ["vault-kv", "unsealkey"]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,14 +61,14 @@ jobs:
       - name: ⚙️ Install ${{ matrix.vault_implementation }}
         run: ./testdata/e2e/${{ matrix.vault_implementation }}-01-install.sh
 
-      - name: ⚙️ Setup ${{ matrix.vault_implementation }}
-        run: ./testdata/e2e/${{ matrix.vault_implementation }}-02-setup.sh
+      - name: ⚙️ Setup ${{ matrix.vault_implementation }} with ${{ matrix.secret_source }}
+        run: ./testdata/e2e/${{ matrix.vault_implementation }}-02-setup-${{ matrix.secret_source }}.sh
 
       - name: ⚙️ Install vault unsealer
         run: ./testdata/e2e/install-vault-unsealer.sh ${{ matrix.vault_implementation }}
 
-      - name: ✔️ Check ${{ matrix.vault_implementation }}
-        run: ./testdata/e2e/${{ matrix.vault_implementation }}-03-check.sh
+      - name: ✔️ Check ${{ matrix.vault_implementation }} with ${{ matrix.secret_source }}
+        run: ./testdata/e2e/${{ matrix.vault_implementation }}-03-check-${{ matrix.secret_source }}.sh
         id: run_check_result
         # continue on error to show logs
         continue-on-error: true
