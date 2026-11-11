@@ -7,7 +7,7 @@ replace (
 	github.com/hashicorp/vault/api => github.com/hashicorp/vault/api v1.23.1-0.20261111190220-b3281a533dbd
 	github.com/hashicorp/vault/command/base => github.com/hashicorp/vault/command/base v0.0.0-20261111190220-b3281a533dbd
 	github.com/hashicorp/vault/command/client => github.com/hashicorp/vault/command/client v0.0.0-20261111190220-b3281a533dbd
-	github.com/hashicorp/vault/internalshared => github.com/hashicorp/vault/internalshared v0.0.0-20261022202749-0e7c41b93621
+	github.com/hashicorp/vault/internalshared => github.com/hashicorp/vault/internalshared v0.0.0-20261111190220-b3281a533dbd
 	github.com/hashicorp/vault/sdk => github.com/hashicorp/vault/sdk v0.26.1-0.20261111190220-b3281a533dbd
 	github.com/hashicorp/vault/version => github.com/hashicorp/vault/version v0.0.0-20261111190220-b3281a533dbd
 )

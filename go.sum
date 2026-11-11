@@ -786,8 +786,8 @@ github.com/hashicorp/vault/api v1.23.1-0.20261111190220-b3281a533dbd h1:knxJ6vtO
 github.com/hashicorp/vault/api v1.23.1-0.20261111190220-b3281a533dbd/go.mod h1:3s75OPH94j6Jqys71BNYNXJTy0gYP0/6XHBGfqvUnSQ=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0 h1:C6OdAYczMbzd1Pe1LLf2SHDulxOq/iybWV3kbgV/PS4=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0/go.mod h1:0orUbtkEwbEPmaQ+wvfrOddGBimLJnuN8A/J0PNfBks=
-github.com/hashicorp/vault/internalshared v0.0.0-20261022202749-0e7c41b93621 h1:eiVa9tavSzI/5mhSyw/dtFEy2krgEm4r2qZtwRRIaIA=
-github.com/hashicorp/vault/internalshared v0.0.0-20261022202749-0e7c41b93621/go.mod h1:lijFDbzEAMIbpkbzJmZtBe8X61ZuxMNLXfAkqcuRkiA=
+github.com/hashicorp/vault/internalshared v0.0.0-20261111190220-b3281a533dbd h1:WAUurWxq5GJXdBqTVGXVs2Db+BY8aHbbfdngQL6v7Xw=
+github.com/hashicorp/vault/internalshared v0.0.0-20261111190220-b3281a533dbd/go.mod h1:m4fdYTErzdgF1iZFL9CTIK8GRt+ivFZbu4T/V22E3sI=
 github.com/hashicorp/vault/sdk v0.26.1-0.20261111190220-b3281a533dbd h1:PWZVnJYBvNMmya6KZFURKqb1t9/m7ORiFxgnOnA1D94=
 github.com/hashicorp/vault/sdk v0.26.1-0.20261111190220-b3281a533dbd/go.mod h1:PEl/1vvmhkuyUL8s5Zqrw6UQy4DPwfhUz4S1bpjXKqU=
 github.com/hashicorp/vault/version v0.0.0-20261111190220-b3281a533dbd h1:LLqRnZYaZzrq6ThhTm63EK41IdUJ7a3/Xx6gdOuMZMI=
