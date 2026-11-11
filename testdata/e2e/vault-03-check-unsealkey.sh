@@ -5,7 +5,6 @@ set -e
 # Variables
 NAMESPACE="vault"
 
-
 PODS=($(kubectl get pods -n $NAMESPACE -l app.kubernetes.io/name=vault -o jsonpath="{.items[*].metadata.name}"))
 
 echo "Waiting for Vault pods to be ready..."
