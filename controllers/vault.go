@@ -18,6 +18,46 @@ import (
 // defaultK8sTokenFile is the default path for the Kubernetes service account token file.
 const defaultK8sTokenFile = "/var/run/secrets/kubernetes.io/serviceaccount/token" // #nosec G101 not a secret
 
+// VaultClient abstracts the Vault client methods needed by readUnsealKeys.
+type VaultClient interface {
+	MountsListSecretsEngines(ctx context.Context, opts ...vault.RequestOption) (*vault.Response[map[string]any], error)
+	KvV1Read(ctx context.Context, path string, opts ...vault.RequestOption) (*vault.Response[map[string]any], error)
+	KvV2Read(ctx context.Context, path string, opts ...vault.RequestOption) (*vault.Response[schema.KvV2ReadResponse], error)
+}
+
+// clientAdapter wraps *vault.Client to implement VaultClient.
+type clientAdapter struct {
+	cl *vault.Client
+}
+
+func (a *clientAdapter) MountsListSecretsEngines(
+	ctx context.Context,
+	opts ...vault.RequestOption,
+) (*vault.Response[map[string]any], error) {
+	return a.cl.System.MountsListSecretsEngines(ctx, opts...)
+}
+
+func (a *clientAdapter) KvV1Read(
+	ctx context.Context,
+	path string,
+	opts ...vault.RequestOption,
+) (*vault.Response[map[string]any], error) {
+	return a.cl.Secrets.KvV1Read(ctx, path, opts...)
+}
+
+func (a *clientAdapter) KvV2Read(
+	ctx context.Context,
+	path string,
+	opts ...vault.RequestOption,
+) (*vault.Response[schema.KvV2ReadResponse], error) {
+	return a.cl.Secrets.KvV2Read(ctx, path, opts...)
+}
+
+// newVaultClient wraps a *vault.Client for use with readUnsealKeys.
+func newVaultClient(cl *vault.Client) VaultClient {
+	return &clientAdapter{cl: cl}
+}
+
 // newClient creates a new Vault client with the specified address.
 func newClient(address string, insecureSkipVerify bool) (*vault.Client, error) {
 	return vault.New(
@@ -89,8 +129,8 @@ func kubernetesLogin(ctx context.Context, cl *vault.Client, role, mountPath stri
 }
 
 // readUnsealKeys reads the unseal keys from Vault for the given VaultInfo.
-func readUnsealKeys(ctx context.Context, cl *vault.Client, v *types.VaultInfo) error {
-	mounts, err := cl.System.MountsListSecretsEngines(ctx)
+func readUnsealKeys(ctx context.Context, cl VaultClient, v *types.VaultInfo) error {
+	mounts, err := cl.MountsListSecretsEngines(ctx)
 	if err != nil {
 		return err
 	}
@@ -102,14 +142,14 @@ func readUnsealKeys(ctx context.Context, cl *vault.Client, v *types.VaultInfo) e
 	version := childOf[string](mounts.Data, mount+"/", "options", "version")
 	switch version {
 	case "1":
-		sec, err := cl.Secrets.KvV1Read(ctx, path, vault.WithMountPath(mount))
+		sec, err := cl.KvV1Read(ctx, path, vault.WithMountPath(mount))
 		if err != nil {
 			return err
 		}
 		data = sec.Data
 		warnings = sec.Warnings
 	case "2":
-		sec, err := cl.Secrets.KvV2Read(ctx, path, vault.WithMountPath(mount))
+		sec, err := cl.KvV2Read(ctx, path, vault.WithMountPath(mount))
 		if err != nil {
 			return err
 		}

@@ -110,7 +110,7 @@ func (r *ExternalHandler) handleExternal(
 			return
 		}
 
-		if err = readUnsealKeys(ctx, srcCl, vi); err != nil {
+		if err = readUnsealKeys(ctx, newVaultClient(srcCl), vi); err != nil {
 			l.Error(err, "error reading unseal keys")
 			return
 		}
