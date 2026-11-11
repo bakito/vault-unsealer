@@ -52,18 +52,32 @@ echo "Initializing and unsealing other openbao pods..."
 for ((i=1; i<${#PODS[@]}; i++)); do
   FOLLOWER="${PODS[$i]}"
   kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator raft join "http://${LEADER_POD}.openbao-internal:8200"
-  #echo "Unsealing $POD..."
-  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[0]}"
-  #kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[1]}"
+  echo "Unsealing $FOLLOWER..."
+  kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[0]}"
+  kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[1]}"
 done
+
+# Enable userpass auth method for the unsealer
+echo "Enabling userpass auth method..."
+kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao auth enable userpass
+
+echo "Creating admin user..."
+kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao write auth/userpass/users/admin password=admin policies=admin
+
+# Enable KV v2 secrets engine and write unseal keys to OpenBao
+echo "Enabling KV v2 secrets engine..."
+kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao secrets enable -version=2 unsealer
+
+echo "Writing unseal keys to OpenBao KV v2..."
+kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- sh -c "bao kv put unsealer/unseal unsealKey1='${UNSEAL_KEYS[0]}' unsealKey2='${UNSEAL_KEYS[1]}' unsealKey3='${UNSEAL_KEYS[2]}'"
 
 echo "Write openbao unsealer secret"
 cat <<EOF > $SECRET_FILE_UNSEAL_KEYS
 apiVersion: v1
 stringData:
-  unsealKey1: ${UNSEAL_KEYS[0]}
-  unsealKey2: ${UNSEAL_KEYS[1]}
-  unsealKey3: ${UNSEAL_KEYS[2]}
+  secretPath: unsealer/unseal
+  username: admin
+  password: admin
 
 kind: Secret
 metadata:
