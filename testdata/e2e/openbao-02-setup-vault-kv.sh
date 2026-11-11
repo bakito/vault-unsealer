@@ -99,8 +99,15 @@ kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao login -no-print "$ROOT_TOKEN"
 
 # Create the admin policy used by the unsealer user to read the unseal keys
 echo "Creating admin policy..."
-echo 'path "unsealer/*" { capabilities = ["read", "list"] }' | \
-  kubectl exec -i -n "$NAMESPACE" "$LEADER_POD" -- bao policy write admin -
+# sys/mounts read is required by the unsealer to detect the kv version of the secret engine
+cat <<'EOF' | kubectl exec -i -n "$NAMESPACE" "$LEADER_POD" -- bao policy write admin -
+path "unsealer/*" {
+  capabilities = ["read", "list"]
+}
+path "sys/mounts" {
+  capabilities = ["read"]
+}
+EOF
 
 # Enable userpass auth method for the unsealer
 echo "Enabling userpass auth method..."

@@ -53,17 +53,39 @@ for ((i=0; i<${#PODS[@]}; i++)); do
   POD="${PODS[$i]}"
   echo ""
   echo "Restarting pod ${POD}..."
-  kubectl delete pod -n $NAMESPACE "$POD" --grace-period=0 --force
+  OLD_UID=$(kubectl get pod -n $NAMESPACE "$POD" -o jsonpath='{.metadata.uid}')
+  RESTART_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  kubectl delete pod -n $NAMESPACE "$POD"
 
-  # Wait for the pod to be recreated and running
+  # Wait for the pod to be recreated (new UID) and running
+  # Note: "Running" is a pod phase, not a condition, so poll the phase instead of using kubectl wait
   echo "Waiting for ${POD} to be recreated..."
-  kubectl wait -n $NAMESPACE --for=condition=Running "pod/$POD" --timeout=120s
+  RETRY_COUNT=0
+  while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    NEW_UID=$(kubectl get pod -n $NAMESPACE "$POD" -o jsonpath='{.metadata.uid}' 2>/dev/null || true)
+    PHASE=$(kubectl get pod -n $NAMESPACE "$POD" -o jsonpath='{.status.phase}' 2>/dev/null || true)
+    if [ -n "$NEW_UID" ] && [ "$NEW_UID" != "$OLD_UID" ] && [ "$PHASE" = "Running" ]; then
+      echo "Pod ${POD} is running"
+      break
+    fi
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+    echo "  Waiting for ${POD} to be running... (${RETRY_COUNT}/${MAX_RETRIES}, phase: ${PHASE:-none})"
+    sleep 2
+  done
 
-  # Wait for the unsealer to unseal the pod
+  if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+    echo "FAILURE: Pod ${POD} was not recreated within timeout"
+    kubectl get pods -n $NAMESPACE -o wide || true
+    kubectl describe pod -n $NAMESPACE "$POD" || true
+    exit 1
+  fi
+
+  # Wait for the unsealer to unseal the pod (only consider log lines for this pod since the restart)
   echo "Waiting for unsealer to unseal ${POD}..."
   RETRY_COUNT=0
   while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    if kubectl logs -n $NAMESPACE $UNSEALER_POD 2>&1 | grep -q "successfully unsealed vault"; then
+    if kubectl logs -n $NAMESPACE $UNSEALER_POD --since-time="$RESTART_TIME" 2>&1 | \
+      grep "successfully unsealed vault" | grep -q "\"pod\":\"${POD}\""; then
       echo "SUCCESS: Unsealer unsealed ${POD}"
       break
     fi
@@ -78,9 +100,6 @@ for ((i=0; i<${#PODS[@]}; i++)); do
     kubectl logs -n $NAMESPACE $UNSEALER_POD
     exit 1
   fi
-
-  # Clear the unseal log for the next iteration
-  kubectl logs -n $NAMESPACE $UNSEALER_POD --since=1s >/dev/null 2>&1
 
   # Wait for the pod to be ready (unsealed pods pass readiness probe)
   echo "Waiting for ${POD} to be ready..."
