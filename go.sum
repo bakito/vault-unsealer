@@ -572,8 +572,8 @@ github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgf
 github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
 github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed h1:5upAirOpQc1Q53c0bnx2ufif5kANL7bfZWcc6VJWJd8=
 github.com/hailocab/go-hostpool v0.0.0-20160125115350-e80d13ce29ed/go.mod h1:tMWxXQ9wFIaZeTI9F+hmhFiGpFmhOHzyShyFUhRm0H4=
-github.com/hashicorp/cap v0.13.0 h1:bzLS1er9am6hOiw//TEjmwZ3t975iFfRfvXY6VRLKEw=
-github.com/hashicorp/cap v0.13.0/go.mod h1:Kbu5owAOJzQ/HH4Ba/76wsIXN2tRiJgToJKBO2MAEFE=
+github.com/hashicorp/cap v0.15.0 h1:AvraJIQWPEbxm3m1mKtHEomWjMA22tKMG6jP/In9mG0=
+github.com/hashicorp/cap v0.15.0/go.mod h1:A+JiPqMWvppCWmehtcQHRN8iTcbI10qeJ0lavQt2dnw=
 github.com/hashicorp/cap/ldap v0.0.0-20250911140431-44d01434c285 h1:vwg2CDaWTJJkr+5ivc2KUYx877gPAUEgq5QIPA/bKjw=
 github.com/hashicorp/cap/ldap v0.0.0-20250911140431-44d01434c285/go.mod h1:La1zaRmx2oqz79W9SpwQAPMfDUdBxZeoN2IaAQ8D4ow=
 github.com/hashicorp/cli v1.1.7 h1:/fZJ+hNdwfTSfsxMBa9WWMlfjUZbX8/LnUxgAd7lCVU=
@@ -740,8 +740,8 @@ github.com/hashicorp/vault-plugin-auth-cf v0.24.1 h1:h0Ag/CyZh4Jt/gS5qjn58iGQ8od
 github.com/hashicorp/vault-plugin-auth-cf v0.24.1/go.mod h1:4MIEdewvSqYFz+usW7TtTbuhmK6DSPAzKwKUUZBh7MY=
 github.com/hashicorp/vault-plugin-auth-gcp v0.24.1 h1:jS8nrgSuCHd5DaLBYsM/Iu+adWKzfqYMMfU7nJ1sQXs=
 github.com/hashicorp/vault-plugin-auth-gcp v0.24.1/go.mod h1:ZNVDIwKVxUxePEAjpn2pcKmB8joMYgDr0DUM3ZmsYzY=
-github.com/hashicorp/vault-plugin-auth-jwt v0.27.2 h1:/1l31rYjc7FJ2fXkeHI2EagvfEwHExD9/pD3UM55CPg=
-github.com/hashicorp/vault-plugin-auth-jwt v0.27.2/go.mod h1:p50iZajVi+F/DdegVVV18cMceF14fpFSwvcbcnDvKTg=
+github.com/hashicorp/vault-plugin-auth-jwt v0.27.3 h1:GER5Zpq1VKjw3V/CzY5fLnekcOEOEk0tUoNkfzjgAo0=
+github.com/hashicorp/vault-plugin-auth-jwt v0.27.3/go.mod h1:awAET9P0iNmDWH1pXcaiIStvpECYgjykitvSPQms/Rc=
 github.com/hashicorp/vault-plugin-auth-kerberos v0.18.1 h1:53Vth8Kmnw7iUfjc65NW23xUOsxSGYVNAs3Hif/hhwI=
 github.com/hashicorp/vault-plugin-auth-kerberos v0.18.1/go.mod h1:h4V+/E+C/4ijT78rsCooG3iTcBzwGh4Not47Gd4JXfU=
 github.com/hashicorp/vault-plugin-auth-kubernetes v0.25.1 h1:lJwWhwe++aOWjOhYlKl878ZFVC29Hmp7ELwq5yExq6Q=
@@ -786,8 +786,8 @@ github.com/hashicorp/vault/api v1.23.1-0.20261111190220-b3281a533dbd h1:knxJ6vtO
 github.com/hashicorp/vault/api v1.23.1-0.20261111190220-b3281a533dbd/go.mod h1:3s75OPH94j6Jqys71BNYNXJTy0gYP0/6XHBGfqvUnSQ=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0 h1:C6OdAYczMbzd1Pe1LLf2SHDulxOq/iybWV3kbgV/PS4=
 github.com/hashicorp/vault/api/auth/userpass v0.1.0/go.mod h1:0orUbtkEwbEPmaQ+wvfrOddGBimLJnuN8A/J0PNfBks=
-github.com/hashicorp/vault/internalshared v0.0.0-20261022202749-0e7c41b93621 h1:eiVa9tavSzI/5mhSyw/dtFEy2krgEm4r2qZtwRRIaIA=
-github.com/hashicorp/vault/internalshared v0.0.0-20261022202749-0e7c41b93621/go.mod h1:lijFDbzEAMIbpkbzJmZtBe8X61ZuxMNLXfAkqcuRkiA=
+github.com/hashicorp/vault/internalshared v0.0.0-20261111190220-b3281a533dbd h1:WAUurWxq5GJXdBqTVGXVs2Db+BY8aHbbfdngQL6v7Xw=
+github.com/hashicorp/vault/internalshared v0.0.0-20261111190220-b3281a533dbd/go.mod h1:m4fdYTErzdgF1iZFL9CTIK8GRt+ivFZbu4T/V22E3sI=
 github.com/hashicorp/vault/sdk v0.26.1-0.20261111190220-b3281a533dbd h1:PWZVnJYBvNMmya6KZFURKqb1t9/m7ORiFxgnOnA1D94=
 github.com/hashicorp/vault/sdk v0.26.1-0.20261111190220-b3281a533dbd/go.mod h1:PEl/1vvmhkuyUL8s5Zqrw6UQy4DPwfhUz4S1bpjXKqU=
 github.com/hashicorp/vault/version v0.0.0-20261111190220-b3281a533dbd h1:LLqRnZYaZzrq6ThhTm63EK41IdUJ7a3/Xx6gdOuMZMI=
@@ -1155,8 +1155,8 @@ github.com/smartystreets/assertions v1.13.1 h1:Ef7KhSmjZcK6AVf9YbJdvPYG9avaF0Zxu
 github.com/smartystreets/assertions v1.13.1/go.mod h1:cXr/IwVfSo/RbCSPhoAPv73p3hlSdrBH/b3SdnW/LMY=
 github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a h1:pa8hGb/2YqsZKovtsgrwcDH1RZhVbTKCjLp47XpqCDs=
 github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a/go.mod h1:syvi0/a8iFYH4r/RixwvyeAJjdLS9QV7WQ/tjFTllLA=
-github.com/snowflakedb/gosnowflake v1.19.0 h1:Oy/w5/hXiSJV09kgG9zpFZFjNRNvF5Cet7r6vzd87OQ=
-github.com/snowflakedb/gosnowflake v1.19.0/go.mod h1:7D4+cLepOWrerVsH+tevW3zdMJ5/WrEN7ZceAC6xBv0=
+github.com/snowflakedb/gosnowflake v1.19.1 h1:NZMErtdZMu6kooehbONNQmu/W5BPsaX8hYdlBBEHgxs=
+github.com/snowflakedb/gosnowflake v1.19.1/go.mod h1:9vGW6LYbUD1UqfjpuNN5a5vtha+u4n1AlsR1BqhHwPA=
 github.com/softlayer/softlayer-go v1.2.1 h1:8ucHxn5laVsVPb0/aMGnr6tOMt1I9BgEtU5mn70OGKw=
 github.com/softlayer/softlayer-go v1.2.1/go.mod h1:Gz9/ktcmB7Z8EJlu+QEJJpkv8lAmnhYdB9Tc6gedjmo=
 github.com/softlayer/xmlrpc v0.0.0-20200409220501-5f089df7cb7e h1:3OgWYFw7jxCZPcvAg+4R8A50GZ+CCkARF10lxu2qDsQ=
