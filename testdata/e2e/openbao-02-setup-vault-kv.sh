@@ -51,11 +51,56 @@ done
 echo "Initializing and unsealing other openbao pods..."
 for ((i=1; i<${#PODS[@]}; i++)); do
   FOLLOWER="${PODS[$i]}"
+  echo "Waiting for pod ${FOLLOWER} to be running..."
+  kubectl wait -n "$NAMESPACE" --for=jsonpath='{.status.phase}'=Running "pod/$FOLLOWER" --timeout=180s
   kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator raft join "http://${LEADER_POD}.openbao-internal:8200"
+  # Wait for follower OpenBao API to be ready before unsealing
+  echo "Waiting for OpenBao API on ${FOLLOWER}..."
+  wait_attempts=0
+  until kubectl exec -n "$NAMESPACE" "$FOLLOWER" -- bao status -format=json 2>/dev/null | jq -e 'type == "object"' >/dev/null; do
+    wait_attempts=$((wait_attempts + 1))
+    if [ "$wait_attempts" -ge 30 ]; then
+      echo "OpenBao API on ${FOLLOWER} did not become ready in time"
+      exit 1
+    fi
+    echo "  Waiting... (${wait_attempts}/30)"
+    sleep 2
+  done
   echo "Unsealing $FOLLOWER..."
-  kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[0]}"
-  kubectl exec -n $NAMESPACE "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[1]}"
+  for ((k=0; k<RAFT_KEY_THRESHOLD; k++)); do
+    kubectl exec -n "$NAMESPACE" "$FOLLOWER" -- bao operator unseal "${UNSEAL_KEYS[$k]}"
+  done
+  # A raft follower completes unsealing asynchronously (join challenge + sync),
+  # so poll until it reports unsealed (bao status exits 2 when sealed, so ignore exit code)
+  seal_attempts=0
+  until [ "$(kubectl exec -n "$NAMESPACE" "$FOLLOWER" -- bao status -format=json 2>/dev/null | jq -r '.sealed' || true)" = "false" ]; do
+    seal_attempts=$((seal_attempts + 1))
+    if [ "$seal_attempts" -ge 30 ]; then
+      echo "OpenBao pod ${FOLLOWER} is still sealed"
+      kubectl logs -n "$NAMESPACE" "$FOLLOWER" --tail=100 || true
+      exit 1
+    fi
+    echo "  Waiting for ${FOLLOWER} to be unsealed... (${seal_attempts}/30)"
+    sleep 2
+  done
+  echo "${FOLLOWER} is unsealed"
 done
+
+# Wait for all openbao pods to be ready before making API calls
+echo "Waiting for all openbao pods to be ready..."
+for ((i=1; i<${#PODS[@]}; i++)); do
+  FOLLOWER="${PODS[$i]}"
+  kubectl wait --for=condition=ready pod "$FOLLOWER" -n $NAMESPACE --timeout=60s
+done
+
+# Login with the root token (required for all following API calls)
+echo "Logging in with root token..."
+kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao login -no-print "$ROOT_TOKEN"
+
+# Create the admin policy used by the unsealer user to read the unseal keys
+echo "Creating admin policy..."
+echo 'path "unsealer/*" { capabilities = ["read", "list"] }' | \
+  kubectl exec -i -n "$NAMESPACE" "$LEADER_POD" -- bao policy write admin -
 
 # Enable userpass auth method for the unsealer
 echo "Enabling userpass auth method..."
@@ -66,7 +111,7 @@ kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao write auth/userpass/users/admi
 
 # Enable KV v2 secrets engine and write unseal keys to OpenBao
 echo "Enabling KV v2 secrets engine..."
-kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao secrets enable -version=2 unsealer
+kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- bao secrets enable -path=unsealer -version=2 kv
 
 echo "Writing unseal keys to OpenBao KV v2..."
 kubectl exec -n "$NAMESPACE" "$LEADER_POD" -- sh -c "bao kv put unsealer/unseal unsealKey1='${UNSEAL_KEYS[0]}' unsealKey2='${UNSEAL_KEYS[1]}' unsealKey3='${UNSEAL_KEYS[2]}'"
