@@ -1,6 +1,6 @@
 module github.com/bakito/vault-unsealer
 
-go 1.27.3
+go 1.27.4
 
 replace (
 	// resolve with commit id of github.com/hashicorp/vault
@@ -24,9 +24,9 @@ require (
 	github.com/onsi/gomega v1.44.0
 	go.uber.org/zap v1.28.0
 	golang.org/x/sync v0.25.0
-	k8s.io/api v0.37.1
-	k8s.io/apimachinery v0.37.1
-	k8s.io/client-go v0.37.1
+	k8s.io/api v0.37.2
+	k8s.io/apimachinery v0.37.2
+	k8s.io/client-go v0.37.2
 	k8s.io/klog/v2 v2.140.0
 	sigs.k8s.io/controller-runtime v0.25.2
 )
