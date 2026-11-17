@@ -47,8 +47,9 @@ docker-push: docker-build
 
 release: tb.semver tb.goreleaser
 	@version=$$($(TB_SEMVER)); \
-	git tag -s $$version -m"Release $$version"
-	$(TB_GORELEASER) --clean
+	git tag -s $$version -m"Release $$version"; \
+	git push origin $$version
+	PATH=$(TB_LOCALBIN):$${PATH} $(TB_GORELEASER) --clean
 
 test-release: tb.goreleaser
 	$(TB_GORELEASER) --skip=publish --snapshot --clean
