@@ -20,6 +20,12 @@ imagePullSecrets: []
 leaderElection:
   # -- Specifies whether leader election should be enabled
   enabled: true
+  # -- Lease duration for leader election; empty uses the binary default
+  leaseDuration: ""
+  # -- Renew deadline for leader election; empty uses the binary default
+  renewDeadline: ""
+  # -- Retry period for leader election; empty uses the binary default
+  retryPeriod: ""
 
 sharedCache:
   # -- Specifies whether a shared cache cluster should be started

@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -47,10 +49,19 @@ func init() {
 func main() {
 	var enableLeaderElection bool
 	var enableSharedCache bool
+	var leaseDuration time.Duration
+	var renewDeadline time.Duration
+	var retryPeriod time.Duration
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.BoolVar(&enableSharedCache, "shared-cache", false, "Enable shared cache between the operator instances.")
+	flag.DurationVar(&leaseDuration, "leader-elect-lease-duration", 60*time.Second,
+		"The duration that non-leader candidates will wait to force acquire leadership.")
+	flag.DurationVar(&renewDeadline, "leader-elect-renew-deadline", 40*time.Second,
+		"The duration that the acting master will retry refreshing leadership before giving up.")
+	flag.DurationVar(&retryPeriod, "leader-elect-retry-period", 5*time.Second,
+		"The duration the leader elector clients should wait between tries of actions.")
 	flag.StringVar(
 		&vaultContainerName,
 		"container-name",
@@ -77,6 +88,16 @@ func main() {
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 	logging.SetupLogger(true)
+	if leaseDuration <= renewDeadline || renewDeadline <= retryPeriod || retryPeriod <= 0 {
+		setupLog.Error(
+			errors.New("leader election durations must satisfy lease duration > renew deadline > retry period > 0"),
+			"invalid leader election durations",
+			"leaseDuration", leaseDuration,
+			"renewDeadline", renewDeadline,
+			"retryPeriod", retryPeriod,
+		)
+		os.Exit(1)
+	}
 	podNamespace := os.Getenv(constants.EnvNamespace)
 
 	cfg := ctrl.GetConfigOrDie()
@@ -109,6 +130,9 @@ func main() {
 		WebhookServer:                 webhook.NewServer(webhook.Options{Port: 9443}),
 		HealthProbeBindAddress:        ":8081",
 		LeaderElection:                enableLeaderElection,
+		LeaseDuration:                 new(leaseDuration),
+		RenewDeadline:                 new(renewDeadline),
+		RetryPeriod:                   new(retryPeriod),
 		LeaderElectionID:              constants.OperatorID,
 		LeaderElectionNamespace:       podNamespace,
 		LeaderElectionReleaseOnCancel: true,
