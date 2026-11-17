@@ -29,6 +29,9 @@ helm install my-vault-unsealer bakito/vault-unsealer --version 0.4.1
 | image.tag | string | `nil` | Tag to use |
 | imagePullSecrets | list | `[]` | Optional array of imagePullSecrets containing private registry credentials # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | leaderElection.enabled | bool | `true` | Specifies whether leader election should be enabled |
+| leaderElection.leaseDuration | string | `""` | Lease duration for leader election; empty uses the binary default |
+| leaderElection.renewDeadline | string | `""` | Renew deadline for leader election; empty uses the binary default |
+| leaderElection.retryPeriod | string | `""` | Retry period for leader election; empty uses the binary default |
 | nodeSelector | object | `{}` | [Node selector] |
 | podAnnotations | object | `{}` | Pod Annotations |
 | podLabels | object | `{}` | Pod Labels |

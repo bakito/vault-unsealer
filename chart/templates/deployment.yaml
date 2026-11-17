@@ -56,13 +56,22 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          {{- if or (eq (.Values.sharedCache.enabled | toString) "true") (eq (.Values.leaderElection.enabled | toString) "true")  }}
+          {{- if or (eq (.Values.sharedCache.enabled | toString) "true") (eq (.Values.leaderElection.enabled | toString) "true") .Values.leaderElection.leaseDuration .Values.leaderElection.renewDeadline .Values.leaderElection.retryPeriod }}
           args:
           {{- if eq (.Values.sharedCache.enabled | toString) "true" }}
             - '-shared-cache'
           {{- end }}
           {{- if eq (.Values.leaderElection.enabled | toString) "true" }}
             - '-leader-elect'
+          {{- end }}
+          {{- with .Values.leaderElection.leaseDuration }}
+            - '-leader-elect-lease-duration={{ . }}'
+          {{- end }}
+          {{- with .Values.leaderElection.renewDeadline }}
+            - '-leader-elect-renew-deadline={{ . }}'
+          {{- end }}
+          {{- with .Values.leaderElection.retryPeriod }}
+            - '-leader-elect-retry-period={{ . }}'
           {{- end }}
           {{- end }}
           resources:
